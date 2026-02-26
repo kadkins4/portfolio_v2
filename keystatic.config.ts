@@ -25,6 +25,35 @@ export default config({
         ),
       },
     }),
+
+    siteSettings: singleton({
+      label: "Site Settings",
+      path: "content/site-settings",
+      schema: {
+        socialLinks: fields.array(
+          fields.object({
+            platform: fields.select({
+              label: "Platform",
+              options: [
+                { label: "GitHub", value: "github" },
+                { label: "Instagram", value: "instagram" },
+                { label: "Reddit", value: "reddit" },
+                { label: "LinkedIn", value: "linkedin" },
+                { label: "Email", value: "email" },
+              ],
+              defaultValue: "github",
+            }),
+            url: fields.text({ label: "URL / email address" }),
+            showInFooter: fields.checkbox({ label: "Show in footer", defaultValue: true }),
+            showInContact: fields.checkbox({ label: "Show on contact page", defaultValue: true }),
+          }),
+          {
+            label: "Social Links",
+            itemLabel: (props) => props.fields.platform.value ?? "Link",
+          }
+        ),
+      },
+    }),
   },
 
   collections: {
