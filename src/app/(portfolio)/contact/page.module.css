@@ -80,3 +80,18 @@
   color: #ff6b6b;
   font-size: 14px;
 }
+
+.socialLinks {
+  display: flex;
+  gap: 16px;
+  margin: 16px 0 24px;
+}
+
+.socialLinks a {
+  color: var(--text-secondary);
+  transition: color 0.2s ease;
+}
+
+.socialLinks a:hover {
+  color: var(--accent);
+}
