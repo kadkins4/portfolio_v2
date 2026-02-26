@@ -43,3 +43,6 @@ next-env.d.ts
 # generated sitemap files
 public/sitemap*.xml
 public/robots.txt
+
+# git worktrees
+.worktrees
