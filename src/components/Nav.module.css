@@ -1,3 +1,14 @@
+@keyframes slideInLink {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 .nav {
   position: fixed;
   top: 0;
@@ -158,9 +169,27 @@
   min-height: 44px;
   display: flex;
   align-items: center;
+  transition: color 0.2s ease, transform 0.2s ease;
 }
 
-.mobileMenu a:hover,
+.mobileMenu a:hover {
+  transform: translateX(4px);
+}
+
+.mobileMenu a:active {
+  transform: scale(0.97);
+}
+
 .mobileMenu a.active {
   color: var(--accent);
 }
+
+.mobileMenu.open a {
+  animation: slideInLink 0.3s ease forwards;
+}
+
+.mobileMenu.open a:nth-child(1) { animation-delay: 0ms; }
+.mobileMenu.open a:nth-child(2) { animation-delay: 60ms; }
+.mobileMenu.open a:nth-child(3) { animation-delay: 120ms; }
+.mobileMenu.open a:nth-child(4) { animation-delay: 180ms; }
+.mobileMenu.open a:nth-child(5) { animation-delay: 240ms; }
