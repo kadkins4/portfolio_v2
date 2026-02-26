@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect, useId } from "react";
+import { useState, useEffect, useId, useRef } from "react";
 import styles from "./Nav.module.css";
 
 const NAV_LINKS = [
@@ -18,6 +18,8 @@ export default function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const menuId = useId();
+  const navRef = useRef<HTMLElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -29,9 +31,28 @@ export default function Nav() {
     setMobileOpen(false);
   }, [pathname]);
 
+  useEffect(() => {
+    if (!mobileOpen) return;
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        navRef.current &&
+        menuRef.current &&
+        !navRef.current.contains(e.target as Node) &&
+        !menuRef.current.contains(e.target as Node)
+      ) {
+        setMobileOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [mobileOpen]);
+
   return (
     <>
       <nav
+        ref={navRef}
         className={`${styles.nav} ${scrolled ? styles.scrolled : ""}`}
         aria-label="Main navigation"
       >
@@ -66,6 +87,7 @@ export default function Nav() {
       </nav>
 
       <div
+        ref={menuRef}
         id={menuId}
         className={`${styles.mobileMenu} ${mobileOpen ? styles.open : ""}`}
       >
