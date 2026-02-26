@@ -57,7 +57,7 @@ export default function Nav() {
         aria-label="Main navigation"
       >
         <Link href="/" className={styles.logo}>
-          K<span className={styles.logoAccent}>.</span>
+          K<span className={styles.logoAccent}>A.</span>
         </Link>
 
         <ul className={styles.links}>

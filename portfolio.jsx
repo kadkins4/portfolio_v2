@@ -742,10 +742,11 @@ export default function Portfolio() {
       <footer className="footer" role="contentinfo">
         <nav className="footer-links" aria-label="Social links">
           <a href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">Instagram</a>
+          <a href="https://reddit.com" target="_blank" rel="noopener noreferrer">Reddit</a>
           <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">LinkedIn</a>
           <a href="mailto:hello@kendalladkins.com">Email</a>
         </nav>
-        <p className="footer-copy">© 2026 Kendall Adkins. Built with care.</p>
       </footer>
     </>
   );

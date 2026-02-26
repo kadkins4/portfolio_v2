@@ -1,7 +1,10 @@
 "use client";
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 export default function FadeInObserver() {
+  const pathname = usePathname();
+
   useEffect(() => {
     const els = document.querySelectorAll(".fade-in");
     const obs = new IntersectionObserver(
@@ -12,6 +15,6 @@ export default function FadeInObserver() {
     );
     els.forEach((el) => obs.observe(el));
     return () => obs.disconnect();
-  }, []);
+  }, [pathname]);
   return null;
 }
