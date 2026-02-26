@@ -10,4 +10,17 @@ describe("readTime", () => {
     const words = Array(400).fill("word").join(" ");
     expect(readTime(words)).toBe("2 min read");
   });
+
+  it("returns 1 min for empty string", () => {
+    expect(readTime("")).toBe("1 min read");
+  });
+
+  it("returns 1 min for whitespace-only string", () => {
+    expect(readTime("   ")).toBe("1 min read");
+  });
+
+  it("rounds correctly at boundary", () => {
+    const words = Array(300).fill("word").join(" ");
+    expect(readTime(words)).toBe("2 min read"); // 300/200 = 1.5 → rounds to 2
+  });
 });
