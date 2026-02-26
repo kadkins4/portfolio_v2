@@ -1,5 +1,4 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
 import SocialLinks from "./SocialLinks";
 
 const links = [
@@ -23,5 +22,19 @@ describe("SocialLinks", () => {
     render(<SocialLinks links={links} />);
     const githubLink = screen.getByLabelText("GitHub");
     expect(githubLink).toHaveAttribute("href", "https://github.com/test");
+  });
+
+  it("opens non-email links in a new tab with noopener noreferrer", () => {
+    render(<SocialLinks links={links} />);
+    const githubLink = screen.getByLabelText("GitHub");
+    expect(githubLink).toHaveAttribute("target", "_blank");
+    expect(githubLink).toHaveAttribute("rel", "noopener noreferrer");
+  });
+
+  it("does not set target or rel on email links", () => {
+    render(<SocialLinks links={links} />);
+    const emailLink = screen.getByLabelText("Email");
+    expect(emailLink).not.toHaveAttribute("target");
+    expect(emailLink).not.toHaveAttribute("rel");
   });
 });

@@ -73,14 +73,15 @@ export default function SocialLinks({ links, className }: Props) {
     <nav aria-label="Social links" className={className}>
       {links.map(({ platform, url }) => {
         const href = platform === "email" ? `mailto:${url}` : url;
+        const isExternal = platform !== "email";
         const Icon = ICONS[platform];
         return (
           <a
             key={platform}
             href={href}
             aria-label={LABELS[platform]}
-            target={platform !== "email" ? "_blank" : undefined}
-            rel={platform !== "email" ? "noopener noreferrer" : undefined}
+            target={isExternal ? "_blank" : undefined}
+            rel={isExternal ? "noopener noreferrer" : undefined}
           >
             <Icon />
           </a>
