@@ -39,6 +39,7 @@ export default async function PostPage({ params }: Props) {
   if (!post) notFound();
 
   const contentResult = await post.content();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const contentNodes: any[] = (contentResult as unknown as any)?.node?.children ?? [];
 
   const dateObj = post.date ? new Date(`${post.date}T12:00:00Z`) : null;
@@ -52,11 +53,10 @@ export default async function PostPage({ params }: Props) {
       : post.date ?? "";
 
   // Build plain text for read time estimation
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const plainText = contentNodes
-    .map(
-      (node: any) =>
-        node.children?.map((c: any) => c.text ?? "").join("") ?? ""
-    )
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .map((node: any) => node.children?.map((c: any) => c.text ?? c.attributes?.content ?? "").join("") ?? "")
     .join(" ");
 
   return (
@@ -65,7 +65,7 @@ export default async function PostPage({ params }: Props) {
         <p className="section-label">Blog</p>
         <h1 className="section-title">{post.title}</h1>
         <div className={styles.meta}>
-          <time dateTime={post.date ?? ""}>{formatted}</time>
+          {post.date && <time dateTime={post.date}>{formatted}</time>}
           {plainText && <span>{readTime(plainText)}</span>}
         </div>
       </div>
@@ -89,7 +89,7 @@ export default async function PostPage({ params }: Props) {
               .join("") ?? "";
           if (node.type === "heading") {
             const level = node.level ?? 2;
-            if (level === 1) return <h1 key={i}>{text}</h1>;
+            if (level === 1) return <h2 key={i}>{text}</h2>;
             if (level === 3) return <h3 key={i}>{text}</h3>;
             if (level === 4) return <h4 key={i}>{text}</h4>;
             if (level === 5) return <h5 key={i}>{text}</h5>;
