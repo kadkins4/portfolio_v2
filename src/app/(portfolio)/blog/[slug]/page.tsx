@@ -5,6 +5,7 @@ import { createReader } from "@keystatic/core/reader";
 import { readTime } from "@/lib/readTime";
 import config from "../../../../../keystatic.config";
 import styles from "./page.module.css";
+import JsonLd from "@/components/JsonLd";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -61,6 +62,15 @@ export default async function PostPage({ params }: Props) {
 
   return (
     <div className="section-wrapper">
+      <JsonLd data={{
+        "@context": "https://schema.org",
+        "@type": "Article",
+        headline: post.title,
+        description: post.excerpt,
+        datePublished: post.date ?? undefined,
+        author: { "@type": "Person", name: "Kendall Adkins" },
+        image: post.coverImage ?? undefined,
+      }} />
       <div className={styles.header}>
         <p className="section-label">Blog</p>
         <h1 className="section-title">{post.title}</h1>

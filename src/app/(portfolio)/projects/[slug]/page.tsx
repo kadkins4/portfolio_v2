@@ -4,6 +4,7 @@ import Image from "next/image";
 import { createReader } from "@keystatic/core/reader";
 import config from "../../../../../keystatic.config";
 import styles from "./page.module.css";
+import JsonLd from "@/components/JsonLd";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -42,6 +43,15 @@ export default async function ProjectPage({ params }: Props) {
 
   return (
     <div className="section-wrapper">
+      <JsonLd data={{
+        "@context": "https://schema.org",
+        "@type": "CreativeWork",
+        name: project.title,
+        description: project.description,
+        author: { "@type": "Person", name: "Kendall Adkins" },
+        image: project.coverImage ?? undefined,
+        url: project.liveUrl ?? undefined,
+      }} />
       <div className={styles.header}>
         <p className="section-label">Project</p>
         <h1 className="section-title">{project.title}</h1>

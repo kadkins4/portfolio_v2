@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Syne, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import JsonLd from "@/components/JsonLd";
 
 const syne = Syne({
   subsets: ["latin"],
@@ -45,10 +46,25 @@ export const metadata: Metadata = {
   },
 };
 
+const personSchema = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: "Kendall Adkins",
+  url: "https://kendalladkins.com",
+  jobTitle: "Senior Front End Engineer",
+  sameAs: [
+    "https://github.com/kendalladkins",
+    "https://linkedin.com/in/kendalladkins",
+  ],
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${syne.variable} ${jetbrainsMono.variable}`}>
-      <body>{children}</body>
+      <body>
+        <JsonLd data={personSchema} />
+        {children}
+      </body>
     </html>
   );
 }
