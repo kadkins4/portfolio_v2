@@ -1,13 +1,17 @@
-export default function Footer() {
+import { createReader } from "@keystatic/core/reader";
+import config from "../../keystatic.config";
+import SocialLinks from "./SocialLinks";
+
+const CURRENT_YEAR = new Date().getFullYear();
+
+export default async function Footer() {
+  const reader = createReader(process.cwd(), config);
+  const settings = await reader.singletons.siteSettings.read();
+  const links = (settings?.socialLinks ?? []).filter((l) => l.showInFooter);
+
   return (
     <footer className="footer-wrapper">
-      <nav aria-label="Social links" className="footer-links-nav">
-        <a href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub</a>
-        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">Instagram</a>
-        <a href="https://reddit.com" target="_blank" rel="noopener noreferrer">Reddit</a>
-        <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-        <a href="mailto:hello@kendalladkins.com">Email</a>
-      </nav>
+      <SocialLinks links={links} className="footer-links-nav" />
     </footer>
   );
 }

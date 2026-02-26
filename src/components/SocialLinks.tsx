@@ -1,3 +1,5 @@
+import React from "react";
+
 type Platform = "github" | "instagram" | "reddit" | "linkedin" | "email";
 
 export type SocialLink = {
@@ -55,7 +57,7 @@ function EmailIcon() {
   );
 }
 
-const ICONS: Record<Platform, () => JSX.Element> = {
+const ICONS: Record<Platform, () => React.JSX.Element> = {
   github: GitHubIcon,
   instagram: InstagramIcon,
   reddit: RedditIcon,
