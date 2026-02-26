@@ -53,7 +53,7 @@ export default function Nav() {
         </ul>
 
         <button
-          className={styles.toggle}
+          className={`${styles.toggle}${mobileOpen ? ` ${styles.toggleOpen}` : ""}`}
           onClick={() => setMobileOpen((o) => !o)}
           aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
           aria-expanded={mobileOpen}

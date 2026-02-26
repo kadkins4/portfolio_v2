@@ -107,6 +107,20 @@
   display: block;
 }
 
+/* Bars → X when open */
+.toggleOpen .toggleBar:nth-child(1) {
+  transform: translateY(6.5px) rotate(45deg);
+}
+
+.toggleOpen .toggleBar:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+
+.toggleOpen .toggleBar:nth-child(3) {
+  transform: translateY(-6.5px) rotate(-45deg);
+}
+
 .mobileMenu {
   display: none;
   position: fixed;
