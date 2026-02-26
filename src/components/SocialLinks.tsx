@@ -1,4 +1,4 @@
-import React from "react";
+import type { JSX } from "react";
 
 type Platform = "github" | "instagram" | "reddit" | "linkedin" | "email";
 
@@ -57,7 +57,7 @@ function EmailIcon() {
   );
 }
 
-const ICONS: Record<Platform, () => React.JSX.Element> = {
+const ICONS: Record<Platform, () => JSX.Element> = {
   github: GitHubIcon,
   instagram: InstagramIcon,
   reddit: RedditIcon,
