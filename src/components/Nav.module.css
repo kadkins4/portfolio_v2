@@ -122,7 +122,10 @@
 }
 
 .mobileMenu {
-  display: none;
+  display: flex;
+  flex-direction: column;
+  visibility: hidden;
+  pointer-events: none;
   position: fixed;
   top: 64px;
   left: 0;
@@ -131,17 +134,18 @@
   border-bottom: 1px solid var(--border);
   padding: 24px;
   z-index: 99;
-  flex-direction: column;
   gap: 20px;
   transform: translateY(-8px);
   opacity: 0;
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  transition: transform 0.25s ease, opacity 0.25s ease, visibility 0s linear 0.25s;
 }
 
 .mobileMenu.open {
-  display: flex;
+  visibility: visible;
+  pointer-events: auto;
   transform: translateY(0);
   opacity: 1;
+  transition: transform 0.25s ease, opacity 0.25s ease, visibility 0s linear 0s;
 }
 
 .mobileMenu a {
