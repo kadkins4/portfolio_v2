@@ -2805,31 +2805,31 @@ Push fixes to `main` → Vercel auto-deploys.
 
 ## Checklist
 
-- [ ] Task 1: Scaffold Next.js
-- [ ] Task 2: Install dependencies
-- [ ] Task 3: Configure next.config.ts
-- [ ] Task 4: Configure Vitest
-- [ ] Task 5: Global CSS and theme
-- [ ] Task 6: Nav component
-- [ ] Task 7: Footer component
-- [ ] Task 8: Root layout
-- [ ] Task 9: Migrate to next/font
-- [ ] Task 10: Keystatic config
-- [ ] Task 11: Keystatic admin route
-- [ ] Task 12: Seed initial content
-- [ ] Task 13: Home page
-- [ ] Task 14: About page
-- [ ] Task 15: ProjectCard component
-- [ ] Task 16: Projects listing page
-- [ ] Task 17: Project detail page
-- [ ] Task 18: PostCard + readTime utility
-- [ ] Task 19: Blog listing page
-- [ ] Task 20: Blog post detail page
-- [ ] Task 21: Contact API route (TDD)
-- [ ] Task 22: Contact page
-- [ ] Task 23: JSON-LD structured data
-- [ ] Task 24: Sitemap + robots.txt
-- [ ] Task 25: RSS feed
+- [x] Task 1: Scaffold Next.js
+- [x] Task 2: Install dependencies
+- [x] Task 3: Configure next.config.ts
+- [x] Task 4: Configure Vitest
+- [x] Task 5: Global CSS and theme
+- [x] Task 6: Nav component
+- [x] Task 7: Footer component
+- [x] Task 8: Root layout
+- [x] Task 9: Migrate to next/font
+- [x] Task 10: Keystatic config
+- [x] Task 11: Keystatic admin route
+- [x] Task 12: Seed initial content
+- [x] Task 13: Home page
+- [x] Task 14: About page
+- [x] Task 15: ProjectCard component
+- [x] Task 16: Projects listing page
+- [x] Task 17: Project detail page
+- [x] Task 18: PostCard + readTime utility
+- [x] Task 19: Blog listing page
+- [x] Task 20: Blog post detail page
+- [x] Task 21: Contact API route (TDD)
+- [x] Task 22: Contact page
+- [x] Task 23: JSON-LD structured data
+- [x] Task 24: Sitemap + robots.txt
+- [x] Task 25: RSS feed
 - [ ] Task 26: Deploy to Vercel
 - [ ] Task 27: Accessibility audit
 - [ ] Task 28: Core Web Vitals verification
