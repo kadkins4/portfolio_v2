@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Syne, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import Nav from "@/components/Nav";
-import Footer from "@/components/Footer";
 
 const syne = Syne({
   subsets: ["latin"],
@@ -50,12 +48,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${syne.variable} ${jetbrainsMono.variable}`}>
-      <body>
-        <a href="#main" className="skip-link">Skip to main content</a>
-        <Nav />
-        <main id="main">{children}</main>
-        <Footer />
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
