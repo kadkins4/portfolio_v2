@@ -46,3 +46,8 @@ public/robots.txt
 
 # git worktrees
 .worktrees
+
+# backup and planning files
+portfolio.jsx
+archive/
+docs/plans/

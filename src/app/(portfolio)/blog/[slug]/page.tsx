@@ -3,21 +3,22 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import { createReader } from "@keystatic/core/reader";
 import { readTime } from "@/lib/readTime";
+import { renderMarkdoc, extractText } from "@/lib/renderMarkdoc";
 import config from "../../../../../keystatic.config";
 import styles from "./page.module.css";
 import JsonLd from "@/components/JsonLd";
 
 type Props = { params: Promise<{ slug: string }> };
 
+const reader = createReader(process.cwd(), config);
+
 export async function generateStaticParams() {
-  const reader = createReader(process.cwd(), config);
   const slugs = await reader.collections.posts.list();
   return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const reader = createReader(process.cwd(), config);
   const post = await reader.collections.posts.read(slug);
   if (!post) return {};
   return {
@@ -35,13 +36,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function PostPage({ params }: Props) {
   const { slug } = await params;
-  const reader = createReader(process.cwd(), config);
   const post = await reader.collections.posts.read(slug);
   if (!post) notFound();
 
   const contentResult = await post.content();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const contentNodes: any[] = (contentResult as unknown as any)?.node?.children ?? [];
 
   const dateObj = post.date ? new Date(`${post.date}T12:00:00Z`) : null;
   const formatted =
@@ -53,12 +51,7 @@ export default async function PostPage({ params }: Props) {
         })
       : post.date ?? "";
 
-  // Build plain text for read time estimation
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const plainText = contentNodes
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    .map((node: any) => node.children?.map((c: any) => c.text ?? c.attributes?.content ?? "").join("") ?? "")
-    .join(" ");
+  const plainText = extractText(contentResult.node);
 
   return (
     <div className="section-wrapper">
@@ -92,22 +85,7 @@ export default async function PostPage({ params }: Props) {
       )}
 
       <article className={styles.content}>
-        {contentNodes.map((node: any, i: number) => {
-          const text =
-            node.children
-              ?.map((c: any) => c.text ?? c.attributes?.content ?? "")
-              .join("") ?? "";
-          if (node.type === "heading") {
-            const level = node.level ?? 2;
-            if (level === 1) return <h2 key={i}>{text}</h2>;
-            if (level === 3) return <h3 key={i}>{text}</h3>;
-            if (level === 4) return <h4 key={i}>{text}</h4>;
-            if (level === 5) return <h5 key={i}>{text}</h5>;
-            if (level === 6) return <h6 key={i}>{text}</h6>;
-            return <h2 key={i}>{text}</h2>;
-          }
-          return <p key={i}>{text}</p>;
-        })}
+        {renderMarkdoc(contentResult)}
       </article>
     </div>
   );

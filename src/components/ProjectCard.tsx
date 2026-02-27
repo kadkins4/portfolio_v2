@@ -23,7 +23,7 @@ export default function ProjectCard({ slug, title, description, tags, coverImage
           className={styles.image}
         />
       )}
-      <div className={styles.number}>0{index + 1}</div>
+      <div className={styles.number}>{String(index + 1).padStart(2, "0")}</div>
       <h2 className={styles.title}>{title}</h2>
       <p className={styles.desc}>{description}</p>
       <div className={styles.tags} aria-label="Technologies used">
