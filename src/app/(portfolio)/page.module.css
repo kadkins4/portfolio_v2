@@ -27,6 +27,11 @@
   animation: fadeUp 0.8s ease both;
 }
 
+.badge:hover {
+  border-color: var(--accent);
+  background: var(--accent-glow);
+}
+
 .badgeDot {
   width: 6px;
   height: 6px;

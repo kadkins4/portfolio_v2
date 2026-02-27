@@ -17,10 +17,10 @@ export default async function HomePage() {
   return (
     <section className={styles.hero} aria-label="Introduction">
       <div className={styles.glow} aria-hidden="true" />
-      <span className={styles.badge}>
+      <Link href="/contact" className={styles.badge}>
         <span className={styles.badgeDot} aria-hidden="true" />
         {home?.badge ?? "Available for work"}
-      </span>
+      </Link>
       <h1 className={styles.heading}>
         Kendall<br />
         <span className={styles.gradient}>Adkins</span>
