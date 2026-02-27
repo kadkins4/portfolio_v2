@@ -87,11 +87,11 @@
   margin: 16px 0 24px;
 }
 
-.socialLinks a {
+.socialLinks :global(a) {
   color: var(--text-secondary);
   transition: color 0.2s ease;
 }
 
-.socialLinks a:hover {
+.socialLinks :global(a):hover {
   color: var(--accent);
 }
