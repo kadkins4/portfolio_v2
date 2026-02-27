@@ -22,7 +22,11 @@ async function callHandler(body: object) {
 }
 
 describe("POST /api/contact", () => {
-  beforeEach(() => vi.resetModules());
+  beforeEach(() => {
+    vi.resetModules();
+    vi.stubEnv("CONTACT_EMAIL", "test@example.com");
+    vi.stubEnv("RESEND_API_KEY", "test-key");
+  });
 
   it("returns 400 when fields are missing", async () => {
     const res = await callHandler({ name: "", email: "", message: "" });
