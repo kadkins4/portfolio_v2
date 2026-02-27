@@ -5,7 +5,7 @@ import config from "../../../keystatic.config";
 import styles from "./page.module.css";
 
 export const metadata: Metadata = {
-  title: "Kendall Adkins — Senior Front End Engineer",
+  title: { absolute: "Kendall Adkins — Senior Front End Engineer" },
   description:
     "Senior Front End Engineer crafting performant, accessible, and visually refined interfaces for the modern web.",
 };

@@ -91,15 +91,20 @@ export default function Nav() {
         id={menuId}
         className={`${styles.mobileMenu} ${mobileOpen ? styles.open : ""}`}
       >
-        {NAV_LINKS.map(({ href, label }) => (
-          <Link
-            key={href}
-            href={href}
-            className={pathname === href ? styles.active : ""}
-          >
-            {label}
-          </Link>
-        ))}
+        <nav aria-label="Mobile navigation">
+          <ul>
+            {NAV_LINKS.map(({ href, label }) => (
+              <li key={href}>
+                <Link
+                  href={href}
+                  className={pathname === href ? styles.active : ""}
+                >
+                  {label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
       </div>
     </>
   );

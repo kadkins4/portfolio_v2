@@ -39,6 +39,7 @@ export async function GET() {
     <link>${BASE_URL}/blog</link>
     <description>Thoughts on frontend engineering, design systems, and the web.</description>
     <language>en-us</language>
+    <managingEditor>${process.env.CONTACT_EMAIL ?? "kendall@kendalladkins.com"} (Kendall Adkins)</managingEditor>
     <atom:link href="${BASE_URL}/feed.xml" rel="self" type="application/rss+xml"/>
     ${items}
   </channel>

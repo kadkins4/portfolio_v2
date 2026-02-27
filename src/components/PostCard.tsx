@@ -19,7 +19,7 @@ export default function PostCard({ slug, title, excerpt, date, coverImage, conte
     : date;
 
   return (
-    <Link href={`/blog/${slug}`} className={styles.card} aria-label={title}>
+    <Link href={`/blog/${slug}`} className={styles.card}>
       {coverImage && (
         <Image src={coverImage} alt={`Cover image for ${title}`} width={800} height={360} className={styles.image} />
       )}
