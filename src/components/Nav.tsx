@@ -28,10 +28,6 @@ export default function Nav() {
   }, []);
 
   useEffect(() => {
-    setMobileOpen(false);
-  }, [pathname]);
-
-  useEffect(() => {
     if (!mobileOpen) return;
 
     const handleClickOutside = (e: MouseEvent) => {
@@ -98,6 +94,7 @@ export default function Nav() {
                 <Link
                   href={href}
                   className={pathname === href ? styles.active : ""}
+                  onClick={() => setMobileOpen(false)}
                 >
                   {label}
                 </Link>
