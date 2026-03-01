@@ -51,4 +51,50 @@ describe("POST /api/contact", () => {
     });
     expect(res.status).toBe(200); // silently succeed to not tip off bots
   });
+
+  it("returns 400 when body is not valid JSON", async () => {
+    const { POST } = await import("./route");
+    const req = new Request("http://localhost/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: "not-json{{",
+    });
+    const res = await POST(req);
+    expect(res.status).toBe(400);
+    const json = await res.json();
+    expect(json.error).toBe("Invalid request body");
+  });
+
+  it("returns 400 when name exceeds 100 characters", async () => {
+    const res = await callHandler({
+      name: "a".repeat(101),
+      email: "test@example.com",
+      message: "Hello!",
+    });
+    expect(res.status).toBe(400);
+    const json = await res.json();
+    expect(json.error).toBe("Input too long");
+  });
+
+  it("returns 400 when email exceeds 254 characters", async () => {
+    const res = await callHandler({
+      name: "Test",
+      email: "a".repeat(250) + "@b.co",
+      message: "Hello!",
+    });
+    expect(res.status).toBe(400);
+    const json = await res.json();
+    expect(json.error).toBe("Input too long");
+  });
+
+  it("returns 400 when message exceeds 5000 characters", async () => {
+    const res = await callHandler({
+      name: "Test",
+      email: "test@example.com",
+      message: "a".repeat(5001),
+    });
+    expect(res.status).toBe(400);
+    const json = await res.json();
+    expect(json.error).toBe("Input too long");
+  });
 });

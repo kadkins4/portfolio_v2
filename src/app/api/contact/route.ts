@@ -4,8 +4,6 @@ import { Resend } from "resend";
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(req: Request) {
-  const resend = new Resend(process.env.RESEND_API_KEY);
-
   const contactEmail = process.env.CONTACT_EMAIL;
   const resendKey = process.env.RESEND_API_KEY;
 
@@ -14,8 +12,18 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Server configuration error" }, { status: 500 });
   }
 
-  const body = await req.json();
-  const { name, email, message, website } = body;
+  const resend = new Resend(resendKey);
+
+  let body: Record<string, unknown>;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+  }
+  const name = String(body.name ?? "");
+  const email = String(body.email ?? "");
+  const message = String(body.message ?? "");
+  const website = body.website;
 
   // Honeypot — bots fill hidden fields
   if (website) {
@@ -28,6 +36,10 @@ export async function POST(req: Request) {
 
   if (!EMAIL_RE.test(email)) {
     return NextResponse.json({ error: "Invalid email address" }, { status: 400 });
+  }
+
+  if (name.trim().length > 100 || email.trim().length > 254 || message.trim().length > 5000) {
+    return NextResponse.json({ error: "Input too long" }, { status: 400 });
   }
 
   const fromAddress = process.env.FROM_EMAIL ?? "onboarding@resend.dev";
