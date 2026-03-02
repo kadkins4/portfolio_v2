@@ -1,4 +1,6 @@
-.header { margin-bottom: 40px; }
+.header {
+  margin-bottom: 40px;
+}
 
 .coverImage {
   width: 100%;
@@ -46,7 +48,9 @@
   margin-bottom: 16px;
 }
 
-.content p { margin-bottom: 16px; }
+.content p {
+  margin-bottom: 16px;
+}
 
 .btnPrimary {
   display: inline-flex;
@@ -63,7 +67,9 @@
   transition: transform 0.3s ease;
 }
 
-.btnPrimary:hover { transform: translateY(-1px); }
+.btnPrimary:hover {
+  transform: translateY(-1px);
+}
 
 .btnGhost {
   display: inline-flex;

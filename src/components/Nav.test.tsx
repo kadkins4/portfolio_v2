@@ -28,14 +28,22 @@ describe("Nav", () => {
     render(<Nav />);
 
     // Open the mobile menu
-    fireEvent.click(screen.getByRole("button", { name: "Open navigation menu" }));
-    expect(screen.getByRole("button", { name: "Close navigation menu" })).toBeInTheDocument();
+    fireEvent.click(
+      screen.getByRole("button", { name: "Open navigation menu" })
+    );
+    expect(
+      screen.getByRole("button", { name: "Close navigation menu" })
+    ).toBeInTheDocument();
 
     // Click a link in the mobile nav
-    const mobileNav = screen.getByRole("navigation", { name: "Mobile navigation" });
+    const mobileNav = screen.getByRole("navigation", {
+      name: "Mobile navigation",
+    });
     fireEvent.click(within(mobileNav).getByRole("link", { name: "about" }));
 
     // Menu should now be closed
-    expect(screen.getByRole("button", { name: "Open navigation menu" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Open navigation menu" })
+    ).toBeInTheDocument();
   });
 });

@@ -2,8 +2,18 @@ import { render, screen } from "@testing-library/react";
 import SocialLinks from "./SocialLinks";
 
 const links = [
-  { platform: "github" as const, url: "https://github.com/test", showInFooter: true, showInContact: true },
-  { platform: "email" as const, url: "test@example.com", showInFooter: true, showInContact: true },
+  {
+    platform: "github" as const,
+    url: "https://github.com/test",
+    showInFooter: true,
+    showInContact: true,
+  },
+  {
+    platform: "email" as const,
+    url: "test@example.com",
+    showInFooter: true,
+    showInContact: true,
+  },
 ];
 
 describe("SocialLinks", () => {

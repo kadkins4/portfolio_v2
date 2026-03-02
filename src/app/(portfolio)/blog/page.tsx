@@ -6,7 +6,8 @@ import styles from "./page.module.css";
 
 export const metadata: Metadata = {
   title: "Blog",
-  description: "Thoughts on frontend engineering, design systems, performance, and accessibility.",
+  description:
+    "Thoughts on frontend engineering, design systems, performance, and accessibility.",
 };
 
 export default async function BlogPage() {
@@ -14,7 +15,9 @@ export default async function BlogPage() {
   const posts = await reader.collections.posts.all();
 
   const sorted = [...posts].sort(
-    (a, b) => new Date(b.entry.date ?? 0).getTime() - new Date(a.entry.date ?? 0).getTime()
+    (a, b) =>
+      new Date(b.entry.date ?? 0).getTime() -
+      new Date(a.entry.date ?? 0).getTime()
   );
 
   return (

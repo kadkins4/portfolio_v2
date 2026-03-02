@@ -11,7 +11,14 @@ type Props = {
   index: number;
 };
 
-export default function ProjectCard({ slug, title, description, tags, coverImage, index }: Props) {
+export default function ProjectCard({
+  slug,
+  title,
+  description,
+  tags,
+  coverImage,
+  index,
+}: Props) {
   return (
     <Link href={`/projects/${slug}`} className={styles.card}>
       {coverImage && (
@@ -28,7 +35,9 @@ export default function ProjectCard({ slug, title, description, tags, coverImage
       <p className={styles.desc}>{description}</p>
       <div className={styles.tags} aria-label="Technologies used">
         {tags.map((tag) => (
-          <span key={tag} className={styles.tag}>{tag}</span>
+          <span key={tag} className={styles.tag}>
+            {tag}
+          </span>
         ))}
       </div>
     </Link>

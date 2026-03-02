@@ -6,7 +6,8 @@ import styles from "./page.module.css";
 
 export const metadata: Metadata = {
   title: "Projects",
-  description: "Selected frontend engineering work — design systems, performance optimization, and more.",
+  description:
+    "Selected frontend engineering work — design systems, performance optimization, and more.",
 };
 
 export default async function ProjectsPage() {

@@ -2,7 +2,9 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 // Mock Resend before importing route
 vi.mock("resend", () => {
-  const mockSend = vi.fn().mockResolvedValue({ data: { id: "test-id" }, error: null });
+  const mockSend = vi
+    .fn()
+    .mockResolvedValue({ data: { id: "test-id" }, error: null });
   class Resend {
     emails = { send: mockSend };
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -72,7 +72,9 @@ export default function Nav() {
         <button
           className={`${styles.toggle}${mobileOpen ? ` ${styles.toggleOpen}` : ""}`}
           onClick={() => setMobileOpen((o) => !o)}
-          aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
+          aria-label={
+            mobileOpen ? "Close navigation menu" : "Open navigation menu"
+          }
           aria-expanded={mobileOpen}
           aria-controls={menuId}
         >

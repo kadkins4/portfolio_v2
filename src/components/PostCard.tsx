@@ -12,16 +12,34 @@ type Props = {
   contentPreview?: string;
 };
 
-export default function PostCard({ slug, title, excerpt, date, coverImage, contentPreview }: Props) {
+export default function PostCard({
+  slug,
+  title,
+  excerpt,
+  date,
+  coverImage,
+  contentPreview,
+}: Props) {
   const dateObj = date ? new Date(`${date}T12:00:00Z`) : null;
-  const formatted = dateObj && !isNaN(dateObj.getTime())
-    ? dateObj.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
-    : date;
+  const formatted =
+    dateObj && !isNaN(dateObj.getTime())
+      ? dateObj.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })
+      : date;
 
   return (
     <Link href={`/blog/${slug}`} className={styles.card}>
       {coverImage && (
-        <Image src={coverImage} alt={`Cover image for ${title}`} width={800} height={360} className={styles.image} />
+        <Image
+          src={coverImage}
+          alt={`Cover image for ${title}`}
+          width={800}
+          height={360}
+          className={styles.image}
+        />
       )}
       <div className={styles.meta}>
         <time dateTime={date}>{formatted}</time>

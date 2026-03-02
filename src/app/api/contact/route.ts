@@ -9,7 +9,10 @@ export async function POST(req: Request) {
 
   if (!contactEmail || !resendKey) {
     console.error("Missing required env vars: CONTACT_EMAIL or RESEND_API_KEY");
-    return NextResponse.json({ error: "Server configuration error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Server configuration error" },
+      { status: 500 }
+    );
   }
 
   const resend = new Resend(resendKey);
@@ -18,7 +21,10 @@ export async function POST(req: Request) {
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Invalid request body" },
+      { status: 400 }
+    );
   }
   const name = String(body.name ?? "");
   const email = String(body.email ?? "");
@@ -35,10 +41,17 @@ export async function POST(req: Request) {
   }
 
   if (!EMAIL_RE.test(email)) {
-    return NextResponse.json({ error: "Invalid email address" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Invalid email address" },
+      { status: 400 }
+    );
   }
 
-  if (name.trim().length > 100 || email.trim().length > 254 || message.trim().length > 5000) {
+  if (
+    name.trim().length > 100 ||
+    email.trim().length > 254 ||
+    message.trim().length > 5000
+  ) {
     return NextResponse.json({ error: "Input too long" }, { status: 400 });
   }
 

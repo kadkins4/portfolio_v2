@@ -40,21 +40,25 @@ export default async function ProjectPage({ params }: Props) {
 
   return (
     <div className="section-wrapper">
-      <JsonLd data={{
-        "@context": "https://schema.org",
-        "@type": "CreativeWork",
-        name: project.title,
-        description: project.description,
-        author: { "@type": "Person", name: "Kendall Adkins" },
-        image: project.coverImage ?? undefined,
-        url: project.liveUrl ?? undefined,
-      }} />
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "CreativeWork",
+          name: project.title,
+          description: project.description,
+          author: { "@type": "Person", name: "Kendall Adkins" },
+          image: project.coverImage ?? undefined,
+          url: project.liveUrl ?? undefined,
+        }}
+      />
       <div className={styles.header}>
         <p className="section-label">Project</p>
         <h1 className="section-title">{project.title}</h1>
         <div className={styles.tags}>
           {[...project.tags].map((tag) => (
-            <span key={tag} className={styles.tag}>{tag}</span>
+            <span key={tag} className={styles.tag}>
+              {tag}
+            </span>
           ))}
         </div>
       </div>
@@ -70,18 +74,26 @@ export default async function ProjectPage({ params }: Props) {
         />
       )}
 
-      <div className={styles.content}>
-        {renderMarkdoc(contentResult)}
-      </div>
+      <div className={styles.content}>{renderMarkdoc(contentResult)}</div>
 
       <div className={styles.links}>
         {project.liveUrl && (
-          <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className={styles.btnPrimary}>
+          <a
+            href={project.liveUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.btnPrimary}
+          >
             Live Site
           </a>
         )}
         {project.repoUrl && (
-          <a href={project.repoUrl} target="_blank" rel="noopener noreferrer" className={styles.btnGhost}>
+          <a
+            href={project.repoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.btnGhost}
+          >
             View Code
           </a>
         )}

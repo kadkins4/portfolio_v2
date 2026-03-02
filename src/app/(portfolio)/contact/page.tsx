@@ -15,7 +15,8 @@ export default async function ContactPage() {
       <h1 className="section-title">Get in touch.</h1>
       <SocialLinks links={links} className={styles.socialLinks} />
       <p style={{ color: "var(--text-secondary)", marginBottom: "8px" }}>
-        Have a project in mind or just want to say hello? I&#39;d love to hear from you.
+        Have a project in mind or just want to say hello? I&#39;d love to hear
+        from you.
       </p>
       <ContactForm />
     </div>

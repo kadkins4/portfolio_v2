@@ -49,21 +49,23 @@ export default async function PostPage({ params }: Props) {
           month: "long",
           day: "numeric",
         })
-      : post.date ?? "";
+      : (post.date ?? "");
 
   const plainText = extractText(contentResult.node);
 
   return (
     <div className="section-wrapper">
-      <JsonLd data={{
-        "@context": "https://schema.org",
-        "@type": "Article",
-        headline: post.title,
-        description: post.excerpt,
-        datePublished: post.date ?? undefined,
-        author: { "@type": "Person", name: "Kendall Adkins" },
-        image: post.coverImage ?? undefined,
-      }} />
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Article",
+          headline: post.title,
+          description: post.excerpt,
+          datePublished: post.date ?? undefined,
+          author: { "@type": "Person", name: "Kendall Adkins" },
+          image: post.coverImage ?? undefined,
+        }}
+      />
       <div className={styles.header}>
         <p className="section-label">Blog</p>
         <h1 className="section-title">{post.title}</h1>

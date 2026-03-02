@@ -17,7 +17,10 @@ export async function GET() {
 
   const sorted = [...posts]
     .filter((p) => p.entry.date)
-    .sort((a, b) => new Date(b.entry.date!).getTime() - new Date(a.entry.date!).getTime());
+    .sort(
+      (a, b) =>
+        new Date(b.entry.date!).getTime() - new Date(a.entry.date!).getTime()
+    );
 
   const items = sorted
     .map(

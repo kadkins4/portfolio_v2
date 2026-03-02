@@ -26,7 +26,9 @@
   margin-bottom: 32px;
   animation: fadeUp 0.8s ease both;
   text-decoration: none;
-  transition: border-color 0.25s ease, background 0.25s ease;
+  transition:
+    border-color 0.25s ease,
+    background 0.25s ease;
 }
 
 .badge:hover {

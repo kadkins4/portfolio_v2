@@ -26,7 +26,9 @@ function renderNode(node: MarkdocNode, key: number | string): React.ReactNode {
       return String(node.attributes?.content ?? "");
 
     case "strong":
-      return <strong key={key}>{children.map((c, i) => renderNode(c, i))}</strong>;
+      return (
+        <strong key={key}>{children.map((c, i) => renderNode(c, i))}</strong>
+      );
 
     case "em":
       return <em key={key}>{children.map((c, i) => renderNode(c, i))}</em>;
@@ -38,7 +40,9 @@ function renderNode(node: MarkdocNode, key: number | string): React.ReactNode {
         <a
           key={key}
           href={href}
-          {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+          {...(external
+            ? { target: "_blank", rel: "noopener noreferrer" }
+            : {})}
         >
           {children.map((c, i) => renderNode(c, i))}
         </a>
@@ -65,10 +69,24 @@ function renderNode(node: MarkdocNode, key: number | string): React.ReactNode {
       );
 
     case "blockquote":
-      return <blockquote key={key}>{children.map((c, i) => renderNode(c, i))}</blockquote>;
+      return (
+        <blockquote key={key}>
+          {children.map((c, i) => renderNode(c, i))}
+        </blockquote>
+      );
+
+    case "inline":
+      return (
+        <React.Fragment key={key}>
+          {children.map((c, i) => renderNode(c, i))}
+        </React.Fragment>
+      );
 
     case "hardbreak":
       return <br key={key} />;
+
+    case "softbreak":
+      return " ";
 
     case "hr":
       return <hr key={key} />;

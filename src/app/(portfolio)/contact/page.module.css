@@ -68,8 +68,14 @@
   align-self: flex-start;
 }
 
-.submit:hover { transform: translateY(-1px); }
-.submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+.submit:hover {
+  transform: translateY(-1px);
+}
+.submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
 
 .success {
   color: var(--accent);

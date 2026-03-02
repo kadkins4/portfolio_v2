@@ -22,15 +22,21 @@ export default async function HomePage() {
         {home?.badge ?? "Available for work"}
       </Link>
       <h1 className={styles.heading}>
-        Kendall<br />
+        Kendall
+        <br />
         <span className={styles.gradient}>Adkins</span>
       </h1>
       <p className={styles.sub}>
-        {home?.subheading ?? "Senior Front End Engineer crafting performant, accessible, and visually refined interfaces for the modern web."}
+        {home?.subheading ??
+          "Senior Front End Engineer crafting performant, accessible, and visually refined interfaces for the modern web."}
       </p>
       <div className={styles.cta}>
-        <Link href="/projects" className={styles.btnPrimary}>View Projects</Link>
-        <Link href="/about" className={styles.btnGhost}>About Me</Link>
+        <Link href="/projects" className={styles.btnPrimary}>
+          View Projects
+        </Link>
+        <Link href="/about" className={styles.btnGhost}>
+          About Me
+        </Link>
       </div>
     </section>
   );

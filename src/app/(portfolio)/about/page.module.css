@@ -9,7 +9,9 @@
   max-width: 600px;
 }
 
-.bio p + p { margin-top: 16px; }
+.bio p + p {
+  margin-top: 16px;
+}
 
 .skillsGrid {
   display: grid;

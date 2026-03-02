@@ -1,4 +1,6 @@
-.header { margin-bottom: 40px; }
+.header {
+  margin-bottom: 40px;
+}
 
 .meta {
   font-size: 13px;
@@ -39,7 +41,9 @@
   margin-bottom: 12px;
 }
 
-.content p { margin-bottom: 20px; }
+.content p {
+  margin-bottom: 20px;
+}
 
 .content code {
   background: var(--bg-card);
