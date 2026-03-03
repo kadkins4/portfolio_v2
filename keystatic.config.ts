@@ -8,10 +8,28 @@ export default config({
       label: "Home Page",
       path: "content/home",
       schema: {
-        badge: fields.text({
-          label: "Badge text",
-          defaultValue: "Available for work",
-        }),
+        badge: fields.conditional(
+          fields.select({
+            label: "Status",
+            options: [
+              { label: "Available for work", value: "available" },
+              { label: "Open to opportunities", value: "open" },
+              { label: "Available for Freelance Work", value: "freelance" },
+              { label: "Custom", value: "custom" },
+              { label: "Hidden", value: "hidden" },
+            ],
+            defaultValue: "available",
+          }),
+          {
+            available: fields.empty(),
+            open: fields.empty(),
+            freelance: fields.empty(),
+            custom: fields.object({
+              text: fields.text({ label: "Custom badge text" }),
+            }),
+            hidden: fields.empty(),
+          }
+        ),
         headline: fields.text({ label: "Headline" }),
         subheading: fields.text({ label: "Subheading", multiline: true }),
       },
