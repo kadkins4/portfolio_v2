@@ -4,6 +4,12 @@ import { createReader } from "@keystatic/core/reader";
 import config from "../../../keystatic.config";
 import styles from "./page.module.css";
 
+const STATUS_TEXT: Record<string, string> = {
+  available: "Available for work",
+  open: "Open to opportunities",
+  freelance: "Available for Freelance Work",
+};
+
 export const metadata: Metadata = {
   title: { absolute: "Kendall Adkins — Senior Front End Engineer" },
   description:
@@ -17,10 +23,18 @@ export default async function HomePage() {
   return (
     <section className={styles.hero} aria-label="Introduction">
       <div className={styles.glow} aria-hidden="true" />
-      <Link href="/contact" className={styles.badge}>
-        <span className={styles.badgeDot} aria-hidden="true" />
-        {home?.badge ?? "Available for work"}
-      </Link>
+      {home?.badge?.discriminant !== "hidden" && (
+        <Link
+          href="/contact"
+          className={styles.badge}
+          data-status={home?.badge?.discriminant ?? "available"}
+        >
+          <span className={styles.badgeDot} aria-hidden="true" />
+          {home?.badge?.discriminant === "custom"
+            ? home.badge.value?.text
+            : STATUS_TEXT[home?.badge?.discriminant ?? "available"]}
+        </Link>
+      )}
       <h1 className={styles.heading}>
         Kendall
         <br />
