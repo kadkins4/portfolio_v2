@@ -11,6 +11,10 @@
 }
 
 .badge {
+  --badge-color: var(--accent);
+  --badge-color-dim: var(--accent-dim);
+  --badge-color-glow: var(--accent-glow);
+
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -18,11 +22,11 @@
   font-weight: 500;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--badge-color);
   padding: 6px 14px;
-  border: 1px solid var(--accent-dim);
+  border: 1px solid var(--badge-color-dim);
   border-radius: 100px;
-  background: var(--accent-glow);
+  background: var(--badge-color-glow);
   margin-bottom: 32px;
   animation: fadeUp 0.8s ease both;
   text-decoration: none;
@@ -32,17 +36,42 @@
 }
 
 .badge:hover {
-  border-color: var(--accent);
-  background: var(--accent-glow);
+  border-color: var(--badge-color);
+  background: var(--badge-color-glow);
 }
 
 .badgeDot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 8px var(--accent);
+  background: var(--badge-color);
+  box-shadow: 0 0 8px var(--badge-color);
   animation: pulse 2s ease infinite;
+}
+
+/* Status color variants */
+.badge[data-status="available"] {
+  --badge-color: #22c55e;
+  --badge-color-dim: rgba(34, 197, 94, 0.15);
+  --badge-color-glow: rgba(34, 197, 94, 0.25);
+}
+
+.badge[data-status="open"] {
+  --badge-color: #3b82f6;
+  --badge-color-dim: rgba(59, 130, 246, 0.15);
+  --badge-color-glow: rgba(59, 130, 246, 0.25);
+}
+
+.badge[data-status="freelance"] {
+  --badge-color: #a855f7;
+  --badge-color-dim: rgba(168, 85, 247, 0.15);
+  --badge-color-glow: rgba(168, 85, 247, 0.25);
+}
+
+.badge[data-status="custom"] {
+  --badge-color: var(--accent);
+  --badge-color-dim: var(--accent-dim);
+  --badge-color-glow: var(--accent-glow);
 }
 
 .heading {
