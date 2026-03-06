@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { createReader } from "@keystatic/core/reader";
 import config from "../../../../keystatic.config";
 import ProjectCard from "@/components/ProjectCard";
@@ -12,6 +13,12 @@ export const metadata: Metadata = {
 
 export default async function ProjectsPage() {
   const reader = createReader(process.cwd(), config);
+
+  const siteSettings = await reader.singletons.siteSettings.read();
+  if (siteSettings?.enabledRoutes?.projects === false) {
+    notFound();
+  }
+
   const projects = await reader.collections.projects.all();
 
   const sorted = [...projects].sort((a, b) => {

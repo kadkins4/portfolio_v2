@@ -33,6 +33,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProjectPage({ params }: Props) {
   const { slug } = await params;
+
+  const siteSettings = await reader.singletons.siteSettings.read();
+  if (siteSettings?.enabledRoutes?.projects === false) {
+    notFound();
+  }
+
   const project = await reader.collections.projects.read(slug);
   if (!project) notFound();
 
