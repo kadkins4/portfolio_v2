@@ -6,11 +6,13 @@ import Image from "next/image";
 import styles from "./not-found.module.css";
 
 const messages = [
-  "Looks like this page took a coffee break.",
-  "This page wandered off to learn a new framework.",
-  "404: Page not found. It's probably refactoring itself.",
-  "Oops! This route doesn't exist… yet.",
-  "The page you're looking for is mass undefined.",
+  "Page not found. It probably took a coffee break.",
+  "Page not found. It wandered off to learn a new framework.",
+  "Page not found. It's probably refactoring itself.",
+  "Page not found. This route doesn't exist… yet.",
+  "Page not found. The page you're looking for is undefined.",
+  "Page not found. It's out chasing a missing semicolon.",
+  "Page not found. It went to go fix a merge conflict.",
 ];
 
 export default function NotFound() {

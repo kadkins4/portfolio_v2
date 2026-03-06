@@ -29,12 +29,10 @@ describe("NotFound", () => {
     expect(screen.getByRole("heading", { name: "404" })).toBeInTheDocument();
   });
 
-  it("displays a message", () => {
+  it("displays a message starting with Page not found", () => {
     render(<NotFound />);
-    // Message should be one of the randomized options
-    const message = screen.getByText(
-      /page|coffee|framework|refactoring|undefined/i
-    );
+    // All messages start with "Page not found"
+    const message = screen.getByText(/^Page not found\./i);
     expect(message).toBeInTheDocument();
   });
 
