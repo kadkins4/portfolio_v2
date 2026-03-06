@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { createReader } from "@keystatic/core/reader";
 import config from "../../../../keystatic.config";
 import PostCard from "@/components/PostCard";
@@ -12,6 +13,12 @@ export const metadata: Metadata = {
 
 export default async function BlogPage() {
   const reader = createReader(process.cwd(), config);
+
+  const siteSettings = await reader.singletons.siteSettings.read();
+  if (siteSettings?.enabledRoutes?.blog === false) {
+    notFound();
+  }
+
   const posts = await reader.collections.posts.all();
 
   const sorted = [...posts].sort(

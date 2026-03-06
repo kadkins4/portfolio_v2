@@ -36,6 +36,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function PostPage({ params }: Props) {
   const { slug } = await params;
+
+  const siteSettings = await reader.singletons.siteSettings.read();
+  if (siteSettings?.enabledRoutes?.blog === false) {
+    notFound();
+  }
+
   const post = await reader.collections.posts.read(slug);
   if (!post) notFound();
 
