@@ -95,7 +95,14 @@ export default function ContactForm() {
         disabled={status === "loading"}
         className={styles.submit}
       >
-        {status === "loading" ? "Sending…" : "Send Message"}
+        {status === "loading" ? (
+          <>
+            <span className={styles.spinner} aria-hidden="true" />
+            Sending…
+          </>
+        ) : (
+          "Send Message"
+        )}
       </button>
 
       {status === "success" && (
