@@ -19,22 +19,25 @@ export const metadata: Metadata = {
 export default async function HomePage() {
   const reader = createReader(process.cwd(), config);
   const home = await reader.singletons.home.read();
+  const siteSettings = await reader.singletons.siteSettings.read();
+  const enabledRoutes = siteSettings?.enabledRoutes;
 
   return (
     <section className={styles.hero} aria-label="Introduction">
       <div className={styles.glow} aria-hidden="true" />
-      {home?.badge?.discriminant !== "hidden" && (
-        <Link
-          href="/contact"
-          className={styles.badge}
-          data-status={home?.badge?.discriminant ?? "available"}
-        >
-          <span className={styles.badgeDot} aria-hidden="true" />
-          {home?.badge?.discriminant === "custom"
-            ? home.badge.value?.text
-            : STATUS_TEXT[home?.badge?.discriminant ?? "available"]}
-        </Link>
-      )}
+      {home?.badge?.discriminant !== "hidden" &&
+        enabledRoutes?.contact !== false && (
+          <Link
+            href="/contact"
+            className={styles.badge}
+            data-status={home?.badge?.discriminant ?? "available"}
+          >
+            <span className={styles.badgeDot} aria-hidden="true" />
+            {home?.badge?.discriminant === "custom"
+              ? home.badge.value?.text
+              : STATUS_TEXT[home?.badge?.discriminant ?? "available"]}
+          </Link>
+        )}
       <h1 className={styles.heading}>
         Kendall
         <br />
@@ -45,9 +48,11 @@ export default async function HomePage() {
           "Senior Front End Engineer crafting performant, accessible, and visually refined interfaces for the modern web."}
       </p>
       <div className={styles.cta}>
-        <Link href="/projects" className={styles.btnPrimary}>
-          View Projects
-        </Link>
+        {enabledRoutes?.projects !== false && (
+          <Link href="/projects" className={styles.btnPrimary}>
+            View Projects
+          </Link>
+        )}
         <Link href="/about" className={styles.btnGhost}>
           About Me
         </Link>
