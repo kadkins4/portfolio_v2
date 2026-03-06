@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import { createReader } from "@keystatic/core/reader";
 import config from "../../../../keystatic.config";
 import SocialLinks from "@/components/SocialLinks";
@@ -7,6 +8,11 @@ import styles from "./page.module.css";
 export default async function ContactPage() {
   const reader = createReader(process.cwd(), config);
   const settings = await reader.singletons.siteSettings.read();
+
+  if (settings?.enabledRoutes?.contact === false) {
+    notFound();
+  }
+
   const links = (settings?.socialLinks ?? []).filter((l) => l.showInContact);
 
   return (
