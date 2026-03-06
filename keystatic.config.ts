@@ -30,7 +30,6 @@ export default config({
             hidden: fields.empty(),
           }
         ),
-        headline: fields.text({ label: "Headline" }),
         subheading: fields.text({ label: "Subheading", multiline: true }),
       },
     }),
@@ -77,6 +76,31 @@ export default config({
           {
             label: "Social Links",
             itemLabel: (props) => props.fields.platform.value ?? "Link",
+          }
+        ),
+        enabledRoutes: fields.object(
+          {
+            blog: fields.checkbox({
+              label: "Enable Blog",
+              description: "Show blog in navigation and allow access to /blog",
+              defaultValue: true,
+            }),
+            projects: fields.checkbox({
+              label: "Enable Projects",
+              description:
+                "Show projects in navigation and allow access to /projects",
+              defaultValue: true,
+            }),
+            contact: fields.checkbox({
+              label: "Enable Contact",
+              description:
+                "Show contact in navigation and allow access to /contact",
+              defaultValue: true,
+            }),
+          },
+          {
+            label: "Enabled Routes",
+            description: "Toggle which sections are visible on your site",
           }
         ),
       },
