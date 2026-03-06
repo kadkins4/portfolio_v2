@@ -5,21 +5,39 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect, useId, useRef } from "react";
 import styles from "./Nav.module.css";
 
-const NAV_LINKS = [
+type RouteConfig = {
+  blog: boolean;
+  projects: boolean;
+  contact: boolean;
+};
+
+type NavProps = {
+  enabledRoutes?: RouteConfig;
+};
+
+const NAV_LINKS: Array<{
+  href: string;
+  label: string;
+  configKey?: keyof RouteConfig;
+}> = [
   { href: "/", label: "home" },
   { href: "/about", label: "about" },
-  { href: "/projects", label: "projects" },
-  { href: "/blog", label: "blog" },
-  { href: "/contact", label: "contact" },
+  { href: "/projects", label: "projects", configKey: "projects" },
+  { href: "/blog", label: "blog", configKey: "blog" },
+  { href: "/contact", label: "contact", configKey: "contact" },
 ];
 
-export default function Nav() {
+export default function Nav({ enabledRoutes }: NavProps) {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const menuId = useId();
   const navRef = useRef<HTMLElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  const visibleLinks = NAV_LINKS.filter(
+    (link) => !link.configKey || enabledRoutes?.[link.configKey] !== false
+  );
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -57,7 +75,7 @@ export default function Nav() {
         </Link>
 
         <ul className={styles.links}>
-          {NAV_LINKS.map(({ href, label }) => (
+          {visibleLinks.map(({ href, label }) => (
             <li key={href}>
               <Link
                 href={href}
@@ -91,7 +109,7 @@ export default function Nav() {
       >
         <nav aria-label="Mobile navigation">
           <ul>
-            {NAV_LINKS.map(({ href, label }) => (
+            {visibleLinks.map(({ href, label }) => (
               <li key={href}>
                 <Link
                   href={href}

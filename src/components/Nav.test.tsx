@@ -24,6 +24,46 @@ vi.mock("next/link", () => ({
 }));
 
 describe("Nav", () => {
+  it("hides nav links when routes are disabled", () => {
+    render(
+      <Nav enabledRoutes={{ blog: false, projects: true, contact: false }} />
+    );
+
+    const mainNav = screen.getByRole("navigation", { name: "Main navigation" });
+
+    expect(
+      within(mainNav).queryByRole("link", { name: "blog" })
+    ).not.toBeInTheDocument();
+    expect(
+      within(mainNav).queryByRole("link", { name: "contact" })
+    ).not.toBeInTheDocument();
+    expect(
+      within(mainNav).getByRole("link", { name: "projects" })
+    ).toBeInTheDocument();
+    expect(
+      within(mainNav).getByRole("link", { name: "home" })
+    ).toBeInTheDocument();
+    expect(
+      within(mainNav).getByRole("link", { name: "about" })
+    ).toBeInTheDocument();
+  });
+
+  it("shows all nav links when enabledRoutes is undefined", () => {
+    render(<Nav />);
+
+    const mainNav = screen.getByRole("navigation", { name: "Main navigation" });
+
+    expect(
+      within(mainNav).getByRole("link", { name: "blog" })
+    ).toBeInTheDocument();
+    expect(
+      within(mainNav).getByRole("link", { name: "projects" })
+    ).toBeInTheDocument();
+    expect(
+      within(mainNav).getByRole("link", { name: "contact" })
+    ).toBeInTheDocument();
+  });
+
   it("closes mobile menu when a mobile nav link is clicked", () => {
     render(<Nav />);
 
