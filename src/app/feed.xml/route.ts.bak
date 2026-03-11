@@ -13,10 +13,10 @@ function escapeXml(str: string): string {
 
 export async function GET() {
   const reader = createReader(process.cwd(), config);
-  const work = await reader.collections.work.all();
+  const posts = await reader.collections.posts.all();
 
-  const sorted = [...work]
-    .filter((w) => w.entry.date)
+  const sorted = [...posts]
+    .filter((p) => p.entry.date)
     .sort(
       (a, b) =>
         new Date(b.entry.date!).getTime() - new Date(a.entry.date!).getTime()
@@ -24,13 +24,13 @@ export async function GET() {
 
   const items = sorted
     .map(
-      (item) => `
+      (post) => `
     <item>
-      <title>${escapeXml(item.entry.title)}</title>
-      <link>${BASE_URL}/work/${item.slug}</link>
-      <guid isPermaLink="true">${BASE_URL}/work/${item.slug}</guid>
-      <description>${escapeXml(item.entry.description)}</description>
-      <pubDate>${new Date(item.entry.date!).toUTCString()}</pubDate>
+      <title>${escapeXml(post.entry.title)}</title>
+      <link>${BASE_URL}/blog/${post.slug}</link>
+      <guid isPermaLink="true">${BASE_URL}/blog/${post.slug}</guid>
+      <description>${escapeXml(post.entry.excerpt)}</description>
+      <pubDate>${new Date(post.entry.date!).toUTCString()}</pubDate>
     </item>`
     )
     .join("");
@@ -38,9 +38,9 @@ export async function GET() {
   const rss = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Kendall Adkins — Work</title>
-    <link>${BASE_URL}/work</link>
-    <description>Projects, writings, and hobbies.</description>
+    <title>Kendall Adkins — Blog</title>
+    <link>${BASE_URL}/blog</link>
+    <description>Thoughts on frontend engineering, design systems, and the web.</description>
     <language>en-us</language>
     <managingEditor>${process.env.CONTACT_EMAIL ?? "kendall@kendalladkins.com"} (Kendall Adkins)</managingEditor>
     <atom:link href="${BASE_URL}/feed.xml" rel="self" type="application/rss+xml"/>
