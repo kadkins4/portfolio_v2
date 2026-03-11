@@ -25,7 +25,14 @@
 
 .nav {
   display: flex;
-  gap: 32px;
+  align-items: center;
+  gap: 24px;
+}
+
+.separator {
+  width: 1px;
+  height: 16px;
+  background: #3a3530;
 }
 
 .navLink {
