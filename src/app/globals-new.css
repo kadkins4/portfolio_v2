@@ -111,3 +111,27 @@ a:hover {
     scroll-behavior: auto;
   }
 }
+
+/* Footer */
+.footer {
+  padding: 48px 24px;
+  text-align: center;
+  border-top: 1px solid var(--border);
+  margin-top: 80px;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+}
+
+.footer-links a {
+  color: var(--text-secondary);
+  transition: color 0.2s ease;
+  padding: 8px;
+}
+
+.footer-links a:hover {
+  color: var(--accent);
+}

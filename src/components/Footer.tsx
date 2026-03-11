@@ -8,8 +8,8 @@ export default async function Footer() {
   const links = (settings?.socialLinks ?? []).filter((l) => l.showInFooter);
 
   return (
-    <footer className="footer-wrapper">
-      <SocialLinks links={links} className="footer-links-nav" />
+    <footer className="footer">
+      <SocialLinks links={links} className="footer-links" />
     </footer>
   );
 }
