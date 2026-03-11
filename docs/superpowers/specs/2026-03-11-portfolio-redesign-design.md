@@ -177,7 +177,7 @@ Redesign the existing Next.js portfolio site to be simpler and more focused. The
 ### Header
 
 - Logo: "KA" (left-aligned)
-- Navigation: Text links (right-aligned on desktop, hamburger on mobile if needed)
+- Navigation: Text links (right-aligned, no hamburger menu needed)
 - Minimal height, subtle border-bottom
 
 ### Footer
@@ -234,19 +234,21 @@ hobbies: string[]
 title: string
 description: string
 type: 'project' | 'writing' | 'hobby'
-image: image (optional)
+image: image (optional)  # Recommended: 16:9 aspect ratio, 1200x675px
 externalUrl: url (optional)
 date: date
 content: markdoc
 ```
 
+Note: Image dimensions are not enforced, but Keystatic should display a recommendation for 16:9 aspect ratio (1200x675px) in the admin UI description.
+
 ## Social Links
 
 Displayed as SVG icons in footer:
 
-- GitHub: `github.com/kendall-adkins` (or actual handle)
-- LinkedIn: Profile URL
-- Instagram: Profile URL
+- GitHub: https://github.com/kadkins4
+- LinkedIn: https://www.linkedin.com/in/adkinskendall/
+- Instagram: https://www.instagram.com/kadkins4/
 
 Icons should be monochrome (text-secondary) with hover state (accent color).
 
