@@ -9,6 +9,7 @@ export default async function HomePage() {
 
   return (
     <section className={styles.hero}>
+      <div className={styles.logo}>KA</div>
       <h1 className={styles.title}>{home?.title ?? "Kendall Adkins"}</h1>
       <p className={styles.tagline}>
         {home?.tagline ?? "Senior Software Engineer"}

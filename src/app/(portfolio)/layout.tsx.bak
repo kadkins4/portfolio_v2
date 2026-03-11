@@ -1,6 +1,5 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import styles from "./layout.module.css";
 
 export default async function PortfolioLayout({
   children,
@@ -8,15 +7,15 @@ export default async function PortfolioLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className={styles.wrapper}>
+    <>
       <a href="#main" className="skip-link">
         Skip to main content
       </a>
       <Header />
-      <main id="main" className={styles.main}>
+      <main id="main" style={{ paddingTop: "80px" }}>
         {children}
       </main>
       <Footer />
-    </div>
+    </>
   );
 }

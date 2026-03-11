@@ -114,10 +114,9 @@ a:hover {
 
 /* Footer */
 .footer {
-  padding: 48px 24px;
+  padding: 32px 24px;
   text-align: center;
   border-top: 1px solid var(--border);
-  margin-top: 80px;
 }
 
 .footer-links {

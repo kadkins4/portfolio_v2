@@ -18,7 +18,8 @@ export default function Header() {
   return (
     <header className={`${styles.header} ${scrolled ? styles.scrolled : ""}`}>
       <Link href="/" className={styles.logo}>
-        KA
+        <span className={styles.logoK}>K</span>
+        <span className={styles.logoA}>A.</span>
       </Link>
       <nav className={styles.nav} aria-label="Main navigation">
         <Link

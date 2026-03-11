@@ -8,8 +8,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: transparent;
-  transition: background 0.2s ease;
+  background: rgba(13, 11, 9, 0.95);
+  border-bottom: 1px solid var(--border);
 }
 
 .header.scrolled {
@@ -21,11 +21,23 @@
   font-family: var(--font-serif), Georgia, serif;
   font-size: 24px;
   font-weight: 700;
-  color: var(--text-primary);
   text-decoration: none;
+  display: flex;
 }
 
-.logo:hover {
+.logoK {
+  color: var(--text-primary);
+}
+
+.logoA {
+  color: var(--accent);
+}
+
+.logo:hover .logoK {
+  color: var(--text-primary);
+}
+
+.logo:hover .logoA {
   color: var(--accent);
 }
 
