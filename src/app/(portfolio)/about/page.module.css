@@ -1,48 +1,42 @@
-.content {
-  display: grid;
-  gap: 48px;
+.container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 48px 24px 80px;
+}
+
+.title {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: clamp(28px, 5vw, 40px);
+  font-weight: 700;
+  margin-bottom: 32px;
 }
 
 .bio {
-  font-size: 15px;
+  font-size: 16px;
+  line-height: 1.7;
   color: var(--text-secondary);
-  max-width: 600px;
+  margin-bottom: 48px;
 }
 
-.bio p + p {
-  margin-top: 16px;
+.bio p {
+  margin-bottom: 16px;
 }
 
-.skillsGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px;
-  margin-top: 32px;
+.section {
+  margin-bottom: 32px;
 }
 
-.skillItem {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px 18px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 10px;
+.sectionTitle {
   font-size: 14px;
-  color: var(--text-secondary);
-  transition: all 0.3s ease;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 16px;
 }
 
-.skillItem:hover {
-  border-color: var(--accent-dim);
-  color: var(--text-primary);
-  box-shadow: 0 0 20px var(--accent-glow);
-}
-
-.skillDot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--grad-from), var(--grad-to));
-  flex-shrink: 0;
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }

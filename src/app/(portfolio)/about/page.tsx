@@ -2,12 +2,13 @@ import type { Metadata } from "next";
 import { createReader } from "@keystatic/core/reader";
 import { renderMarkdoc } from "@/lib/renderMarkdoc";
 import config from "../../../../keystatic.config";
+import Tag from "@/components/Tag";
 import styles from "./page.module.css";
 
 export const metadata: Metadata = {
   title: "About",
   description:
-    "Senior Front End Engineer with a deep focus on design systems, performance optimization, and accessibility.",
+    "Learn more about Kendall Adkins - skills, hobbies, and background.",
 };
 
 export default async function AboutPage() {
@@ -16,30 +17,38 @@ export default async function AboutPage() {
   const bioResult = about ? await about.bio() : null;
 
   return (
-    <div className="section-wrapper">
-      <div className={styles.content}>
-        <div className="fade-in">
-          <p className="section-label">About</p>
-          <h1 className="section-title">
-            Building the interface layer between people and technology.
-          </h1>
-          <div className={styles.bio}>
-            {bioResult ? renderMarkdoc(bioResult) : null}
-          </div>
-        </div>
+    <div className={styles.container}>
+      <h1 className={styles.title}>About</h1>
 
-        <div className="fade-in">
-          <p className="section-label">Expertise</p>
-          <ul className={styles.skillsGrid} aria-label="Technical skills">
-            {(about?.skills ?? []).map((skill) => (
-              <li key={skill} className={styles.skillItem}>
-                <span className={styles.skillDot} aria-hidden="true" />
+      {bioResult && (
+        <div className={styles.bio}>{renderMarkdoc(bioResult)}</div>
+      )}
+
+      {about?.skills && about.skills.length > 0 && (
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Skills</h2>
+          <div className={styles.tags}>
+            {about.skills.map((skill) => (
+              <Tag key={skill} variant="skill">
                 {skill}
-              </li>
+              </Tag>
             ))}
-          </ul>
-        </div>
-      </div>
+          </div>
+        </section>
+      )}
+
+      {about?.hobbies && about.hobbies.length > 0 && (
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Hobbies</h2>
+          <div className={styles.tags}>
+            {about.hobbies.map((hobby) => (
+              <Tag key={hobby} variant="hobby">
+                {hobby}
+              </Tag>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }
