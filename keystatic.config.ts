@@ -8,29 +8,8 @@ export default config({
       label: "Home Page",
       path: "content/home",
       schema: {
-        badge: fields.conditional(
-          fields.select({
-            label: "Status",
-            options: [
-              { label: "Available for work", value: "available" },
-              { label: "Open to opportunities", value: "open" },
-              { label: "Available for Freelance Work", value: "freelance" },
-              { label: "Custom", value: "custom" },
-              { label: "Hidden", value: "hidden" },
-            ],
-            defaultValue: "available",
-          }),
-          {
-            available: fields.empty(),
-            open: fields.empty(),
-            freelance: fields.empty(),
-            custom: fields.object({
-              text: fields.text({ label: "Custom badge text" }),
-            }),
-            hidden: fields.empty(),
-          }
-        ),
-        subheading: fields.text({ label: "Subheading", multiline: true }),
+        title: fields.text({ label: "Title" }),
+        tagline: fields.text({ label: "Tagline" }),
       },
     }),
 
@@ -42,6 +21,10 @@ export default config({
         skills: fields.array(fields.text({ label: "Skill" }), {
           label: "Skills",
           itemLabel: (props) => props.value ?? "Skill",
+        }),
+        hobbies: fields.array(fields.text({ label: "Hobby" }), {
+          label: "Hobbies",
+          itemLabel: (props) => props.value ?? "Hobby",
         }),
       },
     }),
@@ -57,19 +40,13 @@ export default config({
               options: [
                 { label: "GitHub", value: "github" },
                 { label: "Instagram", value: "instagram" },
-                { label: "Reddit", value: "reddit" },
                 { label: "LinkedIn", value: "linkedin" },
-                { label: "Email", value: "email" },
               ],
               defaultValue: "github",
             }),
-            url: fields.text({ label: "URL / email address" }),
+            url: fields.text({ label: "URL" }),
             showInFooter: fields.checkbox({
               label: "Show in footer",
-              defaultValue: true,
-            }),
-            showInContact: fields.checkbox({
-              label: "Show on contact page",
               defaultValue: true,
             }),
           }),
@@ -78,82 +55,38 @@ export default config({
             itemLabel: (props) => props.fields.platform.value ?? "Link",
           }
         ),
-        enabledRoutes: fields.object(
-          {
-            blog: fields.checkbox({
-              label: "Enable Blog",
-              description: "Show blog in navigation and allow access to /blog",
-              defaultValue: true,
-            }),
-            projects: fields.checkbox({
-              label: "Enable Projects",
-              description:
-                "Show projects in navigation and allow access to /projects",
-              defaultValue: true,
-            }),
-            contact: fields.checkbox({
-              label: "Enable Contact",
-              description:
-                "Show contact in navigation and allow access to /contact",
-              defaultValue: true,
-            }),
-          },
-          {
-            label: "Enabled Routes",
-            description: "Toggle which sections are visible on your site",
-          }
-        ),
       },
     }),
   },
 
   collections: {
-    projects: collection({
-      label: "Projects",
+    work: collection({
+      label: "Work",
       slugField: "title",
-      path: "content/projects/*",
+      path: "content/work/*",
       format: { contentField: "content" },
       schema: {
         title: fields.slug({ name: { label: "Title" } }),
-        description: fields.text({ label: "Description", multiline: true }),
-        tags: fields.array(fields.text({ label: "Tag" }), {
-          label: "Tags",
-          itemLabel: (props) => props.value ?? "Tag",
+        description: fields.text({
+          label: "Description",
+          multiline: true,
         }),
+        type: fields.select({
+          label: "Type",
+          options: [
+            { label: "Project", value: "project" },
+            { label: "Writing", value: "writing" },
+            { label: "Hobby", value: "hobby" },
+          ],
+          defaultValue: "project",
+        }),
+        image: fields.image({
+          label: "Image (optional, recommended: 1200x675px, 16:9)",
+          directory: "public/images/work",
+          publicPath: "/images/work",
+        }),
+        externalUrl: fields.url({ label: "External URL (optional)" }),
         date: fields.date({ label: "Date" }),
-        featured: fields.checkbox({
-          label: "Featured on home page",
-          defaultValue: false,
-        }),
-        liveUrl: fields.url({ label: "Live URL (optional)" }),
-        repoUrl: fields.url({ label: "Repo URL (optional)" }),
-        coverImage: fields.image({
-          label: "Cover image (optional)",
-          directory: "public/images/projects",
-          publicPath: "/images/projects",
-        }),
-        content: fields.markdoc({ label: "Content" }),
-      },
-    }),
-
-    posts: collection({
-      label: "Blog Posts",
-      slugField: "title",
-      path: "content/posts/*",
-      format: { contentField: "content" },
-      schema: {
-        title: fields.slug({ name: { label: "Title" } }),
-        excerpt: fields.text({ label: "Excerpt", multiline: true }),
-        date: fields.date({ label: "Date" }),
-        tags: fields.array(fields.text({ label: "Tag" }), {
-          label: "Tags",
-          itemLabel: (props) => props.value ?? "Tag",
-        }),
-        coverImage: fields.image({
-          label: "Cover image (optional)",
-          directory: "public/images/posts",
-          publicPath: "/images/posts",
-        }),
         content: fields.markdoc({ label: "Content" }),
       },
     }),
