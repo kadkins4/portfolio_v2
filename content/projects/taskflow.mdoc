@@ -1,0 +1,65 @@
+---
+title: TaskFlow
+description: A modern project management application built with Next.js and PostgreSQL, featuring real-time collaboration, kanban boards, and AI-powered task prioritization.
+tags:
+  - Next.js
+  - PostgreSQL
+  - WebSockets
+  - AI
+date: 2026-01-15
+featured: true
+liveUrl: https://taskflow-demo.vercel.app
+repoUrl: https://github.com/kendall-adkins/taskflow
+---
+
+TaskFlow is a project management tool I built to explore real-time collaboration patterns and AI integration in modern web applications.
+
+## The Problem
+
+Existing project management tools felt either too complex (Jira) or too simple (Trello). I wanted something in between—powerful enough for engineering teams but intuitive enough that you don't need documentation to use it.
+
+## Key Features
+
+### Real-time Kanban Boards
+Multiple team members can collaborate on the same board simultaneously. Changes appear instantly across all connected clients using WebSocket subscriptions.
+
+### AI Task Prioritization
+An AI assistant analyzes your task descriptions and suggests priority levels based on urgency keywords, dependencies, and historical patterns.
+
+### Smart Notifications
+Instead of notification spam, TaskFlow batches updates intelligently and only alerts you about things that actually need your attention.
+
+### Time Tracking
+Built-in time tracking with automatic reminders. Integrates with calendar apps to provide accurate estimates for future planning.
+
+## Technical Architecture
+
+```
+┌─────────────────────────────────────────┐
+│           Next.js Frontend              │
+│         (React Server Components)       │
+└─────────────────┬───────────────────────┘
+                  │
+┌─────────────────▼───────────────────────┐
+│            API Routes                    │
+│         (tRPC + WebSockets)             │
+└─────────────────┬───────────────────────┘
+                  │
+┌─────────────────▼───────────────────────┐
+│            PostgreSQL                    │
+│         (Drizzle ORM)                   │
+└─────────────────────────────────────────┘
+```
+
+## Lessons Learned
+
+- **Optimistic UI updates** dramatically improve perceived performance for collaborative features
+- **WebSocket connection management** is tricky—you need robust reconnection logic
+- **AI features work best** when they augment, not replace, user decisions
+
+## What's Next
+
+Currently working on:
+- Mobile app with React Native
+- GitHub integration for developer workflows
+- Calendar sync with Google and Outlook

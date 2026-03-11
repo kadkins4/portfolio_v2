@@ -1,0 +1,21 @@
+socialLinks:
+  - platform: github
+    url: "https://github.com"
+    showInFooter: true
+    showInContact: true
+  - platform: instagram
+    url: "https://instagram.com"
+    showInFooter: true
+    showInContact: true
+  - platform: reddit
+    url: "https://reddit.com"
+    showInFooter: true
+    showInContact: true
+  - platform: linkedin
+    url: "https://linkedin.com"
+    showInFooter: true
+    showInContact: true
+  - platform: email
+    url: "hello@kendalladkins.com"
+    showInFooter: true
+    showInContact: true
