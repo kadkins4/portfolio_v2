@@ -1,29 +1,27 @@
 import type { Metadata } from "next";
-import { Syne, JetBrains_Mono } from "next/font/google";
+import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
 import JsonLd from "@/components/JsonLd";
 
-const syne = Syne({
+const playfair = Playfair_Display({
   subsets: ["latin"],
-  weight: ["400", "600", "700", "800"],
-  variable: "--font-syne",
+  variable: "--font-serif",
   display: "swap",
 });
 
-const jetbrainsMono = JetBrains_Mono({
+const inter = Inter({
   subsets: ["latin"],
-  weight: ["300", "400", "500"],
-  variable: "--font-mono",
+  variable: "--font-sans",
   display: "swap",
 });
 
 export const metadata: Metadata = {
   title: {
-    default: "Kendall Adkins — Senior Front End Engineer",
+    default: "Kendall Adkins — Senior Software Engineer",
     template: "%s | Kendall Adkins",
   },
   description:
-    "Senior Front End Engineer crafting performant, accessible, and visually refined interfaces for the modern web.",
+    "Senior Software Engineer building performant, accessible, and visually refined interfaces for the modern web.",
   metadataBase: new URL("https://kendalladkins.com"),
   openGraph: {
     type: "website",
@@ -51,7 +49,7 @@ const personSchema = {
   "@type": "Person",
   name: "Kendall Adkins",
   url: "https://kendalladkins.com",
-  jobTitle: "Senior Front End Engineer",
+  jobTitle: "Senior Software Engineer",
   sameAs: [
     "https://github.com/kendalladkins",
     "https://linkedin.com/in/kendalladkins",
@@ -64,7 +62,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${syne.variable} ${jetbrainsMono.variable}`}>
+    <html lang="en" className={`${playfair.variable} ${inter.variable}`}>
       <body>
         <JsonLd data={personSchema} />
         {children}
