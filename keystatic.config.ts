@@ -87,6 +87,16 @@ export default config({
         }),
         externalUrl: fields.url({ label: "External URL (optional)" }),
         date: fields.date({ label: "Date" }),
+        featured: fields.checkbox({
+          label: "Featured",
+          description: "Featured items appear first in the work list",
+          defaultValue: false,
+        }),
+        order: fields.integer({
+          label: "Order (optional)",
+          description:
+            "Lower numbers appear first among featured items. Leave empty for date-based sorting.",
+        }),
         content: fields.markdoc({ label: "Content" }),
       },
     }),

@@ -1,0 +1,72 @@
+"use client";
+
+import { useState } from "react";
+import WorkCard from "./WorkCard";
+import styles from "./WorkGrid.module.css";
+
+type WorkItem = {
+  slug: string;
+  title: string;
+  description: string;
+  type: "project" | "writing" | "hobby";
+  image: string | null;
+  externalUrl: string | null;
+};
+
+type FilterType = "all" | "project" | "writing" | "hobby";
+
+const FILTERS: { value: FilterType; label: string }[] = [
+  { value: "all", label: "All" },
+  { value: "project", label: "Projects" },
+  { value: "writing", label: "Writing" },
+  { value: "hobby", label: "Hobbies" },
+];
+
+type Props = {
+  items: WorkItem[];
+};
+
+export default function WorkGrid({ items }: Props) {
+  const [filter, setFilter] = useState<FilterType>("all");
+
+  const filteredItems =
+    filter === "all" ? items : items.filter((item) => item.type === filter);
+
+  const activeFilter = FILTERS.find((f) => f.value === filter);
+
+  return (
+    <>
+      <div className={styles.filters}>
+        {FILTERS.map((f) => (
+          <button
+            key={f.value}
+            className={`${styles.filterButton} ${filter === f.value ? styles.active : ""}`}
+            onClick={() => setFilter(f.value)}
+          >
+            {f.label}
+          </button>
+        ))}
+      </div>
+
+      {filteredItems.length > 0 ? (
+        <div className={styles.grid}>
+          {filteredItems.map((item) => (
+            <WorkCard
+              key={item.slug}
+              slug={item.slug}
+              title={item.title}
+              description={item.description}
+              type={item.type}
+              image={item.image}
+              externalUrl={item.externalUrl}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className={styles.emptyState}>
+          No {activeFilter?.label.toLowerCase()} yet.
+        </div>
+      )}
+    </>
+  );
+}
