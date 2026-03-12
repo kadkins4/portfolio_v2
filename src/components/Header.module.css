@@ -9,12 +9,26 @@
   justify-content: space-between;
   align-items: center;
   background: rgba(13, 11, 9, 0.95);
-  border-bottom: 1px solid var(--border);
+}
+
+.header::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--border) 20%,
+    var(--border) 80%,
+    transparent
+  );
 }
 
 .header.scrolled {
   background: rgba(13, 11, 9, 0.95);
-  border-bottom: 1px solid var(--border);
 }
 
 .logo {
@@ -53,9 +67,15 @@
   transition: color 0.2s ease;
 }
 
-.navLink:hover,
+.navLink:hover {
+  color: var(--accent);
+}
+
 .navLink.active {
   color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-underline-offset: 4px;
 }
 
 @media (max-width: 480px) {

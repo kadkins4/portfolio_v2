@@ -32,7 +32,13 @@
 .separator {
   width: 1px;
   height: 16px;
-  background: #3a3530;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    var(--text-muted),
+    transparent
+  );
+  opacity: 0.4;
 }
 
 .navLink {

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { createReader } from "@keystatic/core/reader";
 import config from "../../../../keystatic.config";
 import WorkGrid from "@/components/WorkGrid";
+import { getBlurDataURL } from "@/lib/getBlurDataURL";
 import styles from "./page.module.css";
 
 export const metadata: Metadata = {
@@ -38,14 +39,20 @@ export default async function WorkPage() {
     return dateB - dateA;
   });
 
-  const items = sortedItems.map((item) => ({
-    slug: item.slug,
-    title: item.entry.title,
-    description: item.entry.description,
-    type: item.entry.type,
-    image: item.entry.image ?? null,
-    externalUrl: item.entry.externalUrl ?? null,
-  }));
+  const items = await Promise.all(
+    sortedItems.map(async (item) => ({
+      slug: item.slug,
+      title: item.entry.title,
+      description: item.entry.description,
+      type: item.entry.type,
+      image: item.entry.image ?? null,
+      imageFocus: item.entry.imageFocus ?? "center",
+      blurDataURL: item.entry.image
+        ? await getBlurDataURL(item.entry.image)
+        : undefined,
+      externalUrl: item.entry.externalUrl ?? null,
+    }))
+  );
 
   return (
     <div className={styles.container}>

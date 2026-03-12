@@ -1,10 +1,14 @@
 ---
 title: Building Scalable React Applications
-description: Lessons learned from scaling a React application to millions of users, including architecture patterns, performance optimizations, and team collaboration strategies.
+description: >-
+  Lessons learned from scaling a React application to millions of users,
+  including architecture patterns, performance optimizations, and team
+  collaboration strategies.
 type: writing
+image: /images/work/building-scalable-react-apps/image.jpg
 date: 2026-02-15
+featured: false
 ---
-
 After years of building and scaling React applications, I've learned that the patterns you choose early on have a profound impact on your ability to grow. Here are the key lessons I've picked up along the way.
 
 ## Start with the Right Architecture
@@ -40,9 +44,9 @@ Don't wait until your app is slow to think about performance. Bake it into your 
 Your state management needs will evolve as your app grows:
 
 1. **Local state**: Start here with `useState`
-2. **Shared state**: Move to Context or Zustand
-3. **Server state**: Adopt React Query or TanStack Query
-4. **Global complex state**: Consider Redux Toolkit only when truly needed
+1. **Shared state**: Move to Context or Zustand
+1. **Server state**: Adopt React Query or TanStack Query
+1. **Global complex state**: Consider Redux Toolkit only when truly needed
 
 The key is not picking the "best" solution, but picking the right solution for your current stage.
 

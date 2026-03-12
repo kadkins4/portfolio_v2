@@ -10,6 +10,8 @@ type WorkItem = {
   description: string;
   type: "project" | "writing" | "hobby";
   image: string | null;
+  imageFocus: string;
+  blurDataURL?: string;
   externalUrl: string | null;
 };
 
@@ -50,7 +52,7 @@ export default function WorkGrid({ items }: Props) {
 
       {filteredItems.length > 0 ? (
         <div className={styles.grid}>
-          {filteredItems.map((item) => (
+          {filteredItems.map((item, index) => (
             <WorkCard
               key={item.slug}
               slug={item.slug}
@@ -58,7 +60,10 @@ export default function WorkGrid({ items }: Props) {
               description={item.description}
               type={item.type}
               image={item.image}
+              imageFocus={item.imageFocus}
+              blurDataURL={item.blurDataURL}
               externalUrl={item.externalUrl}
+              priority={index < 4}
             />
           ))}
         </div>

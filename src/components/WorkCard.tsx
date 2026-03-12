@@ -10,7 +10,10 @@ type Props = {
   description: string;
   type: "project" | "writing" | "hobby";
   image?: string | null;
+  imageFocus?: string;
+  blurDataURL?: string;
   externalUrl?: string | null;
+  priority?: boolean;
 };
 
 export default function WorkCard({
@@ -19,7 +22,10 @@ export default function WorkCard({
   description,
   type,
   image,
+  imageFocus = "center",
+  blurDataURL,
   externalUrl,
+  priority = false,
 }: Props) {
   const tagVariant: TagVariant = type;
 
@@ -34,6 +40,10 @@ export default function WorkCard({
               fill
               className={styles.image}
               sizes="(max-width: 768px) 100vw, 50vw"
+              priority={priority}
+              placeholder={blurDataURL ? "blur" : "empty"}
+              blurDataURL={blurDataURL}
+              style={{ objectPosition: imageFocus }}
             />
           ) : (
             <div className={styles.placeholder}>

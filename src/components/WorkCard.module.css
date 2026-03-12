@@ -25,12 +25,42 @@
   right: 12px;
 }
 
-.noImage {
+.placeholder {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: var(--text-muted);
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--bg-primary) 0%, #1a1816 100%);
+}
+
+.initial {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 72px;
+  font-weight: 700;
+  color: var(--accent);
+  opacity: 0.5;
+  line-height: 1;
+}
+
+.divider {
+  width: 40px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--text-muted),
+    transparent
+  );
+  opacity: 0.4;
+  margin: 10px 0 8px;
+}
+
+.typeIcon {
   font-size: 14px;
+  color: var(--text-muted);
+  opacity: 0.5;
 }
 
 .title {

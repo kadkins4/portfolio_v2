@@ -85,6 +85,18 @@ export default config({
           directory: "public/images/work",
           publicPath: "/images/work",
         }),
+        imageFocus: fields.select({
+          label: "Image Focus",
+          description: "Which part of the image to keep visible when cropped",
+          options: [
+            { label: "Center", value: "center" },
+            { label: "Top", value: "top" },
+            { label: "Bottom", value: "bottom" },
+            { label: "Left", value: "left" },
+            { label: "Right", value: "right" },
+          ],
+          defaultValue: "center",
+        }),
         externalUrl: fields.url({ label: "External URL (optional)" }),
         date: fields.date({ label: "Date" }),
         featured: fields.checkbox({
