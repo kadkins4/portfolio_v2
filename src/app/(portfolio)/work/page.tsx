@@ -1,7 +1,19 @@
+import type { Metadata } from "next";
 import { createReader } from "@keystatic/core/reader";
 import config from "../../../../keystatic.config";
 import WorkGrid from "@/components/WorkGrid";
 import styles from "./page.module.css";
+
+export const metadata: Metadata = {
+  title: "Work",
+  description:
+    "Projects, hobbies, and writing by Kendall Adkins — exploring software engineering, developer tools, and web development.",
+  openGraph: {
+    title: "Work — Kendall Adkins",
+    description:
+      "Projects, hobbies, and writing exploring software engineering, developer tools, and web development.",
+  },
+};
 
 export default async function WorkPage() {
   const reader = createReader(process.cwd(), config);

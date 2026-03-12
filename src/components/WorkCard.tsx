@@ -30,13 +30,23 @@ export default function WorkCard({
           {image ? (
             <Image
               src={image}
-              alt=""
+              alt={`${title} thumbnail`}
               fill
               className={styles.image}
               sizes="(max-width: 768px) 100vw, 50vw"
             />
           ) : (
-            <div className={styles.noImage}>No image</div>
+            <div className={styles.placeholder}>
+              <span className={styles.initial}>
+                {title.charAt(0).toUpperCase()}
+              </span>
+              <div className={styles.divider} />
+              <span className={styles.typeIcon}>
+                {type === "writing" && "✎"}
+                {type === "project" && "⚙"}
+                {type === "hobby" && "♦"}
+              </span>
+            </div>
           )}
           <div className={styles.tag}>
             <Tag variant={tagVariant}>{type}</Tag>
@@ -52,7 +62,7 @@ export default function WorkCard({
           target="_blank"
           rel="noopener noreferrer"
         >
-          View Live &rarr;
+          View Live ↗
         </a>
       )}
     </article>

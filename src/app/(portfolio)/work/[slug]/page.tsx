@@ -6,7 +6,10 @@ import { createReader } from "@keystatic/core/reader";
 import { renderMarkdoc } from "@/lib/renderMarkdoc";
 import config from "../../../../../keystatic.config";
 import Tag from "@/components/Tag";
+import JsonLd from "@/components/JsonLd";
 import styles from "./page.module.css";
+
+const SITE_URL = "https://kendalladkins.com";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -45,46 +48,92 @@ export default async function WorkDetailPage({ params }: Props) {
 
   const contentResult = await item.content();
 
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: SITE_URL,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Work",
+        item: `${SITE_URL}/work`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: item.title,
+        item: `${SITE_URL}/work/${slug}`,
+      },
+    ],
+  };
+
+  const articleSchema =
+    item.type === "writing"
+      ? {
+          "@context": "https://schema.org",
+          "@type": "Article",
+          headline: item.title,
+          description: item.description,
+          image: item.image ? `${SITE_URL}${item.image}` : undefined,
+          datePublished: item.date,
+          author: {
+            "@type": "Person",
+            name: "Kendall Adkins",
+            url: SITE_URL,
+          },
+        }
+      : null;
+
   return (
-    <div className={styles.container}>
-      <Link href="/work" className={styles.backLink}>
-        &larr; Back to Work
-      </Link>
+    <>
+      <JsonLd data={breadcrumbSchema} />
+      {articleSchema && <JsonLd data={articleSchema} />}
+      <div className={styles.container}>
+        <Link href="/work" className={styles.backLink}>
+          &larr; Back to Work
+        </Link>
 
-      <header className={styles.header}>
-        <div className={styles.titleRow}>
-          <h1 className={styles.title}>{item.title}</h1>
-          <Tag variant={item.type}>{item.type}</Tag>
-        </div>
-      </header>
+        <header className={styles.header}>
+          <div className={styles.titleRow}>
+            <h1 className={styles.title}>{item.title}</h1>
+            <Tag variant={item.type}>{item.type}</Tag>
+          </div>
+        </header>
 
-      {item.image && (
-        <Image
-          src={item.image}
-          alt=""
-          width={1200}
-          height={675}
-          className={styles.image}
-          priority
-        />
-      )}
+        {item.image && (
+          <Image
+            src={item.image}
+            alt={`${item.title} featured image`}
+            width={1200}
+            height={675}
+            className={styles.image}
+            priority
+          />
+        )}
 
-      {contentResult && (
-        <article className={styles.content}>
-          {renderMarkdoc(contentResult)}
-        </article>
-      )}
+        {contentResult && (
+          <article className={styles.content}>
+            {renderMarkdoc(contentResult)}
+          </article>
+        )}
 
-      {item.externalUrl && (
-        <a
-          href={item.externalUrl}
-          className={styles.externalLink}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          View Live &rarr;
-        </a>
-      )}
-    </div>
+        {item.externalUrl && (
+          <a
+            href={item.externalUrl}
+            className={styles.externalLink}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            View Live ↗
+          </a>
+        )}
+      </div>
+    </>
   );
 }
