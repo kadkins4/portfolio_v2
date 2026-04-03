@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { cache } from "react";
 import { createReader } from "@keystatic/core/reader";
 import { renderMarkdoc } from "@/lib/renderMarkdoc";
 import config from "../../../../../keystatic.config";
@@ -15,9 +16,7 @@ type Props = {
   params: Promise<{ slug: string }>;
 };
 
-function getReader() {
-  return createReader(process.cwd(), config);
-}
+const getReader = cache(() => createReader(process.cwd(), config));
 
 export async function generateStaticParams() {
   const reader = getReader();

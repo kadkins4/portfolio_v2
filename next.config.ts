@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
   },
   headers: async () => [
     {
-      source: "/((?!api|keystatic).*)",
+      source: "/((?!api|keystatic|_next).*)",
       headers: [
         {
           key: "Cache-Control",

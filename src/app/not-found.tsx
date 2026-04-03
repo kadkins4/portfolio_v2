@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import styles from "./not-found.module.css";
@@ -16,11 +16,10 @@ const messages = [
 ];
 
 export default function NotFound() {
-  const [message, setMessage] = useState(messages[0]);
-
-  useEffect(() => {
-    setMessage(messages[Math.floor(Math.random() * messages.length)]);
-  }, []);
+  const message = useMemo(
+    () => messages[Math.floor(Math.random() * messages.length)],
+    []
+  );
 
   return (
     <main className={styles.container}>
