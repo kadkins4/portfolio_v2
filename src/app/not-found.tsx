@@ -38,8 +38,8 @@ export default function NotFound() {
         <Link href="/" className={styles.btnPrimary}>
           Back to Home
         </Link>
-        <Link href="/projects" className={styles.btnGhost}>
-          View Projects
+        <Link href="/work" className={styles.btnGhost}>
+          View Work
         </Link>
       </div>
     </main>

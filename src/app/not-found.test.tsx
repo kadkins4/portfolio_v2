@@ -42,9 +42,9 @@ describe("NotFound", () => {
       "href",
       "/"
     );
-    expect(screen.getByRole("link", { name: /projects/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /work/i })).toHaveAttribute(
       "href",
-      "/projects"
+      "/work"
     );
   });
 });

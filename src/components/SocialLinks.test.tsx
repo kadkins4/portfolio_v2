@@ -6,45 +6,59 @@ const links = [
     platform: "github" as const,
     url: "https://github.com/test",
     showInFooter: true,
-    showInContact: true,
   },
   {
-    platform: "email" as const,
-    url: "test@example.com",
+    platform: "instagram" as const,
+    url: "https://instagram.com/test",
     showInFooter: true,
-    showInContact: true,
+  },
+  {
+    platform: "linkedin" as const,
+    url: "https://linkedin.com/in/test",
+    showInFooter: true,
   },
 ];
 
 describe("SocialLinks", () => {
   it("renders one link per entry", () => {
     render(<SocialLinks links={links} />);
-    expect(screen.getAllByRole("link")).toHaveLength(2);
+    expect(screen.getAllByRole("link")).toHaveLength(3);
   });
 
-  it("uses mailto: prefix for email platform", () => {
+  it("renders links with correct href", () => {
     render(<SocialLinks links={links} />);
-    const emailLink = screen.getByLabelText("Email");
-    expect(emailLink).toHaveAttribute("href", "mailto:test@example.com");
+    expect(screen.getByLabelText("GitHub")).toHaveAttribute(
+      "href",
+      "https://github.com/test"
+    );
+    expect(screen.getByLabelText("Instagram")).toHaveAttribute(
+      "href",
+      "https://instagram.com/test"
+    );
+    expect(screen.getByLabelText("LinkedIn")).toHaveAttribute(
+      "href",
+      "https://linkedin.com/in/test"
+    );
   });
 
-  it("renders non-email links with url as-is", () => {
+  it("opens all links in a new tab with noopener noreferrer", () => {
     render(<SocialLinks links={links} />);
-    const githubLink = screen.getByLabelText("GitHub");
-    expect(githubLink).toHaveAttribute("href", "https://github.com/test");
+    for (const link of screen.getAllByRole("link")) {
+      expect(link).toHaveAttribute("target", "_blank");
+      expect(link).toHaveAttribute("rel", "noopener noreferrer");
+    }
   });
 
-  it("opens non-email links in a new tab with noopener noreferrer", () => {
+  it("renders a nav element with accessible label", () => {
     render(<SocialLinks links={links} />);
-    const githubLink = screen.getByLabelText("GitHub");
-    expect(githubLink).toHaveAttribute("target", "_blank");
-    expect(githubLink).toHaveAttribute("rel", "noopener noreferrer");
+    expect(screen.getByRole("navigation")).toHaveAttribute(
+      "aria-label",
+      "Social links"
+    );
   });
 
-  it("does not set target or rel on email links", () => {
-    render(<SocialLinks links={links} />);
-    const emailLink = screen.getByLabelText("Email");
-    expect(emailLink).not.toHaveAttribute("target");
-    expect(emailLink).not.toHaveAttribute("rel");
+  it("applies custom className when provided", () => {
+    render(<SocialLinks links={links} className="custom-class" />);
+    expect(screen.getByRole("navigation")).toHaveClass("custom-class");
   });
 });
