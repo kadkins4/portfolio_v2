@@ -1,18 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
+import type { WorkItem } from "@/types";
 import Tag from "./Tag";
 import type { TagVariant } from "./Tag";
 import styles from "./WorkCard.module.css";
 
-type Props = {
-  slug: string;
-  title: string;
-  description: string;
-  type: "project" | "writing" | "hobby";
-  image?: string | null;
-  imageFocus?: string;
-  blurDataURL?: string;
-  externalUrl?: string | null;
+type Props = WorkItem & {
   priority?: boolean;
 };
 

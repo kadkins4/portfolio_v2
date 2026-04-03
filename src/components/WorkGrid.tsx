@@ -1,19 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import type { WorkItem } from "@/types";
 import WorkCard from "./WorkCard";
 import styles from "./WorkGrid.module.css";
-
-type WorkItem = {
-  slug: string;
-  title: string;
-  description: string;
-  type: "project" | "writing" | "hobby";
-  image: string | null;
-  imageFocus: string;
-  blurDataURL?: string;
-  externalUrl: string | null;
-};
 
 type FilterType = "all" | "project" | "writing" | "hobby";
 
