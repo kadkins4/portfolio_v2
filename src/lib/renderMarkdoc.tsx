@@ -92,6 +92,25 @@ function renderNode(node: MarkdocNode, key: number | string): React.ReactNode {
       return <hr key={key} />;
 
     default:
+      if (process.env.NODE_ENV === "development") {
+        console.warn(`[renderMarkdoc] Unknown node type: "${node.type}"`);
+        return (
+          <div
+            key={key}
+            style={{
+              background: "#ff4444",
+              color: "#fff",
+              padding: "8px 12px",
+              borderRadius: "4px",
+              fontFamily: "monospace",
+              fontSize: "14px",
+              margin: "8px 0",
+            }}
+          >
+            Unknown Markdoc node: &quot;{node.type}&quot;
+          </div>
+        );
+      }
       return null;
   }
 }

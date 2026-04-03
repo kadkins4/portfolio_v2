@@ -15,14 +15,18 @@ type Props = {
   params: Promise<{ slug: string }>;
 };
 
-const reader = createReader(process.cwd(), config);
+function getReader() {
+  return createReader(process.cwd(), config);
+}
 
 export async function generateStaticParams() {
+  const reader = getReader();
   const items = await reader.collections.work.all();
   return items.map((item) => ({ slug: item.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const reader = getReader();
   const { slug } = await params;
   const item = await reader.collections.work.read(slug);
   if (!item) return {};
@@ -39,6 +43,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function WorkDetailPage({ params }: Props) {
+  const reader = getReader();
   const { slug } = await params;
   const item = await reader.collections.work.read(slug);
 

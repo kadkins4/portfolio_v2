@@ -5,6 +5,17 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
   },
+  headers: async () => [
+    {
+      source: "/((?!api|keystatic).*)",
+      headers: [
+        {
+          key: "Cache-Control",
+          value: "public, max-age=3600, stale-while-revalidate=86400",
+        },
+      ],
+    },
+  ],
 };
 
 export default nextConfig;
