@@ -1,6 +1,7 @@
 import { createReader } from "@keystatic/core/reader";
 import config from "../../keystatic.config";
 import SocialLinks from "./SocialLinks";
+import styles from "./Footer.module.css";
 
 export default async function Footer() {
   const reader = createReader(process.cwd(), config);
@@ -8,8 +9,8 @@ export default async function Footer() {
   const links = (settings?.socialLinks ?? []).filter((l) => l.showInFooter);
 
   return (
-    <footer className="footer">
-      <SocialLinks links={links} className="footer-links" />
+    <footer className={styles.footer}>
+      <SocialLinks links={links} className={styles.links} />
     </footer>
   );
 }

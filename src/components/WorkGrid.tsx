@@ -43,6 +43,7 @@ export default function WorkGrid({ items }: Props) {
           <button
             key={f.value}
             className={`${styles.filterButton} ${filter === f.value ? styles.active : ""}`}
+            aria-pressed={filter === f.value}
             onClick={() => setFilter(f.value)}
           >
             {f.label}
