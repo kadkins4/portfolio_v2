@@ -1,29 +1,15 @@
 skills:
   - React
   - TypeScript
-  - Claude Code
-  - Project Planning
-  - Mentoring
-  - NextJS
+  - Next.js
   - Node.js
   - GraphQL
   - REST APIs
   - Testing (Jest/Vitest)
-  - Code Review
-  - Git
-  - HTML/CSS
-  - C#
-  - Unity
   - Python
-hobbies:
-  - Hot Yoga
-  - Beach Volleyball
-  - Happy Hour Enthusiast
-  - Basketball
-  - Board Games
-  - RollerCoaster Enthusiast
-  - Video Games
-  - Concerts
-  - Billiards
-  - Bachata
-  - Coffee
+  - AI-Assisted Development
+strengths:
+  - Mentoring
+  - Project Planning
+  - Code Review
+hobbies: []

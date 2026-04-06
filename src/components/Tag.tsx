@@ -1,6 +1,6 @@
 import styles from "./Tag.module.css";
 
-export type TagVariant = "project" | "writing" | "hobby" | "skill";
+export type TagVariant = "project" | "writing" | "hobby" | "skill" | "strength";
 
 type Props = {
   variant: TagVariant;

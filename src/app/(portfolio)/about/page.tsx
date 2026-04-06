@@ -18,7 +18,31 @@ export default async function AboutPage() {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>About</h1>
+      <div className={styles.header}>
+        <h1 className={styles.title}>About</h1>
+        <a
+          href="/kendall-adkins-resume.pdf"
+          download
+          className={styles.resumeLink}
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+          Resume
+        </a>
+      </div>
 
       {bioResult && (
         <div className={styles.bio}>{renderMarkdoc(bioResult)}</div>
@@ -37,18 +61,27 @@ export default async function AboutPage() {
         </section>
       )}
 
-      {about?.hobbies && about.hobbies.length > 0 && (
+      {about?.strengths && about.strengths.length > 0 && (
         <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>Hobbies</h2>
+          <h2 className={styles.sectionTitle}>How I Work</h2>
           <div className={styles.tags}>
-            {about.hobbies.map((hobby) => (
-              <Tag key={hobby} variant="hobby">
-                {hobby}
+            {about.strengths.map((strength) => (
+              <Tag key={strength} variant="strength">
+                {strength}
               </Tag>
             ))}
           </div>
         </section>
       )}
+
+      <section className={styles.cta}>
+        <h2 className={styles.ctaTitle}>Want to work together?</h2>
+        <p className={styles.ctaText}>
+          I take on select freelance projects focused on frontend development
+          and web applications. If you have something in mind, I&apos;d love to
+          hear about it.
+        </p>
+      </section>
     </div>
   );
 }

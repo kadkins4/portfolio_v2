@@ -22,6 +22,10 @@ export default config({
           label: "Skills",
           itemLabel: (props) => props.value ?? "Skill",
         }),
+        strengths: fields.array(fields.text({ label: "Strength" }), {
+          label: "Strengths",
+          itemLabel: (props) => props.value ?? "Strength",
+        }),
         hobbies: fields.array(fields.text({ label: "Hobby" }), {
           label: "Hobbies",
           itemLabel: (props) => props.value ?? "Hobby",

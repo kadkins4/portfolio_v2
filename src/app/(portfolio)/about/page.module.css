@@ -4,11 +4,31 @@
   padding: 48px 24px 80px;
 }
 
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+
 .title {
   font-family: var(--font-serif), Georgia, serif;
   font-size: clamp(28px, 5vw, 40px);
   font-weight: 700;
-  margin-bottom: 32px;
+}
+
+.resumeLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.resumeLink:hover {
+  color: var(--accent);
 }
 
 .bio {
@@ -39,4 +59,27 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+.cta {
+  margin-top: 48px;
+  padding: 32px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.ctaTitle {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.ctaText {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  max-width: 480px;
+  margin: 0 auto;
 }

@@ -28,3 +28,9 @@
   color: var(--text-secondary);
   border: 1px solid var(--border);
 }
+
+.strength {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+}
