@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next";
 import JsonLd from "@/components/JsonLd";
 
 const playfair = Playfair_Display({
@@ -66,6 +67,7 @@ export default function RootLayout({
       <body>
         <JsonLd data={personSchema} />
         {children}
+        <Analytics />
       </body>
     </html>
   );
