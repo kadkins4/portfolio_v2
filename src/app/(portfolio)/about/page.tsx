@@ -77,9 +77,9 @@ export default async function AboutPage() {
       <section className={styles.cta}>
         <h2 className={styles.ctaTitle}>Want to work together?</h2>
         <p className={styles.ctaText}>
-          I take on select freelance projects focused on frontend development
-          and web applications. If you have something in mind, I&apos;d love to
-          hear about it.
+          I take on select freelance projects that I find interesting and
+          exciting. If you have something in mind, I&apos;d love to hear about
+          it.
         </p>
       </section>
     </div>
