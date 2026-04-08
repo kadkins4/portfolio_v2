@@ -9,6 +9,11 @@ export const metadata: Metadata = {
   title: "About",
   description:
     "Learn more about Kendall Adkins - skills, hobbies, and background.",
+  openGraph: {
+    title: "About",
+    description:
+      "Learn more about Kendall Adkins - skills, hobbies, and background.",
+  },
 };
 
 export default async function AboutPage() {
