@@ -1,13 +1,21 @@
+.wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
 .container {
-  height: 100vh;
+  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
   padding: 24px;
+  padding-top: 60px;
   overflow: hidden;
   animation: fadeUp 0.6s ease both;
+  border-bottom: 1px solid var(--border);
 }
 
 .illustration {
@@ -24,10 +32,7 @@
   font-size: clamp(72px, 15vw, 120px);
   line-height: 1;
   letter-spacing: -0.03em;
-  background: linear-gradient(135deg, var(--grad-from), var(--grad-to));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--accent);
   margin-bottom: 16px;
 }
 
@@ -38,57 +43,17 @@
   margin-bottom: 40px;
 }
 
-.cta {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.btnPrimary {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+.backLink {
   font-family: var(--font-mono), monospace;
   font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  padding: 14px 28px;
-  border-radius: 8px;
-  text-decoration: none;
-  transition: all 0.3s ease;
-  background: linear-gradient(135deg, var(--grad-from), var(--grad-to));
-  color: #06060e;
-  border: none;
-  min-height: 44px;
-}
-
-.btnPrimary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 30px rgba(0, 212, 255, 0.26);
-}
-
-.btnGhost {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-mono), monospace;
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  padding: 14px 28px;
-  border-radius: 8px;
-  text-decoration: none;
-  transition: all 0.3s ease;
-  background: transparent;
-  color: var(--text-secondary);
-  border: 1px solid var(--border);
-  min-height: 44px;
-}
-
-.btnGhost:hover {
-  border-color: var(--accent);
   color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  transition: opacity 0.2s ease;
+}
+
+.backLink:hover {
+  opacity: 0.7;
 }
 
 @keyframes fadeUp {

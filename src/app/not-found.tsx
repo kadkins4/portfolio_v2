@@ -1,8 +1,7 @@
-"use client";
-
-import { useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import styles from "./not-found.module.css";
 
 const messages = [
@@ -16,31 +15,27 @@ const messages = [
 ];
 
 export default function NotFound() {
-  const message = useMemo(
-    () => messages[Math.floor(Math.random() * messages.length)],
-    []
-  );
+  const message = messages[Math.floor(Math.random() * messages.length)];
 
   return (
-    <main className={styles.container}>
-      <Image
-        src="/images/404-illustration.svg"
-        alt=""
-        width={280}
-        height={200}
-        className={styles.illustration}
-        priority
-      />
-      <h1 className={styles.heading}>404</h1>
-      <p className={styles.message}>{message}</p>
-      <div className={styles.cta}>
-        <Link href="/" className={styles.btnPrimary}>
+    <div className={styles.wrapper}>
+      <Header />
+      <main className={styles.container}>
+        <Image
+          src="/images/404-illustration.svg"
+          alt=""
+          width={280}
+          height={200}
+          className={styles.illustration}
+          priority
+        />
+        <h1 className={styles.heading}>404</h1>
+        <p className={styles.message}>{message}</p>
+        <Link href="/" className={styles.backLink}>
           Back to Home
         </Link>
-        <Link href="/work" className={styles.btnGhost}>
-          View Work
-        </Link>
-      </div>
-    </main>
+      </main>
+      <Footer />
+    </div>
   );
 }

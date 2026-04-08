@@ -23,6 +23,14 @@ vi.mock("next/image", () => ({
   ),
 }));
 
+vi.mock("@/components/Header", () => ({
+  default: () => <header data-testid="header" />,
+}));
+
+vi.mock("@/components/Footer", () => ({
+  default: () => <footer data-testid="footer" />,
+}));
+
 describe("NotFound", () => {
   it("renders 404 heading", () => {
     render(<NotFound />);
@@ -31,20 +39,21 @@ describe("NotFound", () => {
 
   it("displays a message starting with Page not found", () => {
     render(<NotFound />);
-    // All messages start with "Page not found"
     const message = screen.getByText(/^Page not found\./i);
     expect(message).toBeInTheDocument();
   });
 
-  it("has navigation links", () => {
+  it("has Back to Home link", () => {
     render(<NotFound />);
     expect(screen.getByRole("link", { name: /home/i })).toHaveAttribute(
       "href",
       "/"
     );
-    expect(screen.getByRole("link", { name: /work/i })).toHaveAttribute(
-      "href",
-      "/work"
-    );
+  });
+
+  it("renders header and footer", () => {
+    render(<NotFound />);
+    expect(screen.getByTestId("header")).toBeInTheDocument();
+    expect(screen.getByTestId("footer")).toBeInTheDocument();
   });
 });
