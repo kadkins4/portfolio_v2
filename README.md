@@ -29,7 +29,7 @@
 
 <p>
   <a href="https://kendalladkins.dev">
-    <img src="https://img.shields.io/badge/-kendalladkins.dev-000?style=flat-square&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZG9taW5hbnQtYmFzZWxpbmU9ImNlbnRyYWwiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IndoaXRlIiBmb250LWZhbWlseT0ic2VyaWYiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtd2VpZ2h0PSJib2xkIj5LQS48L3RleHQ+PC9zdmc+&logoColor=white" alt="Live Site" />
+    <img src="https://img.shields.io/badge/-kendalladkins.dev-000?style=flat-square&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiBmaWxsPSIjMGQwYjA5Ii8+PHRleHQgeD0iMiIgeT0iMjQiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWksIC1hcHBsZS1zeXN0ZW0sIHNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSI3MDAiIGZvbnQtc2l6ZT0iMTgiPjx0c3BhbiBmaWxsPSIjZWJlNmUwIj5LPC90c3Bhbj48dHNwYW4gZmlsbD0iI2EwODA2MCI+QS48L3RzcGFuPjwvdGV4dD48L3N2Zz4=" alt="Live Site" />
   </a>
 </p>
 
