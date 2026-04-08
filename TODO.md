@@ -45,9 +45,19 @@
 
 ### Backlinks
 
-- [ ] **GitHub profile** — Add website URL to profile and README
-- [ ] **LinkedIn** — Add website in Contact Info section
-- [ ] **Twitter/X** — Add website URL to bio
+- [x] **LinkedIn** — Add website in Contact Info section
+- [ ] **GitHub profile README** — see steps below
+
+### GitHub Profile README Setup
+
+Draft is saved at `docs/github-profile-README.md`. To set it up:
+
+1. [ ] Go to [github.com/new](https://github.com/new) (on your personal account, not EMU)
+2. [ ] Create a **public** repo named exactly after your GitHub username (e.g. `kadkins4`)
+3. [ ] Check "Add a README file"
+4. [ ] Copy the contents of `docs/github-profile-README.md` into the repo's `README.md`
+5. [ ] Commit — it will automatically show on your GitHub profile
+6. [ ] While you're there, add `https://kendalladkins.dev` to your profile's Website field
 
 ### Optional
 
