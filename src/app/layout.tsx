@@ -18,11 +18,11 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "Kendall Adkins — Senior Software Engineer",
+    default: "Kendall Adkins — Software Engineer, Builder, and Yogi",
     template: "%s | Kendall Adkins",
   },
   description:
-    "Senior Software Engineer building performant, accessible, and visually refined interfaces for the modern web.",
+    "Software Engineer building performant, accessible, and visually refined web and mobile app experiences. Open to collaborations as a developer or project planner.",
   metadataBase: new URL("https://kendalladkins.dev"),
   openGraph: {
     type: "website",
