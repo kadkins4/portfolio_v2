@@ -1,61 +1,59 @@
 # Launch Checklist
 
-## Domain
+## Content
 
-- [ ] **Purchase domain** — kendalladkins.com (or similar)
-  - Registrar options: Namecheap, Cloudflare, Porkbun, Squarespace (Google Domains)
-  - Cloudflare has at-cost pricing with no markup
+- [x] Replace placeholder projects with real projects
+- [x] Replace placeholder blog posts with real content (or delete them)
+- [x] Fill out About page bio and skills
+- [x] Update social links in Site Settings
+- [x] Add resume PDF to `/public`
 
-## Pre-Launch
+## Environment & Config
 
-- [x] **Block /keystatic in production** — Middleware added to redirect to home
-- [ ] **Test production build locally** — Run `pnpm build && pnpm start` to verify everything works
-- [ ] **Verify all images load** — Check work cards and detail pages
-- [ ] **Test on mobile** — Responsive layout check
-- [ ] **Check all links** — Internal navigation and external URLs
+- [x] Purchase domain — kendalladkins.dev
+- [x] Configure DNS (A record + CNAME for Vercel)
+- [x] Verify domain in `next-sitemap.config.js` matches actual domain
+- [x] Block /keystatic in production
+- [x] Add Vercel Analytics
+- [ ] Set up [Resend](https://resend.com) account for contact form emails
+- [ ] Get `RESEND_API_KEY`
+- [ ] Decide on `CONTACT_EMAIL` (where form submissions go)
 
-## Hosting (Vercel)
+## Pre-Launch Testing
 
-1. [ ] Go to [vercel.com](https://vercel.com) and sign up with GitHub
-2. [ ] Click "Add New Project" and import `portfolio_v2` repo
-3. [ ] Vercel auto-detects Next.js — click Deploy
-4. [ ] Once deployed, go to Settings → Domains → Add your domain
-5. [ ] Update DNS at your registrar:
-   - A record: `76.76.21.21`
-   - Or CNAME: `cname.vercel-dns.com`
-6. [ ] HTTPS is automatic — verify site loads with https://
+- [x] Test production build locally (`pnpm build && pnpm start`)
+- [x] Verify all images load
+- [x] Check all navigation links (internal + external)
+- [ ] Test on mobile — responsive layout check
+- [ ] Test contact form sends real email (with Resend API key set)
+- [ ] Share a page URL to preview OG image
 
-Alternative hosts: Netlify, Cloudflare Pages
+## Deploy
 
-## SEO & Discoverability
+1. [x] Sign up at [vercel.com](https://vercel.com) with GitHub
+2. [x] Import `portfolio_v2` repo → Deploy
+3. [ ] Set env vars: `RESEND_API_KEY`, `CONTACT_EMAIL`
+4. [x] Add `kendalladkins.dev` domain in Vercel dashboard
+5. [x] Verify HTTPS works
 
-### Google Search Console
+## Post-Launch
 
-- [ ] Go to [Google Search Console](https://search.google.com/search-console)
-- [ ] Add property for your domain
+- [ ] Submit sitemap to [Google Search Console](https://search.google.com/search-console) (`https://kendalladkins.dev/sitemap.xml`)
 - [ ] Verify ownership (DNS TXT record or HTML file)
-- [ ] Submit sitemap: https://yourdomain.com/sitemap.xml
 - [ ] Request indexing for homepage
+- [ ] Test live contact form
 
-### Backlinks (links from other sites to yours)
+### Backlinks
 
 - [ ] **GitHub profile** — Add website URL to profile and README
 - [ ] **LinkedIn** — Add website in Contact Info section
 - [ ] **Twitter/X** — Add website URL to bio
-- [ ] **Stack Overflow** — Add website to profile (if you have one)
-- [ ] **Dev.to / Hashnode** — Link to portfolio in bio (if applicable)
 
-### Optional Enhancements
+### Optional
 
-- [ ] Add canonical URLs to metadata (minor improvement)
-- [ ] Set up Google Analytics or Plausible for traffic insights
-- [ ] Create a Google Business Profile (for knowledge panel presence)
-
-## Post-Launch
-
-- [ ] Test site in Google Search — Search "site:yourdomain.com" after a few days
-- [ ] Monitor Search Console for crawl errors
-- [ ] Check Core Web Vitals in Search Console once data is available
+- [ ] Update README to be more attractive/engaging
+- [ ] Add canonical URLs to metadata
+- [ ] Create a Google Business Profile
 
 ---
 
