@@ -8,9 +8,8 @@ import { renderMarkdoc } from "@/lib/renderMarkdoc";
 import config from "../../../../../keystatic.config";
 import Tag from "@/components/Tag";
 import JsonLd from "@/components/JsonLd";
+import { SITE_URL, SITE_NAME } from "@/lib/constants";
 import styles from "./page.module.css";
-
-const SITE_URL = "https://kendalladkins.dev";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -91,7 +90,7 @@ export default async function WorkDetailPage({ params }: Props) {
           datePublished: item.date,
           author: {
             "@type": "Person",
-            name: "Kendall Adkins",
+            name: SITE_NAME,
             url: SITE_URL,
           },
         }

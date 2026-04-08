@@ -1,7 +1,6 @@
 import { createReader } from "@keystatic/core/reader";
 import config from "../../../keystatic.config";
-
-const BASE_URL = "https://kendalladkins.dev";
+import { SITE_URL, SITE_NAME } from "@/lib/constants";
 
 function escapeXml(str: string): string {
   return str
@@ -27,8 +26,8 @@ export async function GET() {
       (item) => `
     <item>
       <title>${escapeXml(item.entry.title)}</title>
-      <link>${BASE_URL}/work/${item.slug}</link>
-      <guid isPermaLink="true">${BASE_URL}/work/${item.slug}</guid>
+      <link>${SITE_URL}/work/${item.slug}</link>
+      <guid isPermaLink="true">${SITE_URL}/work/${item.slug}</guid>
       <description>${escapeXml(item.entry.description)}</description>
       <pubDate>${new Date(item.entry.date!).toUTCString()}</pubDate>
     </item>`
@@ -38,12 +37,12 @@ export async function GET() {
   const rss = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Kendall Adkins — Work</title>
-    <link>${BASE_URL}/work</link>
+    <title>${SITE_NAME} — Work</title>
+    <link>${SITE_URL}/work</link>
     <description>Projects, writings, and hobbies.</description>
     <language>en-us</language>
-    <managingEditor>${process.env.CONTACT_EMAIL ?? "kendall@kendalladkins.dev"} (Kendall Adkins)</managingEditor>
-    <atom:link href="${BASE_URL}/feed.xml" rel="self" type="application/rss+xml"/>
+    <managingEditor>${process.env.CONTACT_EMAIL ?? "kendall@kendalladkins.dev"} (${SITE_NAME})</managingEditor>
+    <atom:link href="${SITE_URL}/feed.xml" rel="self" type="application/rss+xml"/>
     ${items}
   </channel>
 </rss>`;

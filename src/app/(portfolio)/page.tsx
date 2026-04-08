@@ -2,16 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { createReader } from "@keystatic/core/reader";
 import config from "../../../keystatic.config";
+import { SITE_TITLE, SITE_DESCRIPTION } from "@/lib/constants";
 import styles from "./page.module.css";
 
 export const metadata: Metadata = {
   title: "Home",
-  description:
-    "Kendall Adkins — Senior Software Engineer building performant, accessible, and visually refined interfaces for the modern web.",
+  description: SITE_DESCRIPTION,
   openGraph: {
-    title: "Kendall Adkins — Senior Software Engineer",
-    description:
-      "Building performant, accessible, and visually refined interfaces for the modern web.",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
   },
 };
 

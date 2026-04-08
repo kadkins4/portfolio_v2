@@ -3,6 +3,12 @@ import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import JsonLd from "@/components/JsonLd";
+import {
+  SITE_URL,
+  SITE_NAME,
+  SITE_TITLE,
+  SITE_DESCRIPTION,
+} from "@/lib/constants";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -18,17 +24,16 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "Kendall Adkins — Software Engineer, Builder, and Yogi",
+    default: SITE_TITLE,
     template: "%s | KendallAdkins.dev",
   },
-  description:
-    "Software Engineer building performant, accessible, and visually refined web and mobile app experiences. Open to collaborations as a developer or project planner.",
-  metadataBase: new URL("https://kendalladkins.dev"),
+  description: SITE_DESCRIPTION,
+  metadataBase: new URL(SITE_URL),
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://kendalladkins.dev",
-    siteName: "Kendall Adkins",
+    url: SITE_URL,
+    siteName: SITE_NAME,
   },
   twitter: {
     card: "summary_large_image",
@@ -41,7 +46,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
     types: {
-      "application/rss+xml": "https://kendalladkins.dev/feed.xml",
+      "application/rss+xml": `${SITE_URL}/feed.xml`,
     },
   },
 };
@@ -49,8 +54,8 @@ export const metadata: Metadata = {
 const personSchema = {
   "@context": "https://schema.org",
   "@type": "Person",
-  name: "Kendall Adkins",
-  url: "https://kendalladkins.dev",
+  name: SITE_NAME,
+  url: SITE_URL,
   jobTitle: "Senior Software Engineer",
   sameAs: [
     "https://github.com/kendalladkins",
