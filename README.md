@@ -29,7 +29,7 @@
 
 <p>
   <a href="https://kendalladkins.dev">
-    <img src="https://img.shields.io/badge/-kendalladkins.dev-000?style=flat-square&logoColor=white" alt="Live Site" />
+    <img src="https://img.shields.io/badge/-kendalladkins.dev-000?style=flat-square&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZG9taW5hbnQtYmFzZWxpbmU9ImNlbnRyYWwiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IndoaXRlIiBmb250LWZhbWlseT0ic2VyaWYiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtd2VpZ2h0PSJib2xkIj5LQS48L3RleHQ+PC9zdmc+&logoColor=white" alt="Live Site" />
   </a>
 </p>
 
