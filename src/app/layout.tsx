@@ -19,7 +19,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: {
     default: "Kendall Adkins — Software Engineer, Builder, and Yogi",
-    template: "%s | kendalladkins.dev",
+    template: "%s | KendallAdkins.dev",
   },
   description:
     "Software Engineer building performant, accessible, and visually refined web and mobile app experiences. Open to collaborations as a developer or project planner.",

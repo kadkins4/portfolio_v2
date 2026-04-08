@@ -29,7 +29,7 @@
 
 <p>
   <a href="https://kendalladkins.dev">
-    <img src="https://img.shields.io/badge/-kendalladkins.dev-000?style=flat-square&logo=vercel&logoColor=white" alt="Live Site" />
+    <img src="https://img.shields.io/badge/-kendalladkins.dev-000?style=flat-square&logoColor=white" alt="Live Site" />
   </a>
 </p>
 
