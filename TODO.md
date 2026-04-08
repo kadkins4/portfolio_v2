@@ -26,7 +26,7 @@
 - [x] Check all navigation links (internal + external)
 - [x] Test on mobile — responsive layout check
 - [ ] Test contact form sends real email (with Resend API key set)
-- [ ] Share a page URL to preview OG image
+- [x] Share a page URL to preview OG image
 
 ## Deploy
 
@@ -38,9 +38,9 @@
 
 ## Post-Launch
 
-- [ ] Submit sitemap to [Google Search Console](https://search.google.com/search-console) (`https://kendalladkins.dev/sitemap.xml`)
-- [ ] Verify ownership (DNS TXT record or HTML file)
-- [ ] Request indexing for homepage
+- [x] Submit sitemap to [Google Search Console](https://search.google.com/search-console) (`https://kendalladkins.dev/sitemap.xml`)
+- [x] Verify ownership (DNS TXT record or HTML file)
+- [x] Request indexing for homepage
 - [ ] Test live contact form
 
 ### Backlinks
@@ -52,7 +52,7 @@
 
 - [x] Update README to be more attractive/engaging
 - [x] Add canonical URLs to metadata
-- [ ] Create a Google Business Profile
+- [x] ~~Create a Google Business Profile~~ — not needed for personal portfolio
 
 ---
 
