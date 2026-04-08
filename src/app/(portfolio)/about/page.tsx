@@ -9,6 +9,9 @@ export const metadata: Metadata = {
   title: "About",
   description:
     "Learn more about Kendall Adkins - skills, hobbies, and background.",
+  alternates: {
+    canonical: "/about",
+  },
   openGraph: {
     title: "About",
     description:
