@@ -23,11 +23,11 @@ export const metadata: Metadata = {
   },
   description:
     "Senior Software Engineer building performant, accessible, and visually refined interfaces for the modern web.",
-  metadataBase: new URL("https://kendalladkins.com"),
+  metadataBase: new URL("https://kendalladkins.dev"),
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://kendalladkins.com",
+    url: "https://kendalladkins.dev",
     siteName: "Kendall Adkins",
   },
   twitter: {
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   },
   alternates: {
     types: {
-      "application/rss+xml": "https://kendalladkins.com/feed.xml",
+      "application/rss+xml": "https://kendalladkins.dev/feed.xml",
     },
   },
 };
@@ -49,7 +49,7 @@ const personSchema = {
   "@context": "https://schema.org",
   "@type": "Person",
   name: "Kendall Adkins",
-  url: "https://kendalladkins.com",
+  url: "https://kendalladkins.dev",
   jobTitle: "Senior Software Engineer",
   sameAs: [
     "https://github.com/kendalladkins",

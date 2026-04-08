@@ -10,7 +10,7 @@ import Tag from "@/components/Tag";
 import JsonLd from "@/components/JsonLd";
 import styles from "./page.module.css";
 
-const SITE_URL = "https://kendalladkins.com";
+const SITE_URL = "https://kendalladkins.dev";
 
 type Props = {
   params: Promise<{ slug: string }>;

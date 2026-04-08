@@ -1,7 +1,7 @@
 import { createReader } from "@keystatic/core/reader";
 import config from "../../../keystatic.config";
 
-const BASE_URL = "https://kendalladkins.com";
+const BASE_URL = "https://kendalladkins.dev";
 
 function escapeXml(str: string): string {
   return str
@@ -42,7 +42,7 @@ export async function GET() {
     <link>${BASE_URL}/work</link>
     <description>Projects, writings, and hobbies.</description>
     <language>en-us</language>
-    <managingEditor>${process.env.CONTACT_EMAIL ?? "kendall@kendalladkins.com"} (Kendall Adkins)</managingEditor>
+    <managingEditor>${process.env.CONTACT_EMAIL ?? "kendall@kendalladkins.dev"} (Kendall Adkins)</managingEditor>
     <atom:link href="${BASE_URL}/feed.xml" rel="self" type="application/rss+xml"/>
     ${items}
   </channel>
