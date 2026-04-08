@@ -24,7 +24,7 @@
 - [x] Test production build locally (`pnpm build && pnpm start`)
 - [x] Verify all images load
 - [x] Check all navigation links (internal + external)
-- [ ] Test on mobile — responsive layout check
+- [x] Test on mobile — responsive layout check
 - [ ] Test contact form sends real email (with Resend API key set)
 - [ ] Share a page URL to preview OG image
 
@@ -46,23 +46,12 @@
 ### Backlinks
 
 - [x] **LinkedIn** — Add website in Contact Info section
-- [ ] **GitHub profile README** — see steps below
-
-### GitHub Profile README Setup
-
-Draft is saved at `docs/github-profile-README.md`. To set it up:
-
-1. [ ] Go to [github.com/new](https://github.com/new) (on your personal account, not EMU)
-2. [ ] Create a **public** repo named exactly after your GitHub username (e.g. `kadkins4`)
-3. [ ] Check "Add a README file"
-4. [ ] Copy the contents of `docs/github-profile-README.md` into the repo's `README.md`
-5. [ ] Commit — it will automatically show on your GitHub profile
-6. [ ] While you're there, add `https://kendalladkins.dev` to your profile's Website field
+- [x] **GitHub profile README**
 
 ### Optional
 
-- [ ] Update README to be more attractive/engaging
-- [ ] Add canonical URLs to metadata
+- [x] Update README to be more attractive/engaging
+- [x] Add canonical URLs to metadata
 - [ ] Create a Google Business Profile
 
 ---
