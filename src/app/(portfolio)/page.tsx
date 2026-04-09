@@ -29,8 +29,8 @@ export default async function HomePage() {
           About
         </Link>
         <span className={styles.separator} aria-hidden="true" />
-        <Link href="/work" className={styles.navLink}>
-          Work
+        <Link href="/projects" className={styles.navLink}>
+          Projects
         </Link>
       </nav>
     </section>

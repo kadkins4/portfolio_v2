@@ -14,14 +14,6 @@
 
   /* Border */
   --border: #1a1816;
-
-  /* Tag colors */
-  --tag-project-bg: #a08060;
-  --tag-project-text: #0d0b09;
-  --tag-writing-bg: #6a645c;
-  --tag-writing-text: #ebe6e0;
-  --tag-hobby-bg: #705a40;
-  --tag-hobby-text: #ebe6e0;
 }
 
 *,
