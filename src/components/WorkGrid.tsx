@@ -1,45 +1,51 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { WorkItem } from "@/types";
 import WorkCard from "./WorkCard";
 import styles from "./WorkGrid.module.css";
-
-type FilterType = "all" | "project" | "writing" | "hobby";
-
-const FILTERS: { value: FilterType; label: string }[] = [
-  { value: "all", label: "All" },
-  { value: "project", label: "Projects" },
-  { value: "writing", label: "Writing" },
-  { value: "hobby", label: "Hobbies" },
-];
 
 type Props = {
   items: WorkItem[];
 };
 
 export default function WorkGrid({ items }: Props) {
-  const [filter, setFilter] = useState<FilterType>("all");
+  const [filter, setFilter] = useState<string>("all");
+
+  const allTags = useMemo(() => {
+    const tagSet = new Set<string>();
+    items.forEach((item) => item.tags.forEach((tag) => tagSet.add(tag)));
+    return Array.from(tagSet).sort();
+  }, [items]);
 
   const filteredItems =
-    filter === "all" ? items : items.filter((item) => item.type === filter);
-
-  const activeFilter = FILTERS.find((f) => f.value === filter);
+    filter === "all"
+      ? items
+      : items.filter((item) => item.tags.includes(filter));
 
   return (
     <>
-      <div className={styles.filters}>
-        {FILTERS.map((f) => (
+      {allTags.length > 1 && (
+        <div className={styles.filters}>
           <button
-            key={f.value}
-            className={`${styles.filterButton} ${filter === f.value ? styles.active : ""}`}
-            aria-pressed={filter === f.value}
-            onClick={() => setFilter(f.value)}
+            className={`${styles.filterButton} ${filter === "all" ? styles.active : ""}`}
+            aria-pressed={filter === "all"}
+            onClick={() => setFilter("all")}
           >
-            {f.label}
+            All
           </button>
-        ))}
-      </div>
+          {allTags.map((tag) => (
+            <button
+              key={tag}
+              className={`${styles.filterButton} ${filter === tag ? styles.active : ""}`}
+              aria-pressed={filter === tag}
+              onClick={() => setFilter(tag)}
+            >
+              {tag}
+            </button>
+          ))}
+        </div>
+      )}
 
       {filteredItems.length > 0 ? (
         <div className={styles.grid}>
@@ -49,7 +55,7 @@ export default function WorkGrid({ items }: Props) {
               slug={item.slug}
               title={item.title}
               description={item.description}
-              type={item.type}
+              tags={item.tags}
               image={item.image}
               imageFocus={item.imageFocus}
               blurDataURL={item.blurDataURL}
@@ -59,9 +65,7 @@ export default function WorkGrid({ items }: Props) {
           ))}
         </div>
       ) : (
-        <div className={styles.emptyState}>
-          No {activeFilter?.label.toLowerCase()} yet.
-        </div>
+        <div className={styles.emptyState}>No projects yet.</div>
       )}
     </>
   );
