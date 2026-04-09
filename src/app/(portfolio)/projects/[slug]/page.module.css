@@ -35,6 +35,12 @@
   font-weight: 700;
 }
 
+.tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
 .image {
   width: 100%;
   aspect-ratio: 16 / 9;

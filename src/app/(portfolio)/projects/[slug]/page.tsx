@@ -8,7 +8,7 @@ import { renderMarkdoc } from "@/lib/renderMarkdoc";
 import config from "../../../../../keystatic.config";
 import Tag from "@/components/Tag";
 import JsonLd from "@/components/JsonLd";
-import { SITE_URL, SITE_NAME } from "@/lib/constants";
+import { SITE_URL } from "@/lib/constants";
 import styles from "./page.module.css";
 
 type Props = {
@@ -19,20 +19,20 @@ const getReader = cache(() => createReader(process.cwd(), config));
 
 export async function generateStaticParams() {
   const reader = getReader();
-  const items = await reader.collections.work.all();
+  const items = await reader.collections.projects.all();
   return items.map((item) => ({ slug: item.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const reader = getReader();
   const { slug } = await params;
-  const item = await reader.collections.work.read(slug);
+  const item = await reader.collections.projects.read(slug);
   if (!item) return {};
   return {
     title: item.title,
     description: item.description,
     alternates: {
-      canonical: `/work/${slug}`,
+      canonical: `/projects/${slug}`,
     },
     openGraph: {
       title: item.title,
@@ -46,7 +46,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function WorkDetailPage({ params }: Props) {
   const reader = getReader();
   const { slug } = await params;
-  const item = await reader.collections.work.read(slug);
+  const item = await reader.collections.projects.read(slug);
 
   if (!item) {
     notFound();
@@ -67,48 +67,36 @@ export default async function WorkDetailPage({ params }: Props) {
       {
         "@type": "ListItem",
         position: 2,
-        name: "Work",
-        item: `${SITE_URL}/work`,
+        name: "Projects",
+        item: `${SITE_URL}/projects`,
       },
       {
         "@type": "ListItem",
         position: 3,
         name: item.title,
-        item: `${SITE_URL}/work/${slug}`,
+        item: `${SITE_URL}/projects/${slug}`,
       },
     ],
   };
 
-  const articleSchema =
-    item.type === "writing"
-      ? {
-          "@context": "https://schema.org",
-          "@type": "Article",
-          headline: item.title,
-          description: item.description,
-          image: item.image ? `${SITE_URL}${item.image}` : undefined,
-          datePublished: item.date,
-          author: {
-            "@type": "Person",
-            name: SITE_NAME,
-            url: SITE_URL,
-          },
-        }
-      : null;
-
   return (
     <>
       <JsonLd data={breadcrumbSchema} />
-      {articleSchema && <JsonLd data={articleSchema} />}
       <div className={styles.container}>
-        <Link href="/work" className={styles.backLink}>
-          &larr; Back to Work
+        <Link href="/projects" className={styles.backLink}>
+          &larr; Back to Projects
         </Link>
 
         <header className={styles.header}>
           <div className={styles.titleRow}>
             <h1 className={styles.title}>{item.title}</h1>
-            <Tag variant={item.type}>{item.type}</Tag>
+            {item.tags && item.tags.length > 0 && (
+              <div className={styles.tags}>
+                {item.tags.map((tag: string) => (
+                  <Tag key={tag}>{tag}</Tag>
+                ))}
+              </div>
+            )}
           </div>
         </header>
 

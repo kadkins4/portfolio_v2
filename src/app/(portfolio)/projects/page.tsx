@@ -6,22 +6,22 @@ import { getBlurDataURL } from "@/lib/getBlurDataURL";
 import styles from "./page.module.css";
 
 export const metadata: Metadata = {
-  title: "Work",
+  title: "Projects",
   description:
-    "Projects, hobbies, and writing by Kendall Adkins — exploring software engineering, developer tools, and web development.",
+    "Projects by Kendall Adkins — exploring software engineering, developer tools, and web development.",
   alternates: {
-    canonical: "/work",
+    canonical: "/projects",
   },
   openGraph: {
-    title: "Work — Kendall Adkins",
+    title: "Projects — Kendall Adkins",
     description:
-      "Projects, hobbies, and writing exploring software engineering, developer tools, and web development.",
+      "Projects exploring software engineering, developer tools, and web development.",
   },
 };
 
 export default async function WorkPage() {
   const reader = createReader(process.cwd(), config);
-  const workItems = await reader.collections.work.all();
+  const workItems = await reader.collections.projects.all();
 
   const sortedItems = workItems.sort((a, b) => {
     // Featured items come first
@@ -47,7 +47,7 @@ export default async function WorkPage() {
       slug: item.slug,
       title: item.entry.title,
       description: item.entry.description,
-      type: item.entry.type,
+      tags: item.entry.tags ?? [],
       image: item.entry.image ?? null,
       imageFocus: item.entry.imageFocus ?? "center",
       blurDataURL: item.entry.image
@@ -59,7 +59,7 @@ export default async function WorkPage() {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Projects, Hobbies, and Writing</h1>
+      <h1 className={styles.title}>Projects</h1>
       <WorkGrid items={items} />
     </div>
   );
