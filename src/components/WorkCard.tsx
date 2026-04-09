@@ -2,7 +2,6 @@ import Link from "next/link";
 import Image from "next/image";
 import type { WorkItem } from "@/types";
 import Tag from "./Tag";
-import type { TagVariant } from "./Tag";
 import styles from "./WorkCard.module.css";
 
 type Props = WorkItem & {
@@ -13,18 +12,16 @@ export default function WorkCard({
   slug,
   title,
   description,
-  type,
+  tags,
   image,
   imageFocus = "center",
   blurDataURL,
   externalUrl,
   priority = false,
 }: Props) {
-  const tagVariant: TagVariant = type;
-
   return (
     <article className={styles.card}>
-      <Link href={`/work/${slug}`}>
+      <Link href={`/projects/${slug}`}>
         <div className={styles.imageWrapper}>
           {image ? (
             <Image
@@ -43,17 +40,13 @@ export default function WorkCard({
               <span className={styles.initial}>
                 {title.charAt(0).toUpperCase()}
               </span>
-              <div className={styles.divider} />
-              <span className={styles.typeIcon}>
-                {type === "writing" && "✎"}
-                {type === "project" && "⚙"}
-                {type === "hobby" && "♦"}
-              </span>
             </div>
           )}
-          <div className={styles.tag}>
-            <Tag variant={tagVariant}>{type}</Tag>
-          </div>
+          {tags.length > 0 && (
+            <div className={styles.tag}>
+              <Tag>{tags[0]}</Tag>
+            </div>
+          )}
         </div>
         <h3 className={styles.title}>{title}</h3>
       </Link>

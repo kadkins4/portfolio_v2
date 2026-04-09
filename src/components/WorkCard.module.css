@@ -44,25 +44,6 @@
   line-height: 1;
 }
 
-.divider {
-  width: 40px;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    var(--text-muted),
-    transparent
-  );
-  opacity: 0.4;
-  margin: 10px 0 8px;
-}
-
-.typeIcon {
-  font-size: 14px;
-  color: var(--text-muted);
-  opacity: 0.5;
-}
-
 .title {
   font-size: 18px;
   font-weight: 600;
