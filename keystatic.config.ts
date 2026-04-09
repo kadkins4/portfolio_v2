@@ -64,10 +64,10 @@ export default config({
   },
 
   collections: {
-    work: collection({
-      label: "Work",
+    projects: collection({
+      label: "Projects",
       slugField: "title",
-      path: "content/work/*",
+      path: "content/projects/*",
       format: { contentField: "content" },
       schema: {
         title: fields.slug({ name: { label: "Title" } }),
@@ -75,19 +75,15 @@ export default config({
           label: "Description",
           multiline: true,
         }),
-        type: fields.select({
-          label: "Type",
-          options: [
-            { label: "Project", value: "project" },
-            { label: "Writing", value: "writing" },
-            { label: "Hobby", value: "hobby" },
-          ],
-          defaultValue: "project",
+        tags: fields.array(fields.text({ label: "Tag" }), {
+          label: "Tags",
+          description: "Category tags (e.g., Game, Work, Tool, Mobile)",
+          itemLabel: (props) => props.value ?? "Tag",
         }),
         image: fields.image({
           label: "Image (optional, recommended: 1200x675px, 16:9)",
-          directory: "public/images/work",
-          publicPath: "/images/work",
+          directory: "public/images/projects",
+          publicPath: "/images/projects",
         }),
         imageFocus: fields.select({
           label: "Image Focus",
