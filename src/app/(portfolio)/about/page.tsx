@@ -3,6 +3,7 @@ import { createReader } from "@keystatic/core/reader";
 import { renderMarkdoc } from "@/lib/renderMarkdoc";
 import config from "../../../../keystatic.config";
 import Tag from "@/components/Tag";
+import SocialLinks from "@/components/SocialLinks";
 import styles from "./page.module.css";
 
 export const metadata: Metadata = {
@@ -23,6 +24,10 @@ export default async function AboutPage() {
   const reader = createReader(process.cwd(), config);
   const about = await reader.singletons.about.read();
   const bioResult = about ? await about.bio() : null;
+  const settings = await reader.singletons.siteSettings.read();
+  const socialLinks = (settings?.socialLinks ?? []).filter(
+    (l) => l.showInFooter
+  );
 
   return (
     <div className={styles.container}>
@@ -89,6 +94,7 @@ export default async function AboutPage() {
           exciting. If you have something in mind, I&apos;d love to hear about
           it.
         </p>
+        <SocialLinks links={socialLinks} className={styles.ctaSocials} />
       </section>
     </div>
   );
