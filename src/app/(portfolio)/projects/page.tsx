@@ -47,7 +47,7 @@ export default async function WorkPage() {
       slug: item.slug,
       title: item.entry.title,
       description: item.entry.description,
-      tags: item.entry.tags ?? [],
+      tags: [...(item.entry.tags ?? [])],
       image: item.entry.image ?? null,
       imageFocus: item.entry.imageFocus ?? "center",
       blurDataURL: item.entry.image
