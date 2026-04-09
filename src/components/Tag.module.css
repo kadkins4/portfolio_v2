@@ -18,9 +18,3 @@
   color: var(--accent);
   border: 1px solid var(--accent);
 }
-
-.strength {
-  background: transparent;
-  color: var(--accent);
-  border: 1px solid var(--accent);
-}

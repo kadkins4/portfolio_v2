@@ -17,18 +17,12 @@ export default config({
       label: "About Page",
       path: "content/about",
       schema: {
-        bio: fields.markdoc({ label: "Bio" }),
+        whatIDo: fields.markdoc({ label: "What I Do" }),
+        howIGotHere: fields.markdoc({ label: "How I Got Here" }),
+        outsideOfCode: fields.markdoc({ label: "Outside of Code" }),
         skills: fields.array(fields.text({ label: "Skill" }), {
           label: "Skills",
           itemLabel: (props) => props.value ?? "Skill",
-        }),
-        strengths: fields.array(fields.text({ label: "Strength" }), {
-          label: "Strengths",
-          itemLabel: (props) => props.value ?? "Strength",
-        }),
-        hobbies: fields.array(fields.text({ label: "Hobby" }), {
-          label: "Hobbies",
-          itemLabel: (props) => props.value ?? "Hobby",
         }),
       },
     }),

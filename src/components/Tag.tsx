@@ -1,6 +1,6 @@
 import styles from "./Tag.module.css";
 
-export type TagVariant = "default" | "skill" | "strength";
+export type TagVariant = "default" | "skill";
 
 type Props = {
   variant?: TagVariant;

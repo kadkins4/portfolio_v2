@@ -9,21 +9,25 @@ import styles from "./page.module.css";
 export const metadata: Metadata = {
   title: "About",
   description:
-    "Learn more about Kendall Adkins - skills, hobbies, and background.",
+    "Learn more about Kendall Adkins - skills, background, and interests.",
   alternates: {
     canonical: "/about",
   },
   openGraph: {
     title: "About",
     description:
-      "Learn more about Kendall Adkins - skills, hobbies, and background.",
+      "Learn more about Kendall Adkins - skills, background, and interests.",
   },
 };
 
 export default async function AboutPage() {
   const reader = createReader(process.cwd(), config);
   const about = await reader.singletons.about.read();
-  const bioResult = about ? await about.bio() : null;
+
+  const whatIDoResult = about ? await about.whatIDo() : null;
+  const howIGotHereResult = about ? await about.howIGotHere() : null;
+  const outsideOfCodeResult = about ? await about.outsideOfCode() : null;
+
   const settings = await reader.singletons.siteSettings.read();
   const socialLinks = (settings?.socialLinks ?? []).filter(
     (l) => l.showInFooter
@@ -57,10 +61,6 @@ export default async function AboutPage() {
         </a>
       </div>
 
-      {bioResult && (
-        <div className={styles.bio}>{renderMarkdoc(bioResult)}</div>
-      )}
-
       {about?.skills && about.skills.length > 0 && (
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>Skills</h2>
@@ -74,16 +74,10 @@ export default async function AboutPage() {
         </section>
       )}
 
-      {about?.strengths && about.strengths.length > 0 && (
+      {whatIDoResult && (
         <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>How I Work</h2>
-          <div className={styles.tags}>
-            {about.strengths.map((strength) => (
-              <Tag key={strength} variant="strength">
-                {strength}
-              </Tag>
-            ))}
-          </div>
+          <h2 className={styles.sectionTitle}>What I Do</h2>
+          <div className={styles.bio}>{renderMarkdoc(whatIDoResult)}</div>
         </section>
       )}
 
@@ -96,6 +90,20 @@ export default async function AboutPage() {
         </p>
         <SocialLinks links={socialLinks} className={styles.ctaSocials} />
       </section>
+
+      {howIGotHereResult && (
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>How I Got Here</h2>
+          <div className={styles.bio}>{renderMarkdoc(howIGotHereResult)}</div>
+        </section>
+      )}
+
+      {outsideOfCodeResult && (
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Outside of Code</h2>
+          <div className={styles.bio}>{renderMarkdoc(outsideOfCodeResult)}</div>
+        </section>
+      )}
     </div>
   );
 }
