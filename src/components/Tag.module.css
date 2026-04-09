@@ -8,19 +8,9 @@
   letter-spacing: 0.05em;
 }
 
-.project {
-  background: var(--tag-project-bg);
-  color: var(--tag-project-text);
-}
-
-.writing {
-  background: var(--tag-writing-bg);
-  color: var(--tag-writing-text);
-}
-
-.hobby {
-  background: var(--tag-hobby-bg);
-  color: var(--tag-hobby-text);
+.default {
+  background: var(--accent);
+  color: var(--bg-primary);
 }
 
 .skill {
