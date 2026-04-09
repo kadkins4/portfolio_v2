@@ -101,7 +101,7 @@ export default config({
         date: fields.date({ label: "Date" }),
         featured: fields.checkbox({
           label: "Featured",
-          description: "Featured items appear first in the work list",
+          description: "Featured items appear first in the projects list",
           defaultValue: false,
         }),
         order: fields.integer({
