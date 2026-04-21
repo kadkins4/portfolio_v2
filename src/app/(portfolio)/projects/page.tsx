@@ -29,12 +29,10 @@ export default async function WorkPage() {
     const featuredB = b.entry.featured ? 1 : 0;
     if (featuredB !== featuredA) return featuredB - featuredA;
 
-    // Among featured items, sort by order (lower first), then date
-    if (a.entry.featured && b.entry.featured) {
-      const orderA = a.entry.order ?? Infinity;
-      const orderB = b.entry.order ?? Infinity;
-      if (orderA !== orderB) return orderA - orderB;
-    }
+    // Sort by order (lower first)
+    const orderA = a.entry.order ?? Infinity;
+    const orderB = b.entry.order ?? Infinity;
+    if (orderA !== orderB) return orderA - orderB;
 
     // Fall back to date (newest first)
     const dateA = a.entry.date ? new Date(a.entry.date).getTime() : 0;
