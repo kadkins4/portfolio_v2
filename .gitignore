@@ -48,6 +48,9 @@ public/robots.txt
 # git worktrees
 .worktrees
 
+# superpowers scratch state
+.superpowers/
+
 # backup and planning files
 portfolio.jsx
 archive/
