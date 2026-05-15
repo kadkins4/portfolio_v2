@@ -6,9 +6,26 @@
 
 .header {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
+  gap: 16px;
   margin-bottom: 32px;
+}
+
+.titleGroup {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.portrait {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: 50% 30%;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
 }
 
 .title {

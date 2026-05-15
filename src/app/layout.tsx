@@ -37,7 +37,6 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    creator: "@kendalladkins",
   },
   robots: {
     index: true,
@@ -56,10 +55,12 @@ const personSchema = {
   "@type": "Person",
   name: SITE_NAME,
   url: SITE_URL,
+  image: `${SITE_URL}/images/kendall-adkins.jpeg`,
   jobTitle: "Senior Software Engineer",
   sameAs: [
-    "https://github.com/kendalladkins",
-    "https://linkedin.com/in/kendalladkins",
+    "https://github.com/kadkins4",
+    "https://www.linkedin.com/in/adkinskendall/",
+    "https://www.instagram.com/kadkins4/",
   ],
 };
 

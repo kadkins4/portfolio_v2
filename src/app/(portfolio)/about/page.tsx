@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { createReader } from "@keystatic/core/reader";
 import { renderMarkdoc } from "@/lib/renderMarkdoc";
 import config from "../../../../keystatic.config";
@@ -36,7 +37,17 @@ export default async function AboutPage() {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1 className={styles.title}>About</h1>
+        <div className={styles.titleGroup}>
+          <Image
+            src="/images/kendall-adkins.jpeg"
+            alt="Kendall Adkins"
+            width={96}
+            height={96}
+            priority
+            className={styles.portrait}
+          />
+          <h1 className={styles.title}>About</h1>
+        </div>
         <a
           href="/kendall-adkins-resume.pdf"
           download
