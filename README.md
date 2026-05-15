@@ -23,9 +23,6 @@
 └──────────────────────────────────────────────────────────┘
 ```
 
-<a href="https://kendalladkins.dev">
-  <img src="docs/preview.png" alt="kendalladkins.dev screenshot" width="100%" />
-</a>
 
 <p>
   <a href="https://kendalladkins.dev">
