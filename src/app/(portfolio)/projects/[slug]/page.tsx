@@ -67,8 +67,8 @@ export default async function WorkDetailPage({ params }: Props) {
       {
         "@type": "ListItem",
         position: 2,
-        name: "Projects",
-        item: `${SITE_URL}/projects`,
+        name: "Studio",
+        item: `${SITE_URL}/studio`,
       },
       {
         "@type": "ListItem",
@@ -83,8 +83,8 @@ export default async function WorkDetailPage({ params }: Props) {
     <>
       <JsonLd data={breadcrumbSchema} />
       <div className={styles.container}>
-        <Link href="/projects" className={styles.backLink}>
-          &larr; Back to Projects
+        <Link href="/studio" className={styles.backLink}>
+          &larr; Back to Studio
         </Link>
 
         <header className={styles.header}>
