@@ -91,6 +91,13 @@ function renderNode(node: MarkdocNode, key: number | string): React.ReactNode {
     case "hr":
       return <hr key={key} />;
 
+    case "image": {
+      const src = String(node.attributes?.src ?? "");
+      const alt = String(node.attributes?.alt ?? "");
+      // eslint-disable-next-line @next/next/no-img-element
+      return <img key={key} src={src} alt={alt} loading="lazy" />;
+    }
+
     default:
       if (process.env.NODE_ENV === "development") {
         console.warn(`[renderMarkdoc] Unknown node type: "${node.type}"`);
