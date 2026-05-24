@@ -46,7 +46,7 @@ function yamlFrontmatter(note: ParsedNote): string {
   const tags = note.tags.map((t) => `  - ${t}`).join("\n");
   return [
     "---",
-    `title: ${note.title}`,
+    `title: ${JSON.stringify(note.title)}`,
     `summary: ${JSON.stringify(note.summary)}`,
     note.tags.length ? `tags:\n${tags}` : "tags: []",
     `date: ${note.date}`,
@@ -69,6 +69,21 @@ export function runSync(opts: SyncOptions): SyncResult {
     const rel = path.relative(vaultDir, file);
     const mtime = fs.statSync(file).mtimeMs;
     parsed.push(parseNote(raw, rel, mtime));
+  }
+
+  // 1b. De-duplicate slugs (two distinct titles can slugify identically).
+  const seenSlugs = new Set<string>();
+  for (const note of parsed) {
+    let unique = note.slug;
+    let n = 2;
+    while (seenSlugs.has(unique)) unique = `${note.slug}-${n++}`;
+    if (unique !== note.slug) {
+      console.warn(
+        `[sync] slug collision: "${note.title}" -> ${unique} (was ${note.slug})`
+      );
+      note.slug = unique;
+    }
+    seenSlugs.add(unique);
   }
 
   // 2. Build indexes for wikilink + asset resolution.
@@ -97,8 +112,12 @@ export function runSync(opts: SyncOptions): SyncResult {
     body = transformWikilinks(body, publishedIndex);
     body = transformEmbeds(body, note.slug, resolveAsset, (from, to) => {
       const dest = path.join(imagesDir, to);
-      fs.mkdirSync(path.dirname(dest), { recursive: true });
-      fs.copyFileSync(from, dest);
+      try {
+        fs.mkdirSync(path.dirname(dest), { recursive: true });
+        fs.copyFileSync(from, dest);
+      } catch (err) {
+        console.warn(`[sync] failed to copy image ${from}: ${String(err)}`);
+      }
     });
     const out = `${yamlFrontmatter(note)}\n${body}\n`;
     fs.writeFileSync(path.join(notesDir, `${note.slug}.mdoc`), out);

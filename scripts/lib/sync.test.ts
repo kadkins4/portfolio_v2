@@ -38,7 +38,7 @@ describe("runSync", () => {
     const file = path.join(repo, "content/notes/public-note.mdoc");
     expect(fs.existsSync(file)).toBe(true);
     const out = fs.readFileSync(file, "utf8");
-    expect(out).toContain("title: Public Note");
+    expect(out).toContain('title: "Public Note"');
     expect(out).toContain("Hello world.");
     expect(fs.existsSync(path.join(repo, "content/notes/secret.mdoc"))).toBe(
       false
@@ -58,5 +58,31 @@ describe("runSync", () => {
     const result = runSync({ vaultDir: vault, repoDir: repo, dryRun: true });
     expect(result.published).toHaveLength(1);
     expect(fs.existsSync(path.join(repo, "content/notes/a.mdoc"))).toBe(false);
+  });
+
+  it("quotes titles so colons stay valid YAML", () => {
+    write("r.md", `---\ntitle: "React: A Deep Dive"\npublish: true\n---\nbody`);
+    runSync({ vaultDir: vault, repoDir: repo, dryRun: false });
+    const out = fs.readFileSync(
+      path.join(repo, "content/notes/react-a-deep-dive.mdoc"),
+      "utf8"
+    );
+    expect(out).toContain('title: "React: A Deep Dive"');
+  });
+
+  it("de-duplicates colliding slugs instead of overwriting", () => {
+    write("one.md", `---\ntitle: "My Note!"\npublish: true\n---\nfirst`);
+    write("two.md", `---\ntitle: "My Note"\npublish: true\n---\nsecond`);
+    const result = runSync({ vaultDir: vault, repoDir: repo, dryRun: false });
+    expect(result.published.map((n) => n.slug).sort()).toEqual([
+      "my-note",
+      "my-note-2",
+    ]);
+    expect(fs.existsSync(path.join(repo, "content/notes/my-note.mdoc"))).toBe(
+      true
+    );
+    expect(fs.existsSync(path.join(repo, "content/notes/my-note-2.mdoc"))).toBe(
+      true
+    );
   });
 });
