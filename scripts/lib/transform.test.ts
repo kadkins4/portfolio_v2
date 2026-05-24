@@ -3,6 +3,7 @@ import {
   transformWikilinks,
   transformCallouts,
   stripComments,
+  transformEmbeds,
 } from "./transform";
 
 describe("transformWikilinks", () => {
@@ -47,5 +48,36 @@ describe("stripComments", () => {
   it("removes %% comments %%", () => {
     expect(stripComments("a %%secret%% b")).toBe("a  b");
     expect(stripComments("a %%multi\nline%% b")).toBe("a  b");
+  });
+});
+
+describe("transformEmbeds", () => {
+  it("rewrites image embeds and records the copy, ignoring missing assets", () => {
+    const copied: Array<{ from: string; to: string }> = [];
+    const resolveAsset = (name: string) =>
+      name === "diagram.png" ? "/vault/attachments/diagram.png" : null;
+
+    const out = transformEmbeds(
+      "intro\n![[diagram.png]]\n![[missing.png]]\nend",
+      "my-note",
+      resolveAsset,
+      (from, to) => copied.push({ from, to })
+    );
+
+    expect(out).toContain("![diagram](/images/notes/my-note/diagram.png)");
+    expect(out).not.toContain("missing.png");
+    expect(copied).toEqual([
+      { from: "/vault/attachments/diagram.png", to: "my-note/diagram.png" },
+    ]);
+  });
+
+  it("leaves note transclusions out (warns, drops)", () => {
+    const out = transformEmbeds(
+      "![[Some Note]]",
+      "n",
+      () => null,
+      () => {}
+    );
+    expect(out.trim()).toBe("");
   });
 });
