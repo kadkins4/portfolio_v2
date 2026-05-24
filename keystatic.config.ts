@@ -106,5 +106,30 @@ export default config({
         content: fields.markdoc({ label: "Content" }),
       },
     }),
+
+    notes: collection({
+      label: "Notes",
+      slugField: "title",
+      path: "content/notes/*",
+      format: { contentField: "content" },
+      schema: {
+        title: fields.slug({ name: { label: "Title" } }),
+        summary: fields.text({ label: "Summary", multiline: true }),
+        tags: fields.array(fields.text({ label: "Tag" }), {
+          label: "Tags",
+          itemLabel: (props) => props.value ?? "Tag",
+        }),
+        date: fields.date({ label: "Date" }),
+        image: fields.image({
+          label: "Image (optional)",
+          directory: "public/images/notes",
+          publicPath: "/images/notes",
+        }),
+        sourcePath: fields.text({
+          label: "Source path (managed by sync — do not edit)",
+        }),
+        content: fields.markdoc({ label: "Content" }),
+      },
+    }),
   },
 });
