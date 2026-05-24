@@ -10,26 +10,48 @@ function escapeXml(str: string): string {
     .replace(/"/g, "&quot;");
 }
 
+type FeedEntry = {
+  title: string;
+  description: string;
+  url: string;
+  date: string;
+};
+
 export async function GET() {
   const reader = createReader(process.cwd(), config);
-  const work = await reader.collections.projects.all();
+  const [projects, notes] = await Promise.all([
+    reader.collections.projects.all(),
+    reader.collections.notes.all(),
+  ]);
 
-  const sorted = [...work]
-    .filter((w) => w.entry.date)
-    .sort(
-      (a, b) =>
-        new Date(b.entry.date!).getTime() - new Date(a.entry.date!).getTime()
-    );
+  const entries: FeedEntry[] = [
+    ...projects
+      .filter((p) => p.entry.date)
+      .map((p) => ({
+        title: p.entry.title,
+        description: p.entry.description,
+        url: `${SITE_URL}/projects/${p.slug}`,
+        date: p.entry.date!,
+      })),
+    ...notes
+      .filter((n) => n.entry.date)
+      .map((n) => ({
+        title: n.entry.title,
+        description: n.entry.summary,
+        url: `${SITE_URL}/notes/${n.slug}`,
+        date: n.entry.date!,
+      })),
+  ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-  const items = sorted
+  const items = entries
     .map(
       (item) => `
     <item>
-      <title>${escapeXml(item.entry.title)}</title>
-      <link>${SITE_URL}/projects/${item.slug}</link>
-      <guid isPermaLink="true">${SITE_URL}/projects/${item.slug}</guid>
-      <description>${escapeXml(item.entry.description)}</description>
-      <pubDate>${new Date(item.entry.date!).toUTCString()}</pubDate>
+      <title>${escapeXml(item.title)}</title>
+      <link>${item.url}</link>
+      <guid isPermaLink="true">${item.url}</guid>
+      <description>${escapeXml(item.description)}</description>
+      <pubDate>${new Date(item.date).toUTCString()}</pubDate>
     </item>`
     )
     .join("");
@@ -37,9 +59,9 @@ export async function GET() {
   const rss = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>${SITE_NAME} — Projects</title>
-    <link>${SITE_URL}/projects</link>
-    <description>Projects by Kendall Adkins.</description>
+    <title>${SITE_NAME} — Studio</title>
+    <link>${SITE_URL}/studio</link>
+    <description>Projects and notes by Kendall Adkins.</description>
     <language>en-us</language>
     <managingEditor>${process.env.CONTACT_EMAIL ?? "kendall@kendalladkins.dev"} (${SITE_NAME})</managingEditor>
     <atom:link href="${SITE_URL}/feed.xml" rel="self" type="application/rss+xml"/>
