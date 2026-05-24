@@ -16,6 +16,9 @@ const nextConfig: NextConfig = {
       ],
     },
   ],
+  redirects: async () => [
+    { source: "/projects", destination: "/studio", permanent: true },
+  ],
 };
 
 export default nextConfig;

@@ -29,10 +29,16 @@ export default function Header() {
           About
         </Link>
         <Link
-          href="/projects"
-          className={`${styles.navLink} ${pathname.startsWith("/projects") ? styles.active : ""}`}
+          href="/studio"
+          className={`${styles.navLink} ${
+            pathname.startsWith("/studio") ||
+            pathname.startsWith("/projects") ||
+            pathname.startsWith("/notes")
+              ? styles.active
+              : ""
+          }`}
         >
-          Projects
+          Studio
         </Link>
       </nav>
     </header>

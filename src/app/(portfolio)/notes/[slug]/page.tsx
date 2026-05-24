@@ -11,46 +11,39 @@ import JsonLd from "@/components/JsonLd";
 import { SITE_URL } from "@/lib/constants";
 import styles from "./page.module.css";
 
-type Props = {
-  params: Promise<{ slug: string }>;
-};
+type Props = { params: Promise<{ slug: string }> };
 
 const getReader = cache(() => createReader(process.cwd(), config));
 
 export async function generateStaticParams() {
   const reader = getReader();
-  const items = await reader.collections.projects.all();
+  const items = await reader.collections.notes.all();
   return items.map((item) => ({ slug: item.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const reader = getReader();
   const { slug } = await params;
-  const item = await reader.collections.projects.read(slug);
+  const item = await reader.collections.notes.read(slug);
   if (!item) return {};
   return {
     title: item.title,
-    description: item.description,
-    alternates: {
-      canonical: `/projects/${slug}`,
-    },
+    description: item.summary,
+    alternates: { canonical: `/notes/${slug}` },
     openGraph: {
       title: item.title,
-      description: item.description,
+      description: item.summary,
       type: "article",
       images: item.image ? [item.image] : [],
     },
   };
 }
 
-export default async function WorkDetailPage({ params }: Props) {
+export default async function NoteDetailPage({ params }: Props) {
   const reader = getReader();
   const { slug } = await params;
-  const item = await reader.collections.projects.read(slug);
-
-  if (!item) {
-    notFound();
-  }
+  const item = await reader.collections.notes.read(slug);
+  if (!item) notFound();
 
   const contentResult = await item.content();
 
@@ -58,12 +51,7 @@ export default async function WorkDetailPage({ params }: Props) {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: SITE_URL,
-      },
+      { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
       {
         "@type": "ListItem",
         position: 2,
@@ -74,7 +62,7 @@ export default async function WorkDetailPage({ params }: Props) {
         "@type": "ListItem",
         position: 3,
         name: item.title,
-        item: `${SITE_URL}/projects/${slug}`,
+        item: `${SITE_URL}/notes/${slug}`,
       },
     ],
   };
@@ -98,6 +86,15 @@ export default async function WorkDetailPage({ params }: Props) {
               </div>
             )}
           </div>
+          {item.date && (
+            <p className={styles.date}>
+              {new Date(item.date).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </p>
+          )}
         </header>
 
         {item.image && (
@@ -115,17 +112,6 @@ export default async function WorkDetailPage({ params }: Props) {
           <article className={styles.content}>
             {renderMarkdoc(contentResult)}
           </article>
-        )}
-
-        {item.externalUrl && (
-          <a
-            href={item.externalUrl}
-            className={styles.externalLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            View Live ↗
-          </a>
         )}
       </div>
     </>
