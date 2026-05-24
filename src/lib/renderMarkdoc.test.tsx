@@ -23,5 +23,6 @@ describe("renderMarkdoc image node", () => {
     const html = renderToStaticMarkup(<>{renderMarkdoc(result)}</>);
     expect(html).toContain('src="/images/notes/n/d.png"');
     expect(html).toContain('alt="d"');
+    expect(html).toContain('loading="lazy"');
   });
 });
