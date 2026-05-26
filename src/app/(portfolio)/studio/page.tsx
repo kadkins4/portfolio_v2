@@ -3,6 +3,7 @@ import { createReader } from "@keystatic/core/reader";
 import config from "../../../../keystatic.config";
 import StudioGrid from "@/components/StudioGrid";
 import { getBlurDataURL } from "@/lib/getBlurDataURL";
+import { sortStudioItems } from "@/lib/sortStudioItems";
 import type { StudioItem } from "@/types";
 import styles from "./page.module.css";
 
@@ -39,6 +40,8 @@ export default async function StudioPage() {
         ? await getBlurDataURL(item.entry.image)
         : undefined,
       externalUrl: item.entry.externalUrl ?? null,
+      featured: item.entry.featured ?? false,
+      order: item.entry.order ?? null,
     }))
   );
 
@@ -57,14 +60,12 @@ export default async function StudioPage() {
         ? await getBlurDataURL(item.entry.image)
         : undefined,
       externalUrl: null,
+      featured: false,
+      order: null,
     }))
   );
 
-  const items = [...projectItems, ...noteItems].sort((a, b) => {
-    const da = a.date ? new Date(a.date).getTime() : 0;
-    const db = b.date ? new Date(b.date).getTime() : 0;
-    return db - da;
-  });
+  const items = sortStudioItems([...projectItems, ...noteItems]);
 
   return (
     <div className={styles.container}>

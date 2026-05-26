@@ -15,6 +15,8 @@ const items: StudioItem[] = [
     image: null,
     imageFocus: "center",
     externalUrl: null,
+    featured: false,
+    order: null,
   },
   {
     kind: "note",
@@ -27,6 +29,8 @@ const items: StudioItem[] = [
     image: null,
     imageFocus: "center",
     externalUrl: null,
+    featured: false,
+    order: null,
   },
 ];
 

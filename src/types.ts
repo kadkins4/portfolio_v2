@@ -32,4 +32,6 @@ export type StudioItem = {
   imageFocus: string;
   blurDataURL?: string;
   externalUrl: string | null; // projects only; null for notes
+  featured: boolean; // projects only; false for notes
+  order: number | null; // ordering among featured items; null = date-based
 };
