@@ -8,7 +8,7 @@
 │                                                          │
 │  ▶ Role:      Senior Software Engineer                   │
 │  ▶ Stack:     React · TypeScript · Next.js               │
-│  ▶ Focus:     Web · AI-Assisted Dev · Unity 2D           │
+│  ▶ Focus:     Web · App · AI-Assisted Dev · Unity 2D     │
 │  ▶ Built w/:  Next.js · Keystatic · Vercel               │
 │  ▶ Uptime:    10+ years in production                    │
 │                                                          │
