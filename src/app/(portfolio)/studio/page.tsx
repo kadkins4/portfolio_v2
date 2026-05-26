@@ -69,7 +69,9 @@ export default async function StudioPage() {
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Studio</h1>
-      <p className={styles.subtitle}>Projects and notes, all in one place.</p>
+      <p className={styles.subtitle}>
+        My Projects and Notes, All in One Place.
+      </p>
       <StudioGrid items={items} />
     </div>
   );
