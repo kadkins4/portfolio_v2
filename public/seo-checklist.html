@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>SEO Boost Checklist — Kendall Adkins</title>
+    <style>
+      :root {
+        --bg: #0d0b09;
+        --bg-elev: #15120f;
+        --bg-elev-2: #1c1814;
+        --text: #ebe6e0;
+        --text-muted: #8b837a;
+        --accent: #a08060;
+        --accent-soft: rgba(160, 128, 96, 0.18);
+        --border: #2a241e;
+        --done: #6b8f5a;
+      }
+      * { box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        padding: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+        line-height: 1.55;
+      }
+      .page {
+        max-width: 820px;
+        margin: 0 auto;
+        padding: 56px 24px 96px;
+      }
+      header h1 {
+        font-family: "Playfair Display", Georgia, serif;
+        font-size: clamp(2rem, 5vw, 2.75rem);
+        margin: 0 0 8px;
+        letter-spacing: -0.02em;
+      }
+      header p {
+        color: var(--text-muted);
+        margin: 0 0 24px;
+      }
+      .progress-wrap {
+        margin: 8px 0 40px;
+        padding: 16px 18px;
+        background: var(--bg-elev);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+      }
+      .progress-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 10px;
+        font-size: 0.9rem;
+      }
+      .progress-count { color: var(--accent); font-weight: 600; }
+      .progress-bar {
+        height: 6px;
+        background: var(--bg-elev-2);
+        border-radius: 3px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: var(--accent);
+        transition: width 0.25s ease;
+      }
+      .reset-btn {
+        background: none;
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        font-size: 0.78rem;
+        padding: 5px 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-top: 12px;
+      }
+      .reset-btn:hover { color: var(--text); border-color: var(--text-muted); }
+
+      section.group {
+        margin-bottom: 36px;
+        padding: 24px;
+        background: var(--bg-elev);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+      }
+      section.group h2 {
+        font-family: "Playfair Display", Georgia, serif;
+        margin: 0 0 4px;
+        font-size: 1.4rem;
+        letter-spacing: -0.01em;
+      }
+      section.group .subtitle {
+        margin: 0 0 18px;
+        color: var(--text-muted);
+        font-size: 0.92rem;
+      }
+      .impact {
+        display: inline-block;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        padding: 3px 8px;
+        border-radius: 999px;
+        margin-left: 8px;
+        vertical-align: middle;
+      }
+      .impact.high { background: rgba(160, 128, 96, 0.2); color: var(--accent); }
+      .impact.med  { background: rgba(139, 131, 122, 0.18); color: var(--text-muted); }
+
+      ul.tasks {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      ul.tasks li {
+        padding: 12px 0;
+        border-top: 1px solid var(--border);
+      }
+      ul.tasks li:first-child { border-top: none; }
+
+      label.task {
+        display: flex;
+        gap: 12px;
+        cursor: pointer;
+        align-items: flex-start;
+      }
+      label.task input[type="checkbox"] {
+        margin-top: 4px;
+        width: 18px;
+        height: 18px;
+        accent-color: var(--done);
+        flex-shrink: 0;
+        cursor: pointer;
+      }
+      label.task .label-text {
+        flex: 1;
+      }
+      label.task input:checked ~ .label-text {
+        color: var(--text-muted);
+        text-decoration: line-through;
+      }
+
+      .details {
+        margin: 8px 0 0 30px;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+      }
+      .details a { color: var(--accent); text-decoration: none; }
+      .details a:hover { text-decoration: underline; }
+
+      .snippet {
+        position: relative;
+        margin: 10px 0 0 30px;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 12px 14px;
+        font-family: ui-monospace, "SF Mono", Menlo, monospace;
+        font-size: 0.82rem;
+        color: var(--text);
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        overflow-x: auto;
+      }
+      .copy-btn {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: var(--bg-elev-2);
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        font-size: 0.72rem;
+        padding: 4px 9px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .copy-btn:hover { color: var(--text); }
+      .copy-btn.copied { color: var(--done); border-color: var(--done); }
+
+      .note {
+        margin-top: 16px;
+        padding: 12px 14px;
+        background: var(--accent-soft);
+        border-left: 3px solid var(--accent);
+        border-radius: 4px;
+        font-size: 0.88rem;
+      }
+
+      footer {
+        margin-top: 48px;
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+      }
+
+      @media (max-width: 520px) {
+        .page { padding: 32px 16px 64px; }
+        section.group { padding: 18px; }
+        .details, .snippet { margin-left: 0; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <h1>SEO Boost Checklist</h1>
+        <p>Off-site work to climb the "Kendall Adkins" search results. Order is roughly highest-impact first.</p>
+      </header>
+
+      <div class="progress-wrap">
+        <div class="progress-row">
+          <span>Progress</span>
+          <span><span class="progress-count" id="done-count">0</span> / <span id="total-count">0</span></span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+        <button class="reset-btn" id="reset-btn" type="button">Reset all</button>
+      </div>
+
+      <section class="group">
+        <h2>1. Google Search Console <span class="impact high">High impact</span></h2>
+        <p class="subtitle">Without this, Google may take weeks to even notice your changes.</p>
+        <ul class="tasks">
+          <li>
+            <label class="task"><input type="checkbox" data-id="gsc-add" /><span class="label-text">Add property at <a href="https://search.google.com/search-console" target="_blank" rel="noopener">search.google.com/search-console</a></span></label>
+            <div class="details">Choose <strong>Domain</strong> property type and enter <code>kendalladkins.dev</code>. Verify via DNS TXT record (one-time, persistent).</div>
+          </li>
+          <li>
+            <label class="task"><input type="checkbox" data-id="gsc-sitemap" /><span class="label-text">Submit sitemap</span></label>
+            <div class="details">Sitemaps menu → New sitemap → paste:</div>
+            <div class="snippet"><button class="copy-btn" data-copy="sitemap.xml" type="button">Copy</button>sitemap.xml</div>
+          </li>
+          <li>
+            <label class="task"><input type="checkbox" data-id="gsc-index" /><span class="label-text">Request indexing on homepage</span></label>
+            <div class="details">URL Inspection → paste <code>https://kendalladkins.dev</code> → "Request Indexing." Repeat for /about and /projects.</div>
+          </li>
+        </ul>
+      </section>
+
+      <section class="group">
+        <h2>2. GitHub Profile <span class="impact high">High impact</span></h2>
+        <p class="subtitle">Your GitHub profile (<a href="https://github.com/kadkins4" target="_blank" rel="noopener">github.com/kadkins4</a>) is one of the strongest backlinks you can give yourself.</p>
+        <ul class="tasks">
+          <li>
+            <label class="task"><input type="checkbox" data-id="gh-name" /><span class="label-text">Set Name to "Kendall Adkins"</span></label>
+            <div class="details">Settings → Profile → Name field. Confirms your real name to crawlers.</div>
+          </li>
+          <li>
+            <label class="task"><input type="checkbox" data-id="gh-bio" /><span class="label-text">Update Bio with portfolio link</span></label>
+            <div class="snippet"><button class="copy-btn" data-copy="Senior Software Engineer @theScore. Building at kendalladkins.dev" type="button">Copy</button>Senior Software Engineer @theScore. Building at kendalladkins.dev</div>
+          </li>
+          <li>
+            <label class="task"><input type="checkbox" data-id="gh-website" /><span class="label-text">Set Website field</span></label>
+            <div class="snippet"><button class="copy-btn" data-copy="https://kendalladkins.dev" type="button">Copy</button>https://kendalladkins.dev</div>
+          </li>
+          <li>
+            <label class="task"><input type="checkbox" data-id="gh-location" /><span class="label-text">Add Location</span></label>
+            <div class="details">Helps disambiguate from other "Kendall Adkins" results.</div>
+          </li>
+        </ul>
+      </section>
+
+      <section class="group">
+        <h2>3. GitHub Profile README <span class="impact high">High impact</span></h2>
+        <p class="subtitle">A repo named exactly the same as your username gets shown at the top of your profile page. High visibility.</p>
+        <ul class="tasks">
+          <li>
+            <label class="task"><input type="checkbox" data-id="ghreadme-create" /><span class="label-text">Create repo named <code>kadkins4</code></span></label>
+            <div class="details">New repo → name it <strong>kadkins4</strong> exactly → check "Add a README file" → Public.</div>
+          </li>
+          <li>
+            <label class="task"><input type="checkbox" data-id="ghreadme-content" /><span class="label-text">Add this README content</span></label>
+            <div class="snippet"><button class="copy-btn" data-copy="# Hi, I'm Kendall Adkins 👋&#10;&#10;Senior Software Engineer at theScore (Penn Entertainment). I build performant, accessible, and visually refined web and mobile experiences.&#10;&#10;- 🌐 Portfolio: https://kendalladkins.dev&#10;- 💼 LinkedIn: https://www.linkedin.com/in/adkinskendall/&#10;- 📫 Open to select freelance collaborations" type="button">Copy</button># Hi, I'm Kendall Adkins 👋
+
+Senior Software Engineer at theScore (Penn Entertainment). I build performant, accessible, and visually refined web and mobile experiences.
+
+- 🌐 Portfolio: https://kendalladkins.dev
+- 💼 LinkedIn: https://www.linkedin.com/in/adkinskendall/
+- 📫 Open to select freelance collaborations</div>
+          </li>
+        </ul>
+      </section>
+
+      <section class="group">
+        <h2>4. Pin Your Best Repos <span class="impact med">Medium impact</span></h2>
+        <p class="subtitle">Each pinned repo's README becomes a backlink to your portfolio.</p>
+        <ul class="tasks">
+          <li>
+            <label class="task"><input type="checkbox" data-id="pin-select" /><span class="label-text">Pick 4–6 of your best public repos</span></label>
+            <div class="details">Profile page → "Customize your pins." Pick polished projects you'd show a recruiter.</div>
+          </li>
+          <li>
+            <label class="task"><input type="checkbox" data-id="pin-readme" /><span class="label-text">Add author footer to each pinned repo's README</span></label>
+            <div class="snippet"><button class="copy-btn" data-copy="## About the author&#10;&#10;Built by [Kendall Adkins](https://kendalladkins.dev) — Senior Software Engineer.&#10;[GitHub](https://github.com/kadkins4) · [LinkedIn](https://www.linkedin.com/in/adkinskendall/)" type="button">Copy</button>## About the author
+
+Built by [Kendall Adkins](https://kendalladkins.dev) — Senior Software Engineer.
+[GitHub](https://github.com/kadkins4) · [LinkedIn](https://www.linkedin.com/in/adkinskendall/)</div>
+          </li>
+        </ul>
+      </section>
+
+      <section class="group">
+        <h2>5. LinkedIn <span class="impact med">Medium impact</span></h2>
+        <p class="subtitle">LinkedIn outranks you today — make sure it points to your portfolio so visitors land where you want them.</p>
+        <ul class="tasks">
+          <li>
+            <label class="task"><input type="checkbox" data-id="li-website" /><span class="label-text">Add portfolio to Contact Info → Website</span></label>
+            <div class="details">Edit profile → Contact info → Add website → use type "Portfolio."</div>
+            <div class="snippet"><button class="copy-btn" data-copy="https://kendalladkins.dev" type="button">Copy</button>https://kendalladkins.dev</div>
+          </li>
+          <li>
+            <label class="task"><input type="checkbox" data-id="li-featured" /><span class="label-text">Add portfolio link to Featured section</span></label>
+            <div class="details">Profile → Add section → Featured → Add link → paste your URL. Shows up prominently above experience.</div>
+          </li>
+        </ul>
+      </section>
+
+      <section class="group">
+        <h2>6. Instagram <span class="impact med">Medium impact</span></h2>
+        <ul class="tasks">
+          <li>
+            <label class="task"><input type="checkbox" data-id="ig-bio" /><span class="label-text">Add portfolio URL to bio link</span></label>
+            <div class="details">Edit profile → Website field. This is the only clickable link in your bio.</div>
+            <div class="snippet"><button class="copy-btn" data-copy="https://kendalladkins.dev" type="button">Copy</button>https://kendalladkins.dev</div>
+          </li>
+        </ul>
+      </section>
+
+      <section class="group">
+        <h2>7. Verify Schema <span class="impact med">After deploy</span></h2>
+        <p class="subtitle">Confirms Google can read your Person schema with the corrected sameAs URLs and headshot.</p>
+        <ul class="tasks">
+          <li>
+            <label class="task"><input type="checkbox" data-id="verify-rich" /><span class="label-text">Validate Person schema</span></label>
+            <div class="details">Paste your URL into <a href="https://validator.schema.org/" target="_blank" rel="noopener">validator.schema.org</a>. Confirm Person schema appears with all 3 sameAs links and the image. (Note: Google's Rich Results Test will say "No items detected" — that's expected, since Person isn't a rich result type. Use Schema Markup Validator instead.)</div>
+            <div class="snippet"><button class="copy-btn" data-copy="https://kendalladkins.dev" type="button">Copy</button>https://kendalladkins.dev</div>
+          </li>
+          <li>
+            <label class="task"><input type="checkbox" data-id="verify-mobile" /><span class="label-text">Run mobile-friendly check</span></label>
+            <div class="details"><a href="https://pagespeed.web.dev/" target="_blank" rel="noopener">pagespeed.web.dev</a> — paste URL, look for green Core Web Vitals on mobile.</div>
+          </li>
+        </ul>
+      </section>
+
+      <div class="note">
+        <strong>Heads up on the headshot:</strong> the photo you sent has someone partially visible on the left edge. Google accepts it as-is, but for the cleanest knowledge-panel result a square crop of just you would be better. If you have one, drop it at <code>public/images/kendall-adkins.jpeg</code> (overwrite) and redeploy.
+      </div>
+
+      <footer>Progress is saved locally in your browser.</footer>
+    </div>
+
+    <script>
+      const STORAGE_KEY = "seo-checklist-v1";
+      const checkboxes = document.querySelectorAll('input[type="checkbox"][data-id]');
+      const doneCountEl = document.getElementById("done-count");
+      const totalCountEl = document.getElementById("total-count");
+      const progressFill = document.getElementById("progress-fill");
+
+      function loadState() {
+        try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+        catch { return {}; }
+      }
+      function saveState(state) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      }
+      function updateProgress() {
+        const total = checkboxes.length;
+        const done = Array.from(checkboxes).filter((c) => c.checked).length;
+        doneCountEl.textContent = done;
+        totalCountEl.textContent = total;
+        progressFill.style.width = total ? (done / total) * 100 + "%" : "0%";
+      }
+
+      const state = loadState();
+      checkboxes.forEach((cb) => {
+        const id = cb.dataset.id;
+        if (state[id]) cb.checked = true;
+        cb.addEventListener("change", () => {
+          const s = loadState();
+          s[id] = cb.checked;
+          saveState(s);
+          updateProgress();
+        });
+      });
+      updateProgress();
+
+      document.getElementById("reset-btn").addEventListener("click", () => {
+        if (!confirm("Clear all progress?")) return;
+        localStorage.removeItem(STORAGE_KEY);
+        checkboxes.forEach((cb) => (cb.checked = false));
+        updateProgress();
+      });
+
+      document.querySelectorAll(".copy-btn").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          try {
+            await navigator.clipboard.writeText(btn.dataset.copy);
+            const orig = btn.textContent;
+            btn.textContent = "Copied";
+            btn.classList.add("copied");
+            setTimeout(() => {
+              btn.textContent = orig;
+              btn.classList.remove("copied");
+            }, 1400);
+          } catch (e) {
+            alert("Copy failed: " + e.message);
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
