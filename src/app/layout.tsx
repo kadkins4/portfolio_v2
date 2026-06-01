@@ -3,6 +3,7 @@ import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import JsonLd from "@/components/JsonLd";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import {
   SITE_URL,
   SITE_NAME,
@@ -75,6 +76,7 @@ export default function RootLayout({
         <JsonLd data={personSchema} />
         {children}
         <Analytics />
+        <SpeedInsights/>
       </body>
     </html>
   );
