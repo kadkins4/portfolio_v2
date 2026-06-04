@@ -1,0 +1,78 @@
+---
+title: "How I Actually Work With AI"
+summary: "Most bad AI output isn't an intelligence problem, it's a guidance problem. Here's how I actually work with AI, shown by building On The Clock, my fantasy-football draft tool."
+tags:
+  - AI
+  - Workflow
+  - Engineering
+date: 2026-06-03
+sourcePath: "Career/How I Actually Work With AI - Portfolio Post.md"
+---
+You've heard the verdict. Maybe you've said it: _AI is garbage. It writes garbage._ Engineers say it loudest, and a lot of the time they're right. The output really is garbage.
+
+But after shipping with these tools every day, I've landed somewhere uncomfortable: most bad AI output isn't an intelligence problem. It's a **guidance** problem. The model didn't fail you... your direction did.
+
+I almost proved that the embarrassing way. When I sat down to write this, the plan was to open with a tidy origin story: "here's the clunky first thing I built before I knew what I was doing." Then I actually opened the repo. It wasn't clunky, Claude (I call it "C") verified it. It was planned, tested, structured. The story was a lie, and my AI would have happily helped me tell it: polished, convincing, completely false. We cut it. Hold onto that, because it turns out to be the whole point.
+
+## Thought partner, not Skippy (the fictional AI)
+
+At first I treated it like Skippy from Craig Alanson's _Expeditionary Force_: a brilliant, pompous, asshole AI who treats every human like a moron (yep, I'm a huge sci-fi nerd). A few months ago, I stopped. I started treating "C" like a **thought partner**.
+
+A partner doesn't just hand you an answer. It asks what you're actually trying to build. It pokes holes in your plan. It makes you defend a decision before you sink a day into it. You still own the judgment; the tool just makes sure you actually exercise it. Think Clippy but better, much better.
+
+That sounds soft. It isn't. It's a concrete workflow, and it leaves fingerprints in the `git log`. Let me show you on something I created recently... 🏈 
+
+## How I actually work
+
+The proof isn't a hot take. It's a repo. **[On The Clock](https://kendalladkins.dev/projects/on-the-clock)** is a fantasy-football draft tool I built and actually use: React 19, TypeScript, Vite, dnd-kit for the drag-and-drop board. I recently took it from "rough personal thing" to something I'd put in front of people, as an Alpha. Here's the workflow that produced it. Each step is a real tool I lean on, plus the principle underneath it.
+
+![on-the-clock-board](/images/notes/how-i-actually-work-with-ai/on-the-clock-board.png)
+
+### Make it argue before you build
+
+I started with a brain-dump: a multi-step wishlist a mile long. A mock-draft engine, multi-source ADP from four providers (ESPN, Yahoo, Sleeper, Vegas projections), user accounts, league sync, player news, depth charts. The vibe code trend is to paste that in and say "build it."
+
+I did the opposite. I had the AI _interrogate_ the wishlist instead of obeying it. I used Matt Pocock's `/grill-me` skill (100% recommend)... I was annoyed by some questions and stumped by others. What's the one job this has to do well? What can wait a year (my brain: "Nothing")? We took about twenty-five features and cut to one coherent v1. The most valuable thing C did during those hours wasn't writing a line of code. It was helping me decide what **not** to build or at least table.
+
+### Make it question the plan
+
+Then I had C poke holes in the plan, not bless it. "Does this look good?" only buys flattery. I told it to hunt for the decisions I'd been hand-waving past, and it caught me contradicting myself in my own notes: I'd written two incompatible rules for the same field (ADP is editable; ADP is read-only) and never noticed. It forced the call: two numbers, a draggable rank of my own plus a read-only consensus ADP, so I can see value and reaches at a glance.
+
+> **ELI5: for the non-fantasy crowd**
+> ADP = Average Draft Position: the average pick number a player goes at across thousands of mock and real drafts. It's the public consensus ranking, so it's how you spot a "reach" (drafted earlier than ADP) or a "value" (still on the board past ADP).
+
+### Turn the decisions into a plan, then deliberately execute it
+
+The resolved spec became nine small, test-first (TDD) tasks, each with exact file paths, real code, and its own commit. That's where vibes turn into a checklist a tired engineer can actually follow at 11pm. The git log still shows the guidance: "Add ranking logic with tests," "Add CSV parse/serialize with tests," "Sanitize newlines in CSV export to keep round-trip intact," "keep nulls last when descending."
+
+### Make it prove things, and stay in the loop
+
+This is where "use your own brain" stops being a slogan.
+
+Mid-build, the AI told me (confidently, in full Skippy mode) that my player data was from last season, and wrote that assumption straight into the spec. It sounded fine. It was wrong. I only caught it because (and I say this with the utmost humility 😉) I know ball: Jeremiyah Love, a rookie who wasn't even in the NFL yet, was sitting in the top fifteen. One look at the fetch script settled it: `SEASON = 2026`, right there in the code. The human caught the machine. Not because I'm smarter than it, but because I was paying attention and I'd kept the work easy to check instead of swallowing a confident answer whole.
+
+So I bake that suspicion into the process. Every one of those nine tasks got reviewed twice: once against the spec, once for build quality. Then I had the whole branch reviewed as a single piece.
+
+That final review caught a bug none of the smaller ones could see. Two of my own design choices, individually fine, combined to make the search look broken for a couple of seconds and let the undo button quietly restore a player I'd never drafted. That was _my_ design mistake, baked into _my_ plan. The only reason it surfaced is that the process was built to go looking for it.
+
+So, is AI just confidently wrong half the time? Sometimes, sure. So is a junior dev. So am I, on a Friday afternoon (or any afternoon after a big lunch with not enough coffee 🤷‍♂️ ). You don't fix that by trusting harder, and you don't fix it by rage-quitting the tools. You layer the checks so the mistakes surface early, while they're still cheap. "We love good vibes but only with music and dating" - me.
+
+## Build the tools you keep reaching for
+
+None of the steps above are ad-hoc prompts I retype each time. They're reusable commands/skills, the workflow encoded so I run it the same way on every project. Some I adopted; some I wrote myself. When I got tired of asking "explain this simpler, now for a PM, now for a staff engineer," I built a single command that does all four levels at once, from five-year-old to expert. When the same friction shows up twice, I stop tolerating it and encode it. The workflow is the product. The model is just the engine I point it at.
+
+## The payoff
+
+The proof isn't a promise. It's a product (in progress). On The Clock is a real, working tool, built with AI, that isn't garbage (at least I think it's not). Not because the model is magic, but because of how it was guided: briefed, interrogated, made to prove itself, and corrected when it was confidently wrong. 
+
+And the origin-story lie I almost opened with? I'm glad the repo (and C) wouldn't let me tell it. "I already work this way" is the less flattering arc and the better one, because it's the one with a working app at the end.
+
+![on-the-clock-splash](/images/notes/how-i-actually-work-with-ai/on-the-clock-splash.png)
+
+[See On The Clock →](https://kendalladkins.dev/projects/on-the-clock)
+
+Still a work in progress: poke around and shoot me feedback. And if you're a fan, who do you think goes #1 this year?
+
+[Other Projects Under Development](https://kendalladkins.dev/studio)
+
+_PS: this is my first piece since being laid off from Penn Entertainment. I owe the engineers and EMs there for the runway to learn how to actually work with these tools._
