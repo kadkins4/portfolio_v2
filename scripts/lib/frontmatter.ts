@@ -8,6 +8,8 @@ export type ParsedNote = {
   summary: string;
   tags: string[];
   date: string; // yyyy-mm-dd
+  featured: boolean;
+  order: number | null;
   sourcePath: string;
   body: string;
 };
@@ -56,6 +58,8 @@ export function parseNote(
     summary,
     tags,
     date: toIsoDate(data.date ?? data.created, mtimeMs),
+    featured: data.featured === true,
+    order: typeof data.order === "number" ? data.order : null,
     sourcePath,
     body: content.trim(),
   };

@@ -60,8 +60,8 @@ export default async function StudioPage() {
         ? await getBlurDataURL(item.entry.image)
         : undefined,
       externalUrl: null,
-      featured: false,
-      order: null,
+      featured: item.entry.featured ?? false,
+      order: item.entry.order ?? null,
     }))
   );
 

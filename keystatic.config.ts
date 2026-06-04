@@ -120,6 +120,16 @@ export default config({
           itemLabel: (props) => props.value ?? "Tag",
         }),
         date: fields.date({ label: "Date" }),
+        featured: fields.checkbox({
+          label: "Featured",
+          description: "Featured items appear first in the studio list",
+          defaultValue: false,
+        }),
+        order: fields.integer({
+          label: "Order (optional)",
+          description:
+            "Lower numbers appear first among featured items. Leave empty for date-based sorting.",
+        }),
         image: fields.image({
           label: "Image (optional)",
           directory: "public/images/notes",

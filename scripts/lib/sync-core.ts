@@ -44,15 +44,18 @@ function buildAssetIndex(vaultDir: string): Map<string, string> {
 
 function yamlFrontmatter(note: ParsedNote): string {
   const tags = note.tags.map((t) => `  - ${t}`).join("\n");
-  return [
+  const lines = [
     "---",
     `title: ${JSON.stringify(note.title)}`,
     `summary: ${JSON.stringify(note.summary)}`,
     note.tags.length ? `tags:\n${tags}` : "tags: []",
     `date: ${note.date}`,
-    `sourcePath: ${JSON.stringify(note.sourcePath)}`,
-    "---",
-  ].join("\n");
+    `featured: ${note.featured}`,
+  ];
+  if (note.order !== null) lines.push(`order: ${note.order}`);
+  lines.push(`sourcePath: ${JSON.stringify(note.sourcePath)}`);
+  lines.push("---");
+  return lines.join("\n");
 }
 
 export function runSync(opts: SyncOptions): SyncResult {
