@@ -10,6 +10,11 @@ export default config({
       schema: {
         title: fields.text({ label: "Title" }),
         tagline: fields.text({ label: "Tagline" }),
+        intro: fields.text({
+          label: "Intro",
+          description: "One-line introduction shown under the tagline.",
+          multiline: true,
+        }),
       },
     }),
 

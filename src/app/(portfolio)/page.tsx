@@ -21,9 +21,8 @@ export default async function HomePage() {
   return (
     <section className={styles.hero}>
       <h1 className={styles.title}>{home?.title ?? "Kendall Adkins"}</h1>
-      <p className={styles.tagline}>
-        {home?.tagline ?? "Senior Software Engineer"}
-      </p>
+      <p className={styles.tagline}>{home?.tagline ?? "Software Engineer"}</p>
+      {home?.intro && <p className={styles.intro}>{home.intro}</p>}
       <nav className={styles.nav}>
         <Link href="/about" className={styles.navLink}>
           About

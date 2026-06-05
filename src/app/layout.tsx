@@ -3,7 +3,7 @@ import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import JsonLd from "@/components/JsonLd";
-import { SpeedInsights } from "@vercel/speed-insights/next"
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import {
   SITE_URL,
   SITE_NAME,
@@ -57,7 +57,7 @@ const personSchema = {
   name: SITE_NAME,
   url: SITE_URL,
   image: `${SITE_URL}/images/kendall-adkins.jpeg`,
-  jobTitle: "Senior Software Engineer",
+  jobTitle: "Software Engineer",
   sameAs: [
     "https://github.com/kadkins4",
     "https://www.linkedin.com/in/adkinskendall/",
@@ -76,7 +76,7 @@ export default function RootLayout({
         <JsonLd data={personSchema} />
         {children}
         <Analytics />
-        <SpeedInsights/>
+        <SpeedInsights />
       </body>
     </html>
   );

@@ -20,6 +20,14 @@
 .tagline {
   font-size: 18px;
   color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+.intro {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-muted);
+  max-width: 440px;
   margin-bottom: 32px;
 }
 

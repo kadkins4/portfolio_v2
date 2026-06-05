@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Kendall Adkins — Senior Software Engineer";
+export const alt = "Kendall Adkins — Software Engineer";
 export const size = {
   width: 1200,
   height: 630,
@@ -65,7 +65,7 @@ export default function Image() {
           fontWeight: 400,
         }}
       >
-        Senior Software Engineer
+        Software Engineer
       </div>
     </div>,
     {
