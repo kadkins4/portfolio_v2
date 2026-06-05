@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import ContactForm from "./ContactForm";
 
 const ENDPOINT = "https://formspree.io/f/test123";
@@ -65,5 +65,72 @@ describe("ContactForm — fields", () => {
     expect(honeypot).toBeInTheDocument();
     expect(honeypot).toHaveAttribute("tabindex", "-1");
     expect(honeypot).toHaveAttribute("aria-hidden", "true");
+  });
+});
+
+describe("ContactForm — submission", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  function openAndFill() {
+    fireEvent.click(screen.getByRole("button", { name: "Send a message" }));
+    fireEvent.change(screen.getByLabelText(/Name/), {
+      target: { value: "Jane" },
+    });
+    fireEvent.change(screen.getByLabelText(/Message/), {
+      target: { value: "Hello there" },
+    });
+  }
+
+  it("POSTs to the Formspree endpoint and shows a success message", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true });
+    vi.stubGlobal("fetch", fetchMock);
+
+    render(<ContactForm endpoint={ENDPOINT} />);
+    openAndFill();
+    fireEvent.submit(screen.getByTestId("contact-form"));
+
+    await waitFor(() =>
+      expect(
+        screen.getByText(/Thanks — I'll be in touch soon\./)
+      ).toBeInTheDocument()
+    );
+    expect(fetchMock).toHaveBeenCalledWith(
+      ENDPOINT,
+      expect.objectContaining({
+        method: "POST",
+        headers: { Accept: "application/json" },
+      })
+    );
+    expect(screen.queryByLabelText(/Message/)).not.toBeInTheDocument();
+  });
+
+  it("shows an error message and keeps the form when the request fails", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false }));
+
+    render(<ContactForm endpoint={ENDPOINT} />);
+    openAndFill();
+    fireEvent.submit(screen.getByTestId("contact-form"));
+
+    await waitFor(() =>
+      expect(screen.getByText(/Something went wrong/)).toBeInTheDocument()
+    );
+    expect(screen.getByLabelText(/Message/)).toBeInTheDocument();
+  });
+
+  it("disables the submit button and shows 'Sending…' while in flight", async () => {
+    let resolve: (v: { ok: boolean }) => void = () => {};
+    const pending = new Promise<{ ok: boolean }>((r) => (resolve = r));
+    vi.stubGlobal("fetch", vi.fn().mockReturnValue(pending));
+
+    render(<ContactForm endpoint={ENDPOINT} />);
+    openAndFill();
+    fireEvent.submit(screen.getByTestId("contact-form"));
+
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Sending…" })).toBeDisabled()
+    );
+    resolve({ ok: true });
   });
 });

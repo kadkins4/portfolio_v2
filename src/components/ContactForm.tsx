@@ -1,26 +1,25 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import styles from "./ContactForm.module.css";
 
 type Props = {
   endpoint: string;
 };
 
+type Status = "idle" | "sending" | "success" | "error";
+
 export default function ContactForm({ endpoint }: Props) {
   const [open, setOpen] = useState(false);
+  const [status, setStatus] = useState<Status>("idle");
   const panelId = useId();
   const triggerRef = useRef<HTMLButtonElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
 
-  // Move focus into the form on open; return it to the trigger on close.
   useEffect(() => {
-    if (open) {
-      nameRef.current?.focus();
-    }
+    if (open) nameRef.current?.focus();
   }, [open]);
 
-  // Escape closes the open form.
   useEffect(() => {
     if (!open) return;
     function onKeyDown(e: KeyboardEvent) {
@@ -37,6 +36,22 @@ export default function ContactForm({ endpoint }: Props) {
   function closeForm() {
     setOpen(false);
     triggerRef.current?.focus();
+  }
+
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setStatus("sending");
+    const data = new FormData(e.currentTarget);
+    try {
+      const res = await fetch(endpoint, {
+        method: "POST",
+        body: data,
+        headers: { Accept: "application/json" },
+      });
+      setStatus(res.ok ? "success" : "error");
+    } catch {
+      setStatus("error");
+    }
   }
 
   return (
@@ -82,62 +97,85 @@ export default function ContactForm({ endpoint }: Props) {
           </button>
         </div>
 
-        <form className={styles.form} action={endpoint} method="POST">
-          <input
-            type="text"
-            name="_gotcha"
-            tabIndex={-1}
-            aria-hidden="true"
-            autoComplete="off"
-            className={styles.honeypot}
-          />
-
-          <label className={styles.field}>
-            <span className={styles.label}>
-              Name <span className={styles.req}>*</span>
-            </span>
-            <input
-              ref={nameRef}
-              type="text"
-              name="name"
-              required
-              autoComplete="name"
-              className={styles.input}
-            />
-          </label>
-
-          <label className={styles.field}>
-            <span className={styles.label}>
-              Email <span className={styles.opt}>— optional</span>
-            </span>
-            <input
-              type="email"
-              name="email"
-              autoComplete="email"
-              className={styles.input}
-            />
-          </label>
-
-          <label className={styles.field}>
-            <span className={styles.label}>
-              Message <span className={styles.req}>*</span>
-            </span>
-            <textarea
-              name="message"
-              required
-              rows={4}
-              className={styles.textarea}
-            />
-          </label>
-
-          <p className={styles.hint}>
-            No email? Leave another way to reach you in the message.
+        {status === "success" ? (
+          <p className={styles.success} role="status">
+            Thanks — I&apos;ll be in touch soon.
           </p>
+        ) : (
+          <form
+            data-testid="contact-form"
+            className={styles.form}
+            action={endpoint}
+            method="POST"
+            onSubmit={handleSubmit}
+          >
+            <input
+              type="text"
+              name="_gotcha"
+              tabIndex={-1}
+              aria-hidden="true"
+              autoComplete="off"
+              className={styles.honeypot}
+            />
 
-          <button type="submit" className={styles.submit}>
-            Send message
-          </button>
-        </form>
+            <label className={styles.field}>
+              <span className={styles.label}>
+                Name <span className={styles.req}>*</span>
+              </span>
+              <input
+                ref={nameRef}
+                type="text"
+                name="name"
+                required
+                autoComplete="name"
+                className={styles.input}
+              />
+            </label>
+
+            <label className={styles.field}>
+              <span className={styles.label}>
+                Email <span className={styles.opt}>— optional</span>
+              </span>
+              <input
+                type="email"
+                name="email"
+                autoComplete="email"
+                className={styles.input}
+              />
+            </label>
+
+            <label className={styles.field}>
+              <span className={styles.label}>
+                Message <span className={styles.req}>*</span>
+              </span>
+              <textarea
+                name="message"
+                required
+                rows={4}
+                className={styles.textarea}
+              />
+            </label>
+
+            <p className={styles.hint}>
+              No email? Leave another way to reach you in the message.
+            </p>
+
+            {status === "error" && (
+              <p className={styles.error} role="alert">
+                Something went wrong — please try again or reach me on the links
+                below.
+              </p>
+            )}
+
+            <button
+              type="submit"
+              className={styles.submit}
+              disabled={status === "sending"}
+            >
+              {status === "sending" ? "Sending…" : "Send message"}
+            </button>
+          </form>
+        )}
       </div>
     </div>
   );
