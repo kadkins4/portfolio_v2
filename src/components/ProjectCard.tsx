@@ -1,14 +1,14 @@
 import Link from "next/link";
 import Image from "next/image";
-import type { WorkItem } from "@/types";
+import type { ProjectItem } from "@/types";
 import Tag from "./Tag";
-import styles from "./WorkCard.module.css";
+import styles from "./ProjectCard.module.css";
 
-type Props = WorkItem & {
+type Props = ProjectItem & {
   priority?: boolean;
 };
 
-export default function WorkCard({
+export default function ProjectCard({
   slug,
   title,
   description,

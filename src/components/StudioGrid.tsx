@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { StudioItem } from "@/types";
-import WorkCard from "./WorkCard";
+import ProjectCard from "./ProjectCard";
 import NoteCard from "./NoteCard";
 import styles from "./StudioGrid.module.css";
 
@@ -102,7 +102,7 @@ export default function StudioGrid({ items }: Props) {
               {column.map(({ item, index }) =>
                 item.kind === "project" ? (
                   <div key={item.href} className={styles.cell}>
-                    <WorkCard
+                    <ProjectCard
                       slug={item.slug}
                       title={item.title}
                       description={item.description}

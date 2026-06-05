@@ -1,4 +1,4 @@
-export type WorkItem = {
+export type ProjectItem = {
   slug: string;
   title: string;
   description: string;
