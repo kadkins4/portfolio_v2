@@ -34,7 +34,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: item.title,
       description: item.summary,
       type: "article",
-      images: item.image ? [item.image] : [],
+      // When a note has its own image, use it. Otherwise omit images so the
+      // generated opengraph-image (branded card with the title) is used.
+      ...(item.image ? { images: [item.image] } : {}),
     },
   };
 }
