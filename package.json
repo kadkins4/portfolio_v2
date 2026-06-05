@@ -23,7 +23,6 @@
     "plaiceholder": "^3.0.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "resend": "^6.9.2",
     "sharp": "^0.34.5"
   },
   "devDependencies": {
