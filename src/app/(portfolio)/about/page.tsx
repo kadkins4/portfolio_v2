@@ -5,6 +5,7 @@ import { renderMarkdoc } from "@/lib/renderMarkdoc";
 import config from "../../../../keystatic.config";
 import Tag from "@/components/Tag";
 import SocialLinks from "@/components/SocialLinks";
+import ContactForm from "@/components/ContactForm";
 import styles from "./page.module.css";
 
 export const metadata: Metadata = {
@@ -99,6 +100,10 @@ export default async function AboutPage() {
           exciting. If you have something in mind, I&apos;d love to hear about
           it.
         </p>
+        {process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT && (
+          <ContactForm endpoint={process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT} />
+        )}
+        <div className={styles.ctaDivider}>or find me on</div>
         <SocialLinks links={socialLinks} className={styles.ctaSocials} />
       </section>
 
