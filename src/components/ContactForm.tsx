@@ -16,6 +16,15 @@ export default function ContactForm({ endpoint }: Props) {
   const triggerRef = useRef<HTMLButtonElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
 
+  function openForm() {
+    setOpen(true);
+  }
+
+  function closeForm() {
+    setOpen(false);
+    triggerRef.current?.focus();
+  }
+
   useEffect(() => {
     if (open) nameRef.current?.focus();
   }, [open]);
@@ -28,15 +37,6 @@ export default function ContactForm({ endpoint }: Props) {
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [open]);
-
-  function openForm() {
-    setOpen(true);
-  }
-
-  function closeForm() {
-    setOpen(false);
-    triggerRef.current?.focus();
-  }
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
