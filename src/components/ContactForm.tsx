@@ -15,6 +15,7 @@ export default function ContactForm({ endpoint }: Props) {
   const panelId = useId();
   const triggerRef = useRef<HTMLButtonElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
+  const successRef = useRef<HTMLParagraphElement>(null);
 
   function openForm() {
     setOpen(true);
@@ -28,6 +29,10 @@ export default function ContactForm({ endpoint }: Props) {
   useEffect(() => {
     if (open) nameRef.current?.focus();
   }, [open]);
+
+  useEffect(() => {
+    if (status === "success") successRef.current?.focus();
+  }, [status]);
 
   useEffect(() => {
     if (!open) return;
@@ -98,7 +103,12 @@ export default function ContactForm({ endpoint }: Props) {
         </div>
 
         {status === "success" ? (
-          <p className={styles.success} role="status">
+          <p
+            ref={successRef}
+            className={styles.success}
+            role="status"
+            tabIndex={-1}
+          >
             Thanks — I&apos;ll be in touch soon.
           </p>
         ) : (

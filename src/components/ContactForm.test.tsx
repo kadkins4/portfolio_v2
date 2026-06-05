@@ -133,4 +133,16 @@ describe("ContactForm — submission", () => {
     );
     resolve({ ok: true });
   });
+
+  it("moves focus to the success message after a successful submit", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true }));
+
+    render(<ContactForm endpoint={ENDPOINT} />);
+    openAndFill();
+    fireEvent.submit(screen.getByTestId("contact-form"));
+
+    await waitFor(() =>
+      expect(screen.getByText(/Thanks — I'll be in touch soon\./)).toHaveFocus()
+    );
+  });
 });

@@ -101,9 +101,13 @@ export default async function AboutPage() {
           it.
         </p>
         {process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT && (
-          <ContactForm endpoint={process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT} />
+          <>
+            <ContactForm
+              endpoint={process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT}
+            />
+            <div className={styles.ctaDivider}>or find me on</div>
+          </>
         )}
-        <div className={styles.ctaDivider}>or find me on</div>
         <SocialLinks links={socialLinks} className={styles.ctaSocials} />
       </section>
 
