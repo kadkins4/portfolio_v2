@@ -6,35 +6,10 @@ summary: >-
   leader who delivers story-driven interfaces that serve both customers and
   business goals.
 resumePdf: /kendall-adkins-resume.pdf
-skills:
-  languages:
-    - JavaScript
-    - TypeScript
-    - C# (Unity)
-    - PHP (WordPress)
-    - Python
-    - Ruby
-    - Java
-  frontend:
-    - React
-    - Vue
-    - Angular
-    - Svelte
-    - State management
-    - Accessibility
-  backend:
-    - REST
-    - GraphQL
-    - Node
-  tooling:
-    - Git
-    - CI/CD
-    - Feature flags (LaunchDarkly)
-    - Claude Code
 experience:
   - org: Penn Entertainment
     role: Senior Frontend Software Engineer (promoted from Software Engineer III)
-    period: Mar 2022 – Present
+    period: Mar 2022 – May 2026
     detail: theScore, theScore Bet, and ESPN BET
     highlights:
       - Rebuilt theScore website from legacy tech to React, revamping sport score pages and UX.
@@ -83,19 +58,6 @@ earlier:
     role: Sales Floor Executive Team Leader
     period: Aug 2013 – Oct 2015
     detail: Owned the entire salesfloor, managed 60+ team members, led remodels.
-projects:
-  - name: On The Clock
-    detail: Fantasy football draft assistant (React 19, TypeScript, Vite). Live product with multi-source ADP data blending; built and shipped solo end-to-end.
-    url: https://kendalladkins.dev/projects/on-the-clock
-  - name: Loresmith
-    detail: Local-first D&D session-notes app; validated demand with real users before building, documented the architecture decisions and a product pivot.
-    url: https://kendalladkins.dev/projects/loresmith
-  - name: Valorant Vantage
-    detail: Next.js app with rank tracking and a "Fight Map" performance heatmap; shipped end-to-end.
-    url: https://kendalladkins.dev/projects/vantage
-  - name: Writing — "How I Actually Work With AI"
-    detail: Essay on AI-assisted engineering as a collaborator, not a crutch.
-    url: https://kendalladkins.dev/notes/how-i-actually-work-with-ai
 education:
   - school: Elon University
     credential: B.S. Accounting

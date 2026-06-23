@@ -1,0 +1,309 @@
+/* Shared chrome for all holo inner pages. Cyan by default; add `.amber` on
+ * .wrap to flip the accent for Life-side pages. Page-specific modules can use
+ * the --accent* / --ink / --muted custom properties below since they cascade
+ * by DOM inheritance from .wrap. */
+
+.wrap {
+  --accent: oklch(0.86 0.13 190);
+  --accent-soft: oklch(0.7 0.1 190);
+  --accent-bd: oklch(0.7 0.1 190 / 0.25);
+  --accent-fill: oklch(0.7 0.1 190 / 0.12);
+  --green: oklch(0.82 0.18 150);
+  --ink: #eaf6f4;
+  --muted: rgba(234, 246, 244, 0.55);
+
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 24px 18px 80px;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  color: var(--ink);
+}
+.wide {
+  max-width: 1080px;
+}
+.amber {
+  --accent: oklch(0.84 0.14 45);
+  --accent-soft: oklch(0.74 0.13 45);
+  --accent-bd: oklch(0.74 0.12 45 / 0.28);
+  --accent-fill: oklch(0.74 0.12 45 / 0.12);
+}
+@media (min-width: 820px) {
+  .wrap {
+    padding: 36px 32px 100px;
+  }
+}
+
+/* heading */
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.title {
+  font-family: var(--font-display), var(--font-serif), Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(30px, 6vw, 44px);
+  line-height: 1.02;
+  margin: 0;
+  color: var(--ink);
+}
+.title i {
+  font-style: italic;
+}
+.entries {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  white-space: nowrap;
+}
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 8px var(--green);
+  animation: hpPulse 1.9s ease-in-out infinite;
+}
+
+/* terminal crumb */
+.crumb {
+  font-size: 12px;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+.crumb .ps {
+  color: var(--accent-soft);
+}
+.cur {
+  display: inline-block;
+  width: 8px;
+  height: 14px;
+  background: var(--accent);
+  vertical-align: -2px;
+  margin-left: 2px;
+  box-shadow: 0 0 8px var(--accent);
+  animation: hpBlink 1s step-end infinite;
+}
+
+/* lede */
+.lede {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: rgba(234, 246, 244, 0.72);
+  margin: 0 0 24px;
+  max-width: 70ch;
+}
+
+/* sectioning */
+.section {
+  margin: 28px 0 0;
+}
+.sectionLabel {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent-soft);
+  margin-bottom: 14px;
+}
+
+/* prose — markdoc body */
+.prose {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.72;
+  color: rgba(234, 246, 244, 0.82);
+}
+.prose > :first-child {
+  margin-top: 0;
+}
+.prose p {
+  margin: 0 0 1.1em;
+}
+.prose h2 {
+  font-family: var(--font-display), var(--font-serif), Georgia, serif;
+  font-weight: 400;
+  font-size: 24px;
+  color: var(--ink);
+  margin: 1.8em 0 0.5em;
+}
+.prose h3,
+.prose h4 {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--ink);
+  margin: 1.6em 0 0.4em;
+}
+.prose strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+.prose em {
+  font-style: italic;
+}
+.prose a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: var(--accent-bd);
+  transition: text-decoration-color 0.2s;
+}
+.prose a:hover {
+  text-decoration-color: var(--accent);
+}
+.prose ul,
+.prose ol {
+  margin: 0 0 1.1em;
+  padding-left: 1.3em;
+}
+.prose li {
+  margin: 0.3em 0;
+}
+.prose li::marker {
+  color: var(--accent-soft);
+}
+.prose blockquote {
+  margin: 1.2em 0;
+  padding: 2px 0 2px 18px;
+  border-left: 2px solid var(--accent-bd);
+  color: var(--muted);
+}
+.prose code {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.86em;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--accent-fill);
+  border: 1px solid var(--accent-bd);
+}
+.prose img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 1.2em 0;
+}
+
+/* chips */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.chip {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 12px;
+  padding: 4px 11px;
+  border-radius: 5px;
+  background: var(--accent-fill);
+  border: 1px solid var(--accent-bd);
+  color: #dff3f0;
+}
+
+/* primary link / button */
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 12.5px;
+  letter-spacing: 0.04em;
+  padding: 10px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--accent-bd);
+  background: var(--accent-fill);
+  color: var(--accent);
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    transform 0.2s;
+}
+.cta:hover {
+  background: oklch(0.7 0.1 190 / 0.2);
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+.amber .cta:hover {
+  background: oklch(0.74 0.12 45 / 0.2);
+}
+
+/* foot */
+.foot {
+  margin-top: 30px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* entrance cascade — add `.rise` to staggerable blocks; .play on .wrap */
+.rise {
+  opacity: 1;
+}
+.play .rise {
+  animation: hpRise 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.play .rise:nth-child(1) {
+  animation-delay: 0.04s;
+}
+.play .rise:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.play .rise:nth-child(3) {
+  animation-delay: 0.16s;
+}
+.play .rise:nth-child(4) {
+  animation-delay: 0.22s;
+}
+.play .rise:nth-child(5) {
+  animation-delay: 0.28s;
+}
+.play .rise:nth-child(n + 6) {
+  animation-delay: 0.34s;
+}
+
+@keyframes hpRise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes hpBlink {
+  50% {
+    opacity: 0;
+  }
+}
+@keyframes hpPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .play .rise {
+    animation: none;
+  }
+  .dot,
+  .cur {
+    animation: none;
+  }
+  .cta:hover {
+    transform: none;
+  }
+}

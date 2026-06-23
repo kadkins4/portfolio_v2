@@ -1,0 +1,29 @@
+/* Note detail — article body. Accent vars cascade from holoPage .wrap (cyan,
+ * or amber when HoloReveal amber is set for Life-side notes). */
+
+.metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 26px;
+}
+.date {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-soft);
+}
+
+.image {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  border: 1px solid var(--accent-bd);
+  margin: 0 0 28px;
+  display: block;
+}
+
+.back {
+  margin-top: 40px;
+}

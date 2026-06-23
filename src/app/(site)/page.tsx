@@ -27,10 +27,10 @@ export default async function HomePage() {
     <Gateway
       name={name}
       nav={[
-        { label: "work", href: "/studio" },
-        { label: "about", href: "/about" },
+        { label: "work", href: "/work" },
+        { label: "about", href: "/story" },
         { label: "notes", href: "/notes" },
-        { label: "contact", href: "/about" },
+        { label: "contact", href: "/contact" },
       ]}
       craft={{
         title: "The Engineer",
@@ -41,7 +41,7 @@ export default async function HomePage() {
             name: "work/",
             desc: "selected projects",
             meta: String(projectCount),
-            href: "/studio",
+            href: "/work",
             preview: "thescore bet · loresmith · on the clock · vantage …",
           },
           {
@@ -55,7 +55,7 @@ export default async function HomePage() {
             name: "stack/",
             desc: "what I build with",
             meta: "→",
-            href: "/about",
+            href: "/stack",
             preview: "react · next · typescript · node · keystatic",
           },
           {
@@ -77,14 +77,14 @@ export default async function HomePage() {
             name: "story/",
             desc: "floors → senior eng",
             meta: "→",
-            href: "/about",
+            href: "/story",
             preview: "retail floor lead → ops manager → senior engineer",
           },
           {
             name: "life/",
             desc: "outside of code",
             meta: "→",
-            href: "/about",
+            href: "/life",
             preview: "bachata · hot yoga · volleyball · d&d · coasters",
           },
           {
