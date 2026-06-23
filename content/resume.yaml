@@ -1,0 +1,102 @@
+summary: >-
+  Product-focused Senior Front-End Engineer with over 8 years building
+  high-traffic web applications. Expert in React and TypeScript, owning features
+  end-to-end with a strong emphasis on UX, AI-assisted development, A/B
+  experimentation, and cross-functional collaboration. Proven mentor and on-call
+  leader who delivers story-driven interfaces that serve both customers and
+  business goals.
+resumePdf: /kendall-adkins-resume.pdf
+skills:
+  languages:
+    - JavaScript
+    - TypeScript
+    - C# (Unity)
+    - PHP (WordPress)
+    - Python
+    - Ruby
+    - Java
+  frontend:
+    - React
+    - Vue
+    - Angular
+    - Svelte
+    - State management
+    - Accessibility
+  backend:
+    - REST
+    - GraphQL
+    - Node
+  tooling:
+    - Git
+    - CI/CD
+    - Feature flags (LaunchDarkly)
+    - Claude Code
+experience:
+  - org: Penn Entertainment
+    role: Senior Frontend Software Engineer (promoted from Software Engineer III)
+    period: Mar 2022 – Present
+    detail: theScore, theScore Bet, and ESPN BET
+    highlights:
+      - Rebuilt theScore website from legacy tech to React, revamping sport score pages and UX.
+      - Led Claude Code skill development and adoption practices for theScore Media web team.
+      - Led front-end architecture and rollout for Search; 70% of searches led to clickthrough.
+      - Redesigned MyBets — reworked information hierarchy, cut clutter, improved clarity.
+      - Shipped Live Streaming MVP and V2 with third-party video partners.
+      - Delivered Golf Event Center, Parlay Lounge, and Featured Bets from MVP to GA via A/B tests.
+      - Built the bet-sharing flow from concept to ship.
+      - Ran web on-call, mentored interns through mid-levels, interviewed candidates, backup scrum master.
+    tech:
+      - React
+      - TypeScript
+      - Zustand
+      - Jest
+      - Datadog
+      - LaunchDarkly
+  - org: Fidelis Cybersecurity
+    role: Software Engineer II (Fullstack)
+    period: Dec 2018 – Mar 2022
+    detail: Threat-analysis platform for security analysts
+    highlights:
+      - Built end-to-end UI workflows for threat analysis; reusable components and unit tests cut regressions in critical views.
+      - Drove UX polish with researchers and back-end teams; improved time-to-insight for analysts.
+    tech:
+      - AngularJS / 10+
+      - TypeScript
+      - Node
+      - Java
+      - SQL
+  - org: American Bankers Association
+    role: Junior Web Developer
+    period: Nov 2017 – Oct 2018
+    detail: Member-facing web and internal tools
+    highlights:
+      - Shipped and maintained member-facing pages and internal tools; improved release hygiene and version control practices.
+    tech:
+      - C#
+      - Angular
+earlier:
+  - org: US2020 / Citizen Schools
+    role: Operations Manager
+    period: Oct 2015 – Jun 2017
+    detail: Led training and onboarding, conference talks, and policy meetings with Congress; managed 40+ people.
+  - org: Target
+    role: Sales Floor Executive Team Leader
+    period: Aug 2013 – Oct 2015
+    detail: Owned the entire salesfloor, managed 60+ team members, led remodels.
+projects:
+  - name: On The Clock
+    detail: Fantasy football draft assistant (React 19, TypeScript, Vite). Live product with multi-source ADP data blending; built and shipped solo end-to-end.
+    url: https://kendalladkins.dev/projects/on-the-clock
+  - name: Loresmith
+    detail: Local-first D&D session-notes app; validated demand with real users before building, documented the architecture decisions and a product pivot.
+    url: https://kendalladkins.dev/projects/loresmith
+  - name: Valorant Vantage
+    detail: Next.js app with rank tracking and a "Fight Map" performance heatmap; shipped end-to-end.
+    url: https://kendalladkins.dev/projects/vantage
+  - name: Writing — "How I Actually Work With AI"
+    detail: Essay on AI-assisted engineering as a collaborator, not a crutch.
+    url: https://kendalladkins.dev/notes/how-i-actually-work-with-ai
+education:
+  - school: Elon University
+    credential: B.S. Accounting
+    year: "2012"

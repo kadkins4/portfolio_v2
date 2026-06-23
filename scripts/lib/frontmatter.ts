@@ -10,6 +10,7 @@ export type ParsedNote = {
   date: string; // yyyy-mm-dd
   featured: boolean;
   order: number | null;
+  side: "craft" | "life";
   sourcePath: string;
   body: string;
 };
@@ -60,6 +61,7 @@ export function parseNote(
     date: toIsoDate(data.date ?? data.created, mtimeMs),
     featured: data.featured === true,
     order: typeof data.order === "number" ? data.order : null,
+    side: data.side === "life" ? "life" : "craft",
     sourcePath,
     body: content.trim(),
   };

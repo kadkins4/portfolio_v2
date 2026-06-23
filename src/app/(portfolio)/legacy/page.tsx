@@ -1,20 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { createReader } from "@keystatic/core/reader";
-import config from "../../../keystatic.config";
-import { SITE_TITLE, SITE_DESCRIPTION } from "@/lib/constants";
-import styles from "./page.module.css";
+import config from "../../../../keystatic.config";
+import { SITE_DESCRIPTION } from "@/lib/constants";
+import styles from "../page.module.css";
 
 export const metadata: Metadata = {
-  title: "Home",
+  title: "Legacy Home",
   description: SITE_DESCRIPTION,
-  openGraph: {
-    title: SITE_TITLE,
-    description: SITE_DESCRIPTION,
-  },
+  robots: { index: false, follow: false },
 };
 
-export default async function HomePage() {
+// Archived copy of the original home page, preserved during the Holo-Terminal
+// redesign. Reachable at /legacy; the live home is being replaced by the new shell.
+export default async function LegacyHomePage() {
   const reader = createReader(process.cwd(), config);
   const home = await reader.singletons.home.read();
 

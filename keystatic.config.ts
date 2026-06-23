@@ -32,6 +32,66 @@ export default config({
       },
     }),
 
+    resume: singleton({
+      label: "Resume / Career Log",
+      path: "content/resume",
+      schema: {
+        summary: fields.text({ label: "Summary", multiline: true }),
+        resumePdf: fields.text({
+          label: "Downloadable PDF path",
+          description: "Path under /public. Keep in sync with the file there.",
+        }),
+        experience: fields.array(
+          fields.object({
+            org: fields.text({ label: "Organization" }),
+            role: fields.text({ label: "Role" }),
+            period: fields.text({ label: "Period (e.g. Mar 2022 – Apr 2026)" }),
+            detail: fields.text({
+              label: "Context / products",
+              multiline: true,
+            }),
+            highlights: fields.array(fields.text({ label: "Highlight" }), {
+              label: "Highlights",
+              itemLabel: (props) => props.value ?? "Highlight",
+            }),
+            tech: fields.array(fields.text({ label: "Tech" }), {
+              label: "Tech",
+              itemLabel: (props) => props.value ?? "Tech",
+            }),
+          }),
+          {
+            label: "Experience (engineering)",
+            itemLabel: (props) =>
+              `${props.fields.org.value ?? "Role"} — ${props.fields.role.value ?? ""}`,
+          }
+        ),
+        earlier: fields.array(
+          fields.object({
+            org: fields.text({ label: "Organization" }),
+            role: fields.text({ label: "Role" }),
+            period: fields.text({ label: "Period" }),
+            detail: fields.text({ label: "Detail", multiline: true }),
+          }),
+          {
+            label: "Earlier experience",
+            itemLabel: (props) =>
+              `${props.fields.org.value ?? "Role"} — ${props.fields.role.value ?? ""}`,
+          }
+        ),
+        education: fields.array(
+          fields.object({
+            school: fields.text({ label: "School" }),
+            credential: fields.text({ label: "Credential" }),
+            year: fields.text({ label: "Year" }),
+          }),
+          {
+            label: "Education",
+            itemLabel: (props) => props.fields.school.value ?? "School",
+          }
+        ),
+      },
+    }),
+
     siteSettings: singleton({
       label: "Site Settings",
       path: "content/site-settings",
@@ -123,6 +183,16 @@ export default config({
         tags: fields.array(fields.text({ label: "Tag" }), {
           label: "Tags",
           itemLabel: (props) => props.value ?? "Tag",
+        }),
+        side: fields.select({
+          label: "Side",
+          description:
+            "Which panel this note belongs to. Defaults to Craft; tag as Life to move it to the human side.",
+          options: [
+            { label: "Craft (cyan)", value: "craft" },
+            { label: "Life (amber)", value: "life" },
+          ],
+          defaultValue: "craft",
         }),
         date: fields.date({ label: "Date" }),
         featured: fields.checkbox({

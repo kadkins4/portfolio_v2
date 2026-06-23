@@ -53,6 +53,7 @@ function yamlFrontmatter(note: ParsedNote): string {
     `featured: ${note.featured}`,
   ];
   if (note.order !== null) lines.push(`order: ${note.order}`);
+  lines.push(`side: ${note.side}`);
   lines.push(`sourcePath: ${JSON.stringify(note.sourcePath)}`);
   lines.push("---");
   return lines.join("\n");
