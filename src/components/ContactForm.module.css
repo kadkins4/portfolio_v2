@@ -1,146 +1,60 @@
-.wrapper {
+/* Contact "message" card — cyan HUD form per the Holo-Terminal handoff
+ * (Screen 5). Mono font is inherited from the page .wrap. Cyan-only surface,
+ * so spec oklch values are inlined rather than themed. */
+
+.card {
   position: relative;
-  margin-top: 20px;
-}
-
-.trigger {
-  background: var(--accent);
-  color: var(--bg-primary);
-  font-size: 14px;
-  font-weight: 600;
-  padding: 11px 22px;
-  border: 0;
   border-radius: 6px;
-  cursor: pointer;
-  transition:
-    opacity 0.3s ease,
-    transform 0.3s ease;
-}
-
-.trigger:hover {
-  filter: brightness(1.08);
-}
-
-.triggerHidden {
-  opacity: 0;
-  transform: scale(0.92);
-  pointer-events: none;
-  position: absolute;
-  left: 50%;
-  translate: -50% 0;
-}
-
-.panel {
-  max-height: 0;
+  padding: 26px;
+  background: linear-gradient(
+    150deg,
+    oklch(0.78 0.1 190 / 0.08),
+    rgba(0, 0, 0, 0.22)
+  );
+  border: 1px solid oklch(0.7 0.1 190 / 0.3);
+  box-shadow: 0 0 30px oklch(0.7 0.12 190 / 0.08);
   overflow: hidden;
-  opacity: 0;
-  margin: 0;
-  text-align: left;
-  transition:
-    max-height 0.45s ease,
-    opacity 0.35s ease,
-    margin 0.35s ease;
 }
 
-.panelOpen {
-  max-height: 560px;
-  opacity: 1;
-  margin: 6px 0 0;
+.scan {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    oklch(0.85 0.1 190 / 0.04) 0 1px,
+    transparent 1px 5px
+  );
+  pointer-events: none;
 }
 
-.formHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
+.bkTL,
+.bkBR {
+  position: absolute;
+  width: 15px;
+  height: 15px;
+}
+.bkTL {
+  top: 10px;
+  left: 10px;
+  border-top: 2px solid oklch(0.8 0.12 190 / 0.7);
+  border-left: 2px solid oklch(0.8 0.12 190 / 0.7);
+}
+.bkBR {
+  bottom: 10px;
+  right: 10px;
+  border-bottom: 2px solid oklch(0.8 0.12 190 / 0.7);
+  border-right: 2px solid oklch(0.8 0.12 190 / 0.7);
 }
 
-.formTitle {
-  font-family: var(--font-serif), Georgia, serif;
-  font-size: 15px;
-  font-weight: 600;
-  margin: 0;
+.body {
+  position: relative;
 }
 
-.close {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: 1px solid var(--border);
-  background: transparent;
-  color: var(--text-secondary);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition:
-    transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
-    color 0.2s ease,
-    border-color 0.2s ease;
-}
-
-.close:hover {
-  color: var(--text-primary);
-  border-color: var(--text-muted);
-  transform: rotate(90deg);
-}
-
-.form {
-  display: flex;
-  flex-direction: column;
-}
-
-.field {
-  display: block;
-  margin-bottom: 13px;
-}
-
-.label {
-  display: block;
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-bottom: 5px;
-  letter-spacing: 0.03em;
-}
-
-.req {
-  color: var(--accent);
-}
-
-.opt {
-  color: var(--text-muted);
-  font-style: italic;
-}
-
-.input,
-.textarea {
-  width: 100%;
-  box-sizing: border-box;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 10px 12px;
-  color: var(--text-primary);
-  font-family: inherit;
-  font-size: 14px;
-}
-
-.input:focus,
-.textarea:focus {
-  outline: none;
-  border-color: var(--accent);
-}
-
-.textarea {
-  min-height: 84px;
-  resize: vertical;
-}
-
-.hint {
-  font-size: 11.5px;
-  color: var(--text-muted);
-  font-style: italic;
-  margin: -4px 0 14px;
+.heading {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: oklch(0.84 0.12 190);
+  margin-bottom: 18px;
 }
 
 .honeypot {
@@ -151,43 +65,144 @@
   opacity: 0;
 }
 
-.submit {
-  background: var(--accent);
-  color: var(--bg-primary);
-  font-size: 14px;
-  font-weight: 600;
+.row2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.label {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: oklch(0.7 0.08 190 / 0.8);
+  margin-bottom: 6px;
+}
+
+.input,
+.textarea {
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(2, 16, 15, 0.6);
+  border: 1px solid oklch(0.7 0.1 190 / 0.35);
+  border-radius: 5px;
+  padding: 11px 13px;
+  font-family: inherit;
+  font-size: 12px;
+  color: #eaf6f4;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.input::placeholder,
+.textarea::placeholder {
+  color: oklch(0.7 0.06 190 / 0.5);
+}
+.input:focus,
+.textarea:focus {
+  border-color: oklch(0.85 0.13 190);
+}
+.textarea {
+  line-height: 1.55;
+  resize: vertical;
+  margin-bottom: 16px;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.send {
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
   padding: 11px 22px;
-  border: 0;
+  border: none;
   border-radius: 6px;
+  background: oklch(0.78 0.14 190);
+  color: #04100f;
   cursor: pointer;
+  transition: background 0.2s;
 }
-
-.submit:hover {
-  filter: brightness(1.08);
+.send:hover:not(:disabled) {
+  background: oklch(0.85 0.15 190);
 }
-
-.submit:disabled {
-  opacity: 0.6;
+.send:disabled {
+  opacity: 0.65;
   cursor: default;
 }
-
-.success {
-  text-align: center;
-  font-size: 14px;
-  color: var(--accent);
-  padding: 8px 0;
+.send:focus-visible {
+  outline: 2px solid #eaf6f4;
+  outline-offset: 2px;
 }
 
-.error {
-  font-size: 12.5px;
-  color: #c97a6d;
-  margin: 0 0 12px;
+.err {
+  font-size: 11px;
+  color: oklch(0.72 0.15 40);
 }
 
+/* terminal receipt (post-send) */
+.receipt {
+  position: relative;
+  padding: 14px 4px;
+  outline: none;
+  animation: cfReceipt 0.45s ease both;
+}
+.sentHead {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12px;
+  color: oklch(0.84 0.16 150);
+  margin-bottom: 14px;
+}
+.sentDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: oklch(0.82 0.18 150);
+  box-shadow: 0 0 9px oklch(0.82 0.2 150);
+}
+.pre {
+  margin: 0;
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1.7;
+  color: oklch(0.86 0.12 190);
+  white-space: pre-wrap;
+}
+.again {
+  display: inline-block;
+  margin-top: 18px;
+  font-family: inherit;
+  font-size: 11px;
+  color: oklch(0.8 0.1 190 / 0.85);
+  background: none;
+  border: 1px solid oklch(0.7 0.1 190 / 0.35);
+  border-radius: 6px;
+  padding: 8px 15px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.again:hover {
+  border-color: oklch(0.8 0.13 190 / 0.65);
+}
+
+@keyframes cfReceipt {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 @media (prefers-reduced-motion: reduce) {
-  .trigger,
-  .panel,
-  .close {
-    transition: none;
+  .receipt {
+    animation: none;
   }
 }

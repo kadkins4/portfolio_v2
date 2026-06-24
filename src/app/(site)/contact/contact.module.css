@@ -1,38 +1,146 @@
-/* Contact page — social links row. Form chrome comes from ContactForm's own
- * module; cyan accent cascades from .wrap via --accent* custom props. */
+/* Contact page layout — two-column grid (message form + direct channels)
+ * per the Holo-Terminal handoff (Screen 5). Cyan HUD; mono inherited from
+ * .wrap. The form card lives in ContactForm.module.css. */
 
-.socials {
+.grid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+@media (max-width: 720px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* direct-channels card */
+.channels {
+  position: relative;
+  border-radius: 6px;
+  padding: 26px;
+  background: linear-gradient(
+    150deg,
+    oklch(0.78 0.1 190 / 0.06),
+    rgba(0, 0, 0, 0.22)
+  );
+  border: 1px solid oklch(0.7 0.1 190 / 0.25);
+  overflow: hidden;
+}
+.scan {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    oklch(0.85 0.1 190 / 0.04) 0 1px,
+    transparent 1px 5px
+  );
+  pointer-events: none;
+}
+.inner {
+  position: relative;
+}
+.heading {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: oklch(0.84 0.12 190);
+  margin-bottom: 18px;
+}
+
+.row {
   display: flex;
   align-items: center;
-  gap: 14px;
-}
-.socials a {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  border: 1px solid var(--accent-bd);
-  background: var(--accent-fill);
-  color: var(--accent);
+  gap: 13px;
+  padding: 12px;
+  border-radius: 5px;
+  border: 1px solid oklch(0.7 0.1 190 / 0.22);
+  text-decoration: none;
   transition:
-    border-color 0.2s,
-    transform 0.2s,
-    color 0.2s;
+    background 0.22s,
+    border-color 0.22s;
 }
-.socials a:hover {
-  border-color: var(--accent);
-  color: var(--ink);
-  transform: translateY(-2px);
+.row:hover {
+  background: oklch(0.7 0.1 190 / 0.12);
+  border-color: oklch(0.7 0.12 190 / 0.5);
 }
-.socials a:focus-visible {
-  outline: 2px solid var(--accent);
+.row:focus-visible {
+  outline: 2px solid oklch(0.85 0.13 190);
   outline-offset: 2px;
 }
+.email {
+  margin-bottom: 9px;
+}
 
+.glyph {
+  width: 22px;
+  text-align: center;
+  color: oklch(0.86 0.13 190);
+  font-size: 13px;
+}
+.meta {
+  flex: 1;
+  min-width: 0;
+}
+.metaLabel {
+  display: block;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  color: oklch(0.7 0.08 190 / 0.7);
+}
+.metaValue {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 13px;
+  color: #eaf6f4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.arrow {
+  font-size: 12px;
+  color: oklch(0.8 0.1 190 / 0.7);
+}
+
+.sockets {
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  color: oklch(0.7 0.08 190 / 0.65);
+  margin: 18px 0 10px;
+}
+.socketList {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.replies {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 20px;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: oklch(0.7 0.08 190 / 0.7);
+}
+.repliesDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: oklch(0.82 0.18 150);
+  box-shadow: 0 0 7px oklch(0.82 0.2 150);
+  animation: hpPulseLocal 2s ease-in-out infinite;
+}
+
+@keyframes hpPulseLocal {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
-  .socials a:hover {
-    transform: none;
+  .repliesDot {
+    animation: none;
   }
 }

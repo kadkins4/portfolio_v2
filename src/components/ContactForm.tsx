@@ -1,192 +1,170 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, type FormEvent } from "react";
+import { useId, useRef, useState, type FormEvent } from "react";
 import styles from "./ContactForm.module.css";
 
 type Props = {
   endpoint: string;
 };
 
-type Status = "idle" | "sending" | "success" | "error";
+type Status = "idle" | "sending" | "error";
 
 export default function ContactForm({ endpoint }: Props) {
-  const [open, setOpen] = useState(false);
+  const [sent, setSent] = useState(false);
   const [status, setStatus] = useState<Status>("idle");
-  const panelId = useId();
-  const triggerRef = useRef<HTMLButtonElement>(null);
-  const nameRef = useRef<HTMLInputElement>(null);
-  const successRef = useRef<HTMLParagraphElement>(null);
-
-  function openForm() {
-    setOpen(true);
-  }
-
-  function closeForm() {
-    setOpen(false);
-    triggerRef.current?.focus();
-  }
-
-  useEffect(() => {
-    if (open) nameRef.current?.focus();
-  }, [open]);
-
-  useEffect(() => {
-    if (status === "success") successRef.current?.focus();
-  }, [status]);
-
-  useEffect(() => {
-    if (!open) return;
-    function onKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") closeForm();
-    }
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, [open]);
+  const [invalid, setInvalid] = useState(false);
+  const [name, setName] = useState("");
+  const formId = useId();
+  const receiptRef = useRef<HTMLDivElement>(null);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setStatus("sending");
     const data = new FormData(e.currentTarget);
+    const nm = String(data.get("name") ?? "").trim();
+    const msg = String(data.get("message") ?? "").trim();
+
+    if (!nm || !msg) {
+      setInvalid(true);
+      return;
+    }
+    setInvalid(false);
+    setStatus("sending");
     try {
       const res = await fetch(endpoint, {
         method: "POST",
         body: data,
         headers: { Accept: "application/json" },
       });
-      setStatus(res.ok ? "success" : "error");
+      if (res.ok) {
+        setName(nm);
+        setSent(true);
+        requestAnimationFrame(() => receiptRef.current?.focus());
+      } else {
+        setStatus("error");
+      }
     } catch {
       setStatus("error");
     }
   }
 
-  return (
-    <div className={styles.wrapper}>
-      <button
-        ref={triggerRef}
-        type="button"
-        className={`${styles.trigger} ${open ? styles.triggerHidden : ""}`}
-        aria-expanded={open}
-        aria-controls={panelId}
-        inert={open}
-        onClick={openForm}
-      >
-        Send a message
-      </button>
+  function reset() {
+    setSent(false);
+    setStatus("idle");
+    setInvalid(false);
+    setName("");
+  }
 
-      <div
-        id={panelId}
-        data-testid="contact-panel"
-        className={`${styles.panel} ${open ? styles.panelOpen : ""}`}
-        inert={!open}
-      >
-        <div className={styles.formHeader}>
-          <h3 className={styles.formTitle}>Send a message</h3>
-          <button
-            type="button"
-            className={styles.close}
-            aria-label="Close form"
-            onClick={closeForm}
-          >
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              aria-hidden="true"
-            >
-              <path d="M18 6 6 18M6 6l12 12" />
-            </svg>
+  const receipt = `$ ./contact.sh --send
+  to:   kendall@adkins
+  from: ${name || "anon"}
+  ok:   queued for delivery
+
+Thanks, I'll be in touch soon.`;
+
+  return (
+    <div className={styles.card}>
+      <div className={styles.scan} aria-hidden="true" />
+      <span className={styles.bkTL} aria-hidden="true" />
+      <span className={styles.bkBR} aria-hidden="true" />
+
+      {sent ? (
+        <div
+          className={styles.receipt}
+          ref={receiptRef}
+          tabIndex={-1}
+          role="status"
+        >
+          <div className={styles.sentHead}>
+            <span className={styles.sentDot} aria-hidden="true" />
+            MESSAGE SENT · EXIT 0
+          </div>
+          <pre className={styles.pre}>{receipt}</pre>
+          <button type="button" className={styles.again} onClick={reset}>
+            &gt; send another
           </button>
         </div>
+      ) : (
+        <form
+          id={formId}
+          data-testid="contact-form"
+          className={styles.body}
+          action={endpoint}
+          method="POST"
+          onSubmit={handleSubmit}
+          noValidate
+        >
+          <div className={styles.heading}>&gt; compose --message</div>
 
-        {status === "success" ? (
-          <p
-            ref={successRef}
-            className={styles.success}
-            role="status"
+          <input
+            type="text"
+            name="_gotcha"
             tabIndex={-1}
-          >
-            Thanks — I&apos;ll be in touch soon.
-          </p>
-        ) : (
-          <form
-            data-testid="contact-form"
-            className={styles.form}
-            action={endpoint}
-            method="POST"
-            onSubmit={handleSubmit}
-          >
-            <input
-              type="text"
-              name="_gotcha"
-              tabIndex={-1}
-              aria-hidden="true"
-              autoComplete="off"
-              className={styles.honeypot}
-            />
+            aria-hidden="true"
+            autoComplete="off"
+            className={styles.honeypot}
+          />
 
-            <label className={styles.field}>
-              <span className={styles.label}>
-                Name <span className={styles.req}>*</span>
-              </span>
+          <div className={styles.row2}>
+            <div>
+              <label className={styles.label} htmlFor={`${formId}-name`}>
+                NAME
+              </label>
               <input
-                ref={nameRef}
+                id={`${formId}-name`}
                 type="text"
                 name="name"
-                required
                 autoComplete="name"
+                placeholder="your name"
                 className={styles.input}
               />
-            </label>
-
-            <label className={styles.field}>
-              <span className={styles.label}>
-                Email <span className={styles.opt}>— optional</span>
-              </span>
+            </div>
+            <div>
+              <label className={styles.label} htmlFor={`${formId}-email`}>
+                EMAIL / HANDLE
+              </label>
               <input
-                type="email"
+                id={`${formId}-email`}
+                type="text"
                 name="email"
                 autoComplete="email"
+                placeholder="how to reach you"
                 className={styles.input}
               />
-            </label>
+            </div>
+          </div>
 
-            <label className={styles.field}>
-              <span className={styles.label}>
-                Message <span className={styles.req}>*</span>
-              </span>
-              <textarea
-                name="message"
-                required
-                rows={4}
-                className={styles.textarea}
-              />
-            </label>
+          <label className={styles.label} htmlFor={`${formId}-msg`}>
+            MESSAGE
+          </label>
+          <textarea
+            id={`${formId}-msg`}
+            name="message"
+            rows={4}
+            placeholder="what's on your mind?"
+            className={styles.textarea}
+          />
 
-            <p className={styles.hint}>
-              No email? Leave another way to reach you in the message.
-            </p>
-
-            {status === "error" && (
-              <p className={styles.error} role="alert">
-                Something went wrong — please try again or reach me on the links
-                below.
-              </p>
-            )}
-
+          <div className={styles.actions}>
             <button
               type="submit"
-              className={styles.submit}
+              className={styles.send}
               disabled={status === "sending"}
             >
-              {status === "sending" ? "Sending…" : "Send message"}
+              {status === "sending" ? "> sending…" : "> send_message"}
             </button>
-          </form>
-        )}
-      </div>
+            {invalid && (
+              <span className={styles.err} role="alert">
+                ! name + message required
+              </span>
+            )}
+            {status === "error" && (
+              <span className={styles.err} role="alert">
+                ! send failed, try the channels at right
+              </span>
+            )}
+          </div>
+        </form>
+      )}
     </div>
   );
 }
