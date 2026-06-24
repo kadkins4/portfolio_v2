@@ -23,11 +23,11 @@ export default async function LegacyHomePage() {
       <p className={styles.tagline}>{home?.tagline ?? "Software Engineer"}</p>
       {home?.intro && <p className={styles.intro}>{home.intro}</p>}
       <nav className={styles.nav}>
-        <Link href="/about" className={styles.navLink}>
+        <Link href="/story" className={styles.navLink}>
           About
         </Link>
         <span className={styles.separator} aria-hidden="true" />
-        <Link href="/studio" className={styles.navLink}>
+        <Link href="/work" className={styles.navLink}>
           Studio
         </Link>
       </nav>

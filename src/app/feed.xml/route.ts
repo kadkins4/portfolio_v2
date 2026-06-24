@@ -59,8 +59,8 @@ export async function GET() {
   const rss = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>${SITE_NAME} — Studio</title>
-    <link>${SITE_URL}/studio</link>
+    <title>${SITE_NAME} — Work</title>
+    <link>${SITE_URL}/work</link>
     <description>Projects and notes by Kendall Adkins.</description>
     <language>en-us</language>
     <managingEditor>${process.env.CONTACT_EMAIL ?? "kendall@kendalladkins.dev"} (${SITE_NAME})</managingEditor>

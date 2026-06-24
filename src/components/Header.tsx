@@ -23,15 +23,15 @@ export default function Header() {
       </Link>
       <nav className={styles.nav} aria-label="Main navigation">
         <Link
-          href="/about"
-          className={`${styles.navLink} ${pathname === "/about" ? styles.active : ""}`}
+          href="/story"
+          className={`${styles.navLink} ${pathname === "/story" ? styles.active : ""}`}
         >
           About
         </Link>
         <Link
-          href="/studio"
+          href="/work"
           className={`${styles.navLink} ${
-            pathname.startsWith("/studio") ||
+            pathname.startsWith("/work") ||
             pathname.startsWith("/projects") ||
             pathname.startsWith("/notes")
               ? styles.active

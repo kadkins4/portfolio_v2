@@ -17,7 +17,11 @@ const nextConfig: NextConfig = {
     },
   ],
   redirects: async () => [
-    { source: "/projects", destination: "/studio", permanent: true },
+    // Old paths from the pre-Holo-Terminal site. Keep external/bookmarked
+    // links and the published note's /studio link from 404ing.
+    { source: "/about", destination: "/story", permanent: true },
+    { source: "/projects", destination: "/work", permanent: true },
+    { source: "/studio", destination: "/work", permanent: true },
   ],
 };
 
