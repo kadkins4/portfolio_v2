@@ -11,7 +11,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "postbuild": "next-sitemap",
-    "sync:studio": "tsx scripts/sync-notes.ts"
+    "sync:studio": "tsx scripts/sync-notes.ts",
+    "sync:resume": "tsx scripts/sync-resume.ts"
   },
   "dependencies": {
     "@keystatic/core": "^0.5.48",
@@ -37,6 +38,7 @@
     "eslint-config-next": "16.1.6",
     "eslint-config-prettier": "^10.1.8",
     "gray-matter": "^4.0.3",
+    "js-yaml": "4.1.1",
     "jsdom": "^28.1.0",
     "prettier": "^3.8.1",
     "tsx": "^4.22.3",

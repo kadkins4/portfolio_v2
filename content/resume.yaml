@@ -1,10 +1,4 @@
-summary: >-
-  Product-focused Senior Front-End Engineer with over 8 years building
-  high-traffic web applications. Expert in React and TypeScript, owning features
-  end-to-end with a strong emphasis on UX, AI-assisted development, A/B
-  experimentation, and cross-functional collaboration. Proven mentor and on-call
-  leader who delivers story-driven interfaces that serve both customers and
-  business goals.
+summary: Senior Front-End Engineer with 8+ years building high-traffic React and TypeScript applications, from real-money betting interfaces at theScore and ESPN BET used by millions to products I have shipped solo end-to-end. Earlier, at Fidelis Cybersecurity, I worked full-stack across Angular, AngularJS, Node, and Java to improve product performance and user experience. I own features start to finish with a focus on performance, accessibility, and UX, and I work AI-natively, having led Claude Code adoption on my team. I care about building interfaces that are fast, reliable, and genuinely good to use.
 resumePdf: /kendall-adkins-resume.pdf
 experience:
   - org: Penn Entertainment
@@ -15,7 +9,7 @@ experience:
       - Rebuilt theScore website from legacy tech to React, revamping sport score pages and UX.
       - Led Claude Code skill development and adoption practices for theScore Media web team.
       - Led front-end architecture and rollout for Search; 70% of searches led to clickthrough.
-      - Redesigned MyBets — reworked information hierarchy, cut clutter, improved clarity.
+      - 'Redesigned MyBets: reworked information hierarchy, cut clutter, improved clarity.'
       - Shipped Live Streaming MVP and V2 with third-party video partners.
       - Delivered Golf Event Center, Parlay Lounge, and Featured Bets from MVP to GA via A/B tests.
       - Built the bet-sharing flow from concept to ship.
@@ -61,4 +55,4 @@ earlier:
 education:
   - school: Elon University
     credential: B.S. Accounting
-    year: "2012"
+    year: '2012'
