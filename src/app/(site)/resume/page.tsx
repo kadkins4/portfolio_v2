@@ -6,9 +6,9 @@ import HoloFrame from "@/components/holo/HoloFrame";
 import CareerLog from "@/components/holo/CareerLog";
 
 export const metadata: Metadata = {
-  title: "Career Log",
+  title: "Resume",
   description:
-    "An interactive, terminal-style résumé — a decade of engineering, in order.",
+    "A terminal-style résumé. A decade of engineering, most recent first.",
 };
 
 export default async function ResumePage() {

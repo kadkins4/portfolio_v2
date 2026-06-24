@@ -206,7 +206,7 @@ export default function CareerLog({ data }: { data: CareerLogData }) {
   return (
     <div className={`${styles.wrap} ${revealed ? styles.revealed : ""}`}>
       <div className={styles.head}>
-        <h1 className={styles.title}>Career Log</h1>
+        <h1 className={styles.title}>Resume</h1>
         <span className={styles.entries}>
           <span className={styles.dot} aria-hidden="true" />
           {data.experience.length} ROLES
