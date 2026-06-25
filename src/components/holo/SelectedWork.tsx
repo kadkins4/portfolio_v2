@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import TypedCrumb from "./TypedCrumb";
 import styles from "./selectedWork.module.css";
 
 export type WorkItem = {
@@ -103,18 +104,6 @@ export default function SelectedWork({
   const [play, setPlay] = useState(false);
   const [filter, setFilter] = useState<string>("all");
 
-  useEffect(() => {
-    const reduce = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
-    if (reduce) {
-      setPlay(true);
-      return;
-    }
-    const t = setTimeout(() => setPlay(true), 60);
-    return () => clearTimeout(t);
-  }, []);
-
   const tags = useMemo(() => {
     const seen = new Set<string>();
     for (const it of items) for (const t of it.tags) seen.add(t);
@@ -137,13 +126,7 @@ export default function SelectedWork({
         </span>
       </div>
 
-      <div className={styles.crumb}>
-        <span className={styles.ps}>
-          {name.split(" ")[0].toLowerCase()}@adkins:~$
-        </span>{" "}
-        ls work/
-        <span className={styles.cur} aria-hidden="true" />
-      </div>
+      <TypedCrumb command="ls work/" name={name} onDone={() => setPlay(true)} />
 
       <p className={styles.lede}>
         Shipping for millions one day, building a fantasy-draft tool the next.

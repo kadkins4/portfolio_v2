@@ -7,6 +7,7 @@ import {
   useState,
   type KeyboardEvent,
 } from "react";
+import TypedCrumb from "./TypedCrumb";
 import styles from "./careerLog.module.css";
 
 export type Experience = {
@@ -47,15 +48,14 @@ type Entry = {
 type OutLine = { cmd: string; out: string };
 
 const PROMPT = "kendall@adkins:~$";
-const CMD = "cat resume.md";
 
 export default function CareerLog({ data }: { data: CareerLogData }) {
-  // entrance state
-  const [cmd, setCmd] = useState("");
-  const [cmdDone, setCmdDone] = useState(false);
+  // entrance state (crumb typing lives in TypedCrumb; the rest is chained off
+  // its onDone via startReveal below)
   const [summaryTyped, setSummaryTyped] = useState("");
   const [revealed, setRevealed] = useState(false); // rail + shell in
   const [nodesIn, setNodesIn] = useState(0);
+  const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   // interaction state
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
@@ -98,34 +98,25 @@ export default function CareerLog({ data }: { data: CareerLogData }) {
     return [...pro, ...early, ...edu];
   }, [data]);
 
-  // ---- entrance sequence ----
-  useEffect(() => {
+  // ---- entrance: fired by TypedCrumb.onDone once "cat resume.md" finishes
+  // typing → type the summary, reveal the shell + rail, then cascade nodes ----
+  function startReveal() {
     const reduce = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
 
     if (reduce) {
-      setCmd(CMD);
-      setCmdDone(true);
       setSummaryTyped(data.summary);
       setRevealed(true);
       setNodesIn(entries.length);
       return;
     }
 
-    const timers: ReturnType<typeof setTimeout>[] = [];
+    const timers = timersRef.current;
     const at = (fn: () => void, ms: number) => timers.push(setTimeout(fn, ms));
 
-    // 1) type the command over ~1s
-    const perChar = 1000 / CMD.length;
-    for (let i = 1; i <= CMD.length; i++) {
-      at(() => setCmd(CMD.slice(0, i)), 350 + i * perChar);
-    }
-    const cmdEnd = 350 + CMD.length * perChar;
-    at(() => setCmdDone(true), cmdEnd);
-
-    // 2) type the summary fast (~1.1s regardless of length)
-    const sStart = cmdEnd + 220;
+    // type the summary fast (~1.1s regardless of length)
+    const base = 180;
     const sBudget = 1100;
     const sStep = Math.max(1, Math.ceil(data.summary.length / (sBudget / 16)));
     let shown = 0;
@@ -133,20 +124,22 @@ export default function CareerLog({ data }: { data: CareerLogData }) {
     while (shown < data.summary.length) {
       shown = Math.min(data.summary.length, shown + sStep);
       const n = shown;
-      at(() => setSummaryTyped(data.summary.slice(0, n)), sStart + frame * 16);
+      at(() => setSummaryTyped(data.summary.slice(0, n)), base + frame * 16);
       frame++;
     }
-    const sEnd = sStart + frame * 16;
+    const sEnd = base + frame * 16;
 
-    // 3) shell + rail reveal, then 4) nodes cascade every 0.5s
+    // shell + rail reveal, then nodes cascade every 0.5s
     at(() => setRevealed(true), sEnd);
     for (let i = 0; i < entries.length; i++) {
       at(() => setNodesIn(i + 1), sEnd + 200 + i * 500);
     }
+  }
 
+  // clear any pending entrance timers on unmount
+  useEffect(() => {
+    const timers = timersRef.current;
     return () => timers.forEach(clearTimeout);
-    // run once on mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const toggle = (i: number) =>
@@ -233,10 +226,11 @@ export default function CareerLog({ data }: { data: CareerLogData }) {
         </a>
       </div>
 
-      <div className={styles.crumb}>
-        <span className={styles.ps}>{PROMPT}</span> {cmd}
-        {!cmdDone && <span className={styles.cur} aria-hidden="true" />}
-      </div>
+      <TypedCrumb
+        command="cat resume.md"
+        name={data.name}
+        onDone={startReveal}
+      />
 
       <p className={styles.summary}>{summaryTyped}</p>
 
