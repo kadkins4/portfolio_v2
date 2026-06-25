@@ -58,3 +58,9 @@ archive/
 docs/plans/
 
 .claude/worktrees/
+
+# Playwright MCP screenshots (test artifacts)
+.playwright-mcp/
+
+# Editor/hook backup files
+*.bak
