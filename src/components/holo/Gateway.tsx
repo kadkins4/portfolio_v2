@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import styles from "./holo.module.css";
+import HoloNav from "./HoloNav";
 
 export type GatewayDir = {
   name: string;
@@ -20,11 +21,8 @@ export type GatewaySide = {
   dirs: GatewayDir[];
 };
 
-export type NavItem = { label: string; href: string };
-
 export type GatewayProps = {
   name: string;
-  nav: NavItem[];
   craft: GatewaySide;
   life: GatewaySide;
 };
@@ -139,9 +137,8 @@ function Panel({
   );
 }
 
-export default function Gateway({ name, nav, craft, life }: GatewayProps) {
+export default function Gateway({ name, craft, life }: GatewayProps) {
   const [booting, setBooting] = useState(true);
-  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const reduce = window.matchMedia(
@@ -155,9 +152,6 @@ export default function Gateway({ name, nav, craft, life }: GatewayProps) {
     return () => clearTimeout(t);
   }, []);
 
-  const [first, ...rest] = name.split(" ");
-  const last = rest.join(" ");
-
   return (
     <div className={`${styles.shell} ${booting ? "" : styles.play}`}>
       {booting && (
@@ -169,50 +163,7 @@ export default function Gateway({ name, nav, craft, life }: GatewayProps) {
         </div>
       )}
 
-      <header className={styles.header}>
-        <Link
-          href="/"
-          className={styles.brand}
-          onClick={() => setMenuOpen(false)}
-        >
-          {first} {last && <i>{last}</i>}
-        </Link>
-
-        <nav className={styles.nav}>
-          {nav.map((item) => (
-            <Link key={item.label} href={item.href} className={styles.navLink}>
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-
-        <button
-          type="button"
-          className={styles.burger}
-          aria-label="Menu"
-          aria-expanded={menuOpen}
-          onClick={() => setMenuOpen((v) => !v)}
-        >
-          <span />
-          <span />
-          <span />
-        </button>
-      </header>
-
-      {menuOpen && (
-        <div className={styles.menu}>
-          {nav.map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              className={styles.menuLink}
-              onClick={() => setMenuOpen(false)}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </div>
-      )}
+      <HoloNav name={name} />
 
       <main className={styles.gateway}>
         <Panel kind="craft" eyebrow="✦ THE CRAFT" side={craft} />

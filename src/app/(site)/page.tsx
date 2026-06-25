@@ -26,12 +26,6 @@ export default async function HomePage() {
   return (
     <Gateway
       name={name}
-      nav={[
-        { label: "work", href: "/work" },
-        { label: "about", href: "/story" },
-        { label: "notes", href: "/notes" },
-        { label: "contact", href: "/contact" },
-      ]}
       craft={{
         title: "The Engineer",
         subtitle:
