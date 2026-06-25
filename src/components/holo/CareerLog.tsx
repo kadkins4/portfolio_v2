@@ -34,52 +34,119 @@ export type CareerLogData = {
   education: Education[];
 };
 
-const PROMPT = "kendall@adkins:~$";
-const ENTRANCE = "cat resume.md";
-
+type Category = "PROFESSIONAL" | "EDUCATION";
+type Entry = {
+  period: string;
+  title: string;
+  org: string;
+  cat: Category;
+  detail: string;
+  highlights: string[];
+  tech: string[];
+};
 type OutLine = { cmd: string; out: string };
 
+const PROMPT = "kendall@adkins:~$";
+const CMD = "cat resume.md";
+
 export default function CareerLog({ data }: { data: CareerLogData }) {
-  const [typed, setTyped] = useState("");
-  const [revealed, setRevealed] = useState(false);
-  const [filter, setFilter] = useState<string | null>(null);
-  const [expanded, setExpanded] = useState<Set<number>>(new Set([0]));
+  // entrance state
+  const [cmd, setCmd] = useState("");
+  const [cmdDone, setCmdDone] = useState(false);
+  const [summaryTyped, setSummaryTyped] = useState("");
+  const [revealed, setRevealed] = useState(false); // rail + shell in
+  const [nodesIn, setNodesIn] = useState(0);
+
+  // interaction state
+  const [expanded, setExpanded] = useState<Set<number>>(new Set());
+  const [shellFocused, setShellFocused] = useState(false);
   const [input, setInput] = useState("");
   const [output, setOutput] = useState<OutLine[]>([]);
   const [history, setHistory] = useState<string[]>([]);
   const histIdx = useRef<number>(-1);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // unique tech tags for filter chips
-  const techs = useMemo(() => {
-    const seen = new Set<string>();
-    data.experience.forEach((e) => e.tech.forEach((t) => seen.add(t)));
-    return Array.from(seen);
-  }, [data.experience]);
+  // unified, most-recent-first timeline (source is already ordered newest→oldest)
+  const entries: Entry[] = useMemo(() => {
+    const pro: Entry[] = data.experience.map((e) => ({
+      period: e.period,
+      title: e.role,
+      org: e.org,
+      cat: "PROFESSIONAL",
+      detail: e.detail,
+      highlights: e.highlights,
+      tech: e.tech,
+    }));
+    const early: Entry[] = data.earlier.map((e) => ({
+      period: e.period,
+      title: e.role,
+      org: e.org,
+      cat: "PROFESSIONAL",
+      detail: e.detail,
+      highlights: [],
+      tech: [],
+    }));
+    const edu: Entry[] = data.education.map((e) => ({
+      period: e.year,
+      title: e.credential,
+      org: e.school,
+      cat: "EDUCATION",
+      detail: "",
+      highlights: [],
+      tech: [],
+    }));
+    return [...pro, ...early, ...edu];
+  }, [data]);
 
-  // typed-command entrance
+  // ---- entrance sequence ----
   useEffect(() => {
     const reduce = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
+
     if (reduce) {
-      setTyped(ENTRANCE);
+      setCmd(CMD);
+      setCmdDone(true);
+      setSummaryTyped(data.summary);
       setRevealed(true);
+      setNodesIn(entries.length);
       return;
     }
-    let i = 0;
-    let timer: ReturnType<typeof setTimeout>;
-    const tick = () => {
-      i += 1;
-      setTyped(ENTRANCE.slice(0, i));
-      if (i < ENTRANCE.length) {
-        timer = setTimeout(tick, 55);
-      } else {
-        timer = setTimeout(() => setRevealed(true), 180);
-      }
-    };
-    timer = setTimeout(tick, 350);
-    return () => clearTimeout(timer);
+
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    const at = (fn: () => void, ms: number) => timers.push(setTimeout(fn, ms));
+
+    // 1) type the command over ~1s
+    const perChar = 1000 / CMD.length;
+    for (let i = 1; i <= CMD.length; i++) {
+      at(() => setCmd(CMD.slice(0, i)), 350 + i * perChar);
+    }
+    const cmdEnd = 350 + CMD.length * perChar;
+    at(() => setCmdDone(true), cmdEnd);
+
+    // 2) type the summary fast (~1.1s regardless of length)
+    const sStart = cmdEnd + 220;
+    const sBudget = 1100;
+    const sStep = Math.max(1, Math.ceil(data.summary.length / (sBudget / 16)));
+    let shown = 0;
+    let frame = 0;
+    while (shown < data.summary.length) {
+      shown = Math.min(data.summary.length, shown + sStep);
+      const n = shown;
+      at(() => setSummaryTyped(data.summary.slice(0, n)), sStart + frame * 16);
+      frame++;
+    }
+    const sEnd = sStart + frame * 16;
+
+    // 3) shell + rail reveal, then 4) nodes cascade every 0.5s
+    at(() => setRevealed(true), sEnd);
+    for (let i = 0; i < entries.length; i++) {
+      at(() => setNodesIn(i + 1), sEnd + 200 + i * 500);
+    }
+
+    return () => timers.forEach(clearTimeout);
+    // run once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const toggle = (i: number) =>
@@ -90,73 +157,25 @@ export default function CareerLog({ data }: { data: CareerLogData }) {
       return next;
     });
 
-  const matches = (e: Experience) =>
-    !filter ||
-    e.tech.some((t) => t.toLowerCase().includes(filter.toLowerCase()));
-
   function run(raw: string) {
-    const cmd = raw.trim();
-    if (!cmd) return;
-    const [verb, ...args] = cmd.split(/\s+/);
-    const arg = args.join(" ");
+    const line = raw.trim();
+    if (!line) return;
+    const verb = line.toLowerCase().split(/\s+/)[0];
     let out = "";
-
-    switch (verb.toLowerCase()) {
+    switch (verb) {
       case "help":
         out =
           "available commands:\n" +
-          "  ls            list roles\n" +
-          "  whoami        summary\n" +
-          "  filter <tech> dim roles missing a tech (filter all = reset)\n" +
-          "  expand <org>  open a role (expand all)\n" +
-          "  collapse      close all roles\n" +
-          "  download      grab the PDF résumé\n" +
-          "  clear         clear the log";
+          "  ls         list roles\n" +
+          "  whoami     summary\n" +
+          "  download   grab the PDF résumé\n" +
+          "  clear      clear the log";
         break;
       case "ls":
-        out = data.experience
-          .map((e) => `${e.period.padEnd(20)} ${e.org}`)
-          .join("\n");
+        out = entries.map((e) => `${e.period.padEnd(20)} ${e.org}`).join("\n");
         break;
       case "whoami":
         out = `${data.name}\n${data.summary}`;
-        break;
-      case "filter":
-        if (!arg || /^(all|clear|reset|none)$/i.test(arg)) {
-          setFilter(null);
-          out = "filter cleared.";
-        } else {
-          const hit = techs.find((t) =>
-            t.toLowerCase().includes(arg.toLowerCase())
-          );
-          if (hit) {
-            setFilter(hit);
-            out = `filtering by "${hit}".`;
-          } else {
-            out = `no roles tagged "${arg}". try: ${techs.join(", ")}`;
-          }
-        }
-        break;
-      case "expand": {
-        if (/^all$/i.test(arg)) {
-          setExpanded(new Set(data.experience.map((_, i) => i)));
-          out = "expanded all roles.";
-          break;
-        }
-        const idx = data.experience.findIndex((e) =>
-          e.org.toLowerCase().includes(arg.toLowerCase())
-        );
-        if (idx >= 0) {
-          setExpanded((p) => new Set(p).add(idx));
-          out = `expanded ${data.experience[idx].org}.`;
-        } else {
-          out = `no role matching "${arg}".`;
-        }
-        break;
-      }
-      case "collapse":
-        setExpanded(new Set());
-        out = "collapsed all roles.";
         break;
       case "download":
       case "resume":
@@ -170,7 +189,7 @@ export default function CareerLog({ data }: { data: CareerLogData }) {
       default:
         out = `command not found: ${verb}. type "help".`;
     }
-    setOutput((p) => [...p, { cmd, out }]);
+    setOutput((p) => [...p, { cmd: line, out }]);
   }
 
   function onKeyDown(e: KeyboardEvent<HTMLInputElement>) {
@@ -203,79 +222,127 @@ export default function CareerLog({ data }: { data: CareerLogData }) {
     }
   }
 
+  const showHint = !shellFocused && !input && output.length === 0;
+
   return (
-    <div className={`${styles.wrap} ${revealed ? styles.revealed : ""}`}>
+    <div className={styles.wrap}>
       <div className={styles.head}>
         <h1 className={styles.title}>Resume</h1>
-        <span className={styles.entries}>
-          <span className={styles.dot} aria-hidden="true" />
-          {data.experience.length} ROLES
-        </span>
+        <a className={styles.download} href={data.resumePdf} download>
+          ↓ download résumé.pdf
+        </a>
       </div>
 
-      <div className={styles.term}>
-        <div className={styles.crumb}>
-          <span className={styles.ps}>{PROMPT}</span> {typed}
-          {!revealed && <span className={styles.cur} aria-hidden="true" />}
-        </div>
+      <div className={styles.crumb}>
+        <span className={styles.ps}>{PROMPT}</span> {cmd}
+        {!cmdDone && <span className={styles.cur} aria-hidden="true" />}
+      </div>
 
-        {revealed && (
-          <>
-            <p className={styles.summary}>{data.summary}</p>
+      <p className={styles.summary}>{summaryTyped}</p>
 
-            {techs.length > 0 && (
-              <div className={styles.filters}>
-                <button
-                  className={`${styles.chip} ${filter === null ? styles.chipActive : ""}`}
-                  onClick={() => setFilter(null)}
-                >
-                  all
-                </button>
-                {techs.map((t) => (
-                  <button
-                    key={t}
-                    className={`${styles.chip} ${filter === t ? styles.chipActive : ""}`}
-                    onClick={() => setFilter((f) => (f === t ? null : t))}
-                  >
-                    {t}
-                  </button>
-                ))}
+      {/* interactive shell — always shown, cursor blinks only when focused */}
+      <div
+        className={`${styles.shell} ${shellFocused ? styles.shellFocused : ""} ${
+          revealed ? styles.in : ""
+        }`}
+        onMouseDown={(e) => {
+          e.preventDefault();
+          inputRef.current?.focus();
+        }}
+      >
+        {output.length > 0 && (
+          <div className={styles.shellHistory}>
+            {output.map((o, i) => (
+              <div key={i}>
+                <div className={styles.shellEchoLine}>
+                  <span className={styles.ps}>{PROMPT}</span> {o.cmd}
+                </div>
+                <div className={styles.shellOut}>{o.out}</div>
               </div>
-            )}
+            ))}
+          </div>
+        )}
+        <div className={styles.shellLine}>
+          <span className={styles.ps}>{PROMPT}</span>
+          <span className={styles.shellEcho}>{input}</span>
+          <span className={styles.shellCur} aria-hidden="true" />
+          {showHint && (
+            <span className={styles.shellHint}>
+              type &quot;help&quot; — try ls · whoami · download
+            </span>
+          )}
+          <input
+            ref={inputRef}
+            className={styles.shellInput}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={onKeyDown}
+            onFocus={() => setShellFocused(true)}
+            onBlur={() => setShellFocused(false)}
+            autoComplete="off"
+            spellCheck={false}
+            aria-label="terminal command input"
+          />
+        </div>
+      </div>
 
-            <div className={styles.timeline}>
-              {data.experience.map((e, i) => {
-                const open = expanded.has(i);
-                const dim = !matches(e);
-                return (
-                  <div
-                    key={e.org + i}
-                    className={`${styles.node} ${dim ? styles.nodeDim : ""}`}
+      <div
+        className={`${styles.timeline} ${revealed ? styles.timelineIn : ""}`}
+      >
+        {entries.map((e, i) => {
+          const open = expanded.has(i);
+          const hasBody =
+            !!e.detail || e.highlights.length > 0 || e.tech.length > 0;
+          return (
+            <div
+              key={e.org + i}
+              className={`${styles.node} ${i < nodesIn ? styles.nodeIn : ""}`}
+            >
+              <div
+                className={`${styles.card} ${open ? styles.cardOpen : ""}`}
+                role={hasBody ? "button" : undefined}
+                tabIndex={hasBody ? 0 : undefined}
+                aria-expanded={hasBody ? open : undefined}
+                onClick={hasBody ? () => toggle(i) : undefined}
+                onKeyDown={
+                  hasBody
+                    ? (ev) => {
+                        if (ev.key === "Enter" || ev.key === " ") {
+                          ev.preventDefault();
+                          toggle(i);
+                        }
+                      }
+                    : undefined
+                }
+                style={hasBody ? undefined : { cursor: "default" }}
+              >
+                <div className={styles.main}>
+                  <div className={styles.period}>{e.period}</div>
+                  <h2 className={styles.role}>{e.title}</h2>
+                  {e.org && <div className={styles.org}>{e.org}</div>}
+                </div>
+                <div className={styles.right}>
+                  <span
+                    className={`${styles.pill} ${
+                      e.cat === "EDUCATION" ? styles.pillEdu : ""
+                    }`}
                   >
-                    <button
-                      className={styles.nodeHead}
-                      onClick={() => toggle(i)}
-                      aria-expanded={open}
-                    >
-                      <span className={styles.period}>{e.period}</span>
-                      <span className={styles.org}>{e.org}</span>
-                      <span className={styles.role}>{e.role}</span>
-                      <span className={styles.toggle}>
-                        {open ? "▾ collapse" : "▸ expand"}
-                      </span>
-                    </button>
-                    <div
-                      className={`${styles.body} ${open ? styles.bodyOpen : ""}`}
-                    >
-                      <div className={styles.bodyInner}>
-                        {e.detail && (
-                          <p className={styles.detail}>{e.detail}</p>
-                        )}
+                    {e.cat}
+                  </span>
+                  {hasBody && <span className={styles.arrow}>▸</span>}
+                </div>
+                {hasBody && (
+                  <div className={styles.body}>
+                    <div className={styles.bodyInner}>
+                      {e.detail && <p className={styles.detail}>{e.detail}</p>}
+                      {e.highlights.length > 0 && (
                         <ul className={styles.highlights}>
                           {e.highlights.map((h, hi) => (
                             <li key={hi}>{h}</li>
                           ))}
                         </ul>
+                      )}
+                      {e.tech.length > 0 && (
                         <div className={styles.tech}>
                           {e.tech.map((t) => (
                             <span key={t} className={styles.techTag}>
@@ -283,88 +350,14 @@ export default function CareerLog({ data }: { data: CareerLogData }) {
                             </span>
                           ))}
                         </div>
-                      </div>
+                      )}
                     </div>
                   </div>
-                );
-              })}
-            </div>
-
-            {data.earlier.length > 0 && (
-              <div className={styles.section}>
-                <div className={styles.sectionLabel}>~/ EARLIER</div>
-                {data.earlier.map((e, i) => (
-                  <div key={i} className={styles.miniRow}>
-                    <span>
-                      <span className={styles.miniOrg}>{e.org}</span>{" "}
-                      <span className={styles.miniRole}>— {e.role}</span>
-                    </span>
-                    <span className={styles.miniPeriod}>{e.period}</span>
-                  </div>
-                ))}
+                )}
               </div>
-            )}
-
-            {data.education.length > 0 && (
-              <div className={styles.section}>
-                <div className={styles.sectionLabel}>~/ EDUCATION</div>
-                {data.education.map((e, i) => (
-                  <div key={i} className={styles.miniRow}>
-                    <span>
-                      <span className={styles.miniOrg}>{e.school}</span>{" "}
-                      <span className={styles.miniRole}>— {e.credential}</span>
-                    </span>
-                    <span className={styles.miniPeriod}>{e.year}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* command output history */}
-            {output.length > 0 && (
-              <div className={styles.cmdHistory}>
-                {output.map((o, i) => (
-                  <div key={i}>
-                    <div className={styles.cmdEcho}>
-                      <span className={styles.ps}>{PROMPT}</span> {o.cmd}
-                    </div>
-                    <div className={styles.cmdOut}>{o.out}</div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* live command line */}
-            <div
-              className={styles.cmdLine}
-              onMouseDown={(ev) => {
-                ev.preventDefault();
-                inputRef.current?.focus();
-              }}
-            >
-              <span className={styles.ps}>{PROMPT}</span>
-              <span className={styles.echo}>{input}</span>
-              <span className={styles.blk} aria-hidden="true" />
-              {!input && <span className={styles.hint}>help</span>}
-              <input
-                ref={inputRef}
-                className={styles.hiddenInput}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={onKeyDown}
-                autoComplete="off"
-                spellCheck={false}
-                aria-label="terminal command input"
-              />
             </div>
-
-            <div className={styles.actions}>
-              <a className={styles.download} href={data.resumePdf} download>
-                ↓ download résumé.pdf
-              </a>
-            </div>
-          </>
-        )}
+          );
+        })}
       </div>
     </div>
   );
