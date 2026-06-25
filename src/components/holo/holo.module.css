@@ -68,16 +68,19 @@
   font-style: italic;
 }
 
-/* desktop nav */
+/* primary nav (persistent on every page) */
 .nav {
-  display: none;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 @media (min-width: 820px) {
   .nav {
-    display: flex;
     gap: 28px;
-    font-size: 12px;
-    letter-spacing: 0.08em;
   }
 }
 .navLink {

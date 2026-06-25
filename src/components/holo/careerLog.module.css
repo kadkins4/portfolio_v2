@@ -1,47 +1,6 @@
 /* Resume — vertical holo timeline (Craft / cyan). Cards on a glowing rail,
  * serif titles, category pills, and an opt-in interactive shell whose cursor
- * blinks only while focused. Full-bleed prototype background (no site chrome). */
-
-.page {
-  min-height: 100dvh;
-  background:
-    radial-gradient(
-      1200px 600px at 50% -10%,
-      oklch(0.4 0.08 190 / 0.12),
-      transparent 60%
-    ),
-    #02100f;
-  color: #eaf6f4;
-  font-family: var(--font-mono), ui-monospace, monospace;
-}
-
-.backRow {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 22px 18px 0;
-  box-sizing: border-box;
-}
-@media (min-width: 820px) {
-  .backRow {
-    padding: 26px 32px 0;
-  }
-}
-.back {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 12px;
-  letter-spacing: 0.06em;
-  color: rgba(234, 246, 244, 0.55);
-  text-decoration: none;
-  transition: color 0.2s;
-}
-.back:hover,
-.back:focus-visible {
-  color: oklch(0.86 0.13 190);
-  outline: none;
-}
+ * blinks only while focused. Wrapped by HoloFrame (shared nav chrome). */
 
 .wrap {
   --cyan: oklch(0.86 0.13 190);

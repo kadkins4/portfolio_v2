@@ -19,9 +19,17 @@ export default function HoloFrame({
         <Link href="/" className={styles.brand}>
           {first} {last && <i>{last}</i>}
         </Link>
-        <Link href="/" className={styles.backLink}>
-          ← cd ~/terminal
-        </Link>
+        <nav className={styles.nav} aria-label="Primary">
+          <Link href="/story" className={styles.navLink}>
+            About
+          </Link>
+          <Link href="/notes" className={styles.navLink}>
+            Notes
+          </Link>
+          <Link href="/contact" className={styles.navLink}>
+            Contact
+          </Link>
+        </nav>
       </header>
       {children}
     </div>
