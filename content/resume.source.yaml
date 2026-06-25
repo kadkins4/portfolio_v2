@@ -67,7 +67,7 @@ skills:
 
 experience:
   - org: Penn Entertainment
-    role: Senior Frontend Software Engineer (promoted from Software Engineer III)
+    role: Senior Software Engineer
     period: Mar 2022 – May 2026
     detail: theScore, theScore Bet, and ESPN BET
     highlights:
@@ -81,7 +81,7 @@ experience:
       - Ran web on-call, mentored interns through mid-levels, interviewed candidates, backup scrum master.
     tech: [React, TypeScript, Zustand, Jest, Datadog, LaunchDarkly]
   - org: Fidelis Cybersecurity
-    role: Software Engineer II (Fullstack)
+    role: Fullstack Software Engineer II
     period: Dec 2018 – Mar 2022
     detail: Threat-analysis platform for security analysts
     highlights:

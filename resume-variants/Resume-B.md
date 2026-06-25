@@ -20,7 +20,7 @@ Product-focused Senior Front-End Engineer with 8+ years building high-traffic co
 
 **Experience**
 
-**Penn Entertainment — Senior Frontend Software Engineer (promoted from Software Engineer III)** | Mar 2022 – May 2026  
+**Penn Entertainment — Senior Software Engineer** | Mar 2022 – May 2026  
 *theScore, theScore Bet, and ESPN BET*
 
 * Rebuilt theScore website from legacy tech to React, revamping sport score pages and UX.
@@ -33,7 +33,7 @@ Product-focused Senior Front-End Engineer with 8+ years building high-traffic co
 * Ran web on-call, mentored interns through mid-levels, interviewed candidates, backup scrum master.
 * *Tech:* React, TypeScript, Zustand, Jest, Datadog, LaunchDarkly
 
-**Fidelis Cybersecurity — Software Engineer II (Fullstack)** | Dec 2018 – Mar 2022  
+**Fidelis Cybersecurity — Fullstack Software Engineer II** | Dec 2018 – Mar 2022  
 *Threat-analysis platform for security analysts*
 
 * Built end-to-end UI workflows for threat analysis; reusable components and unit tests cut regressions in critical views.
