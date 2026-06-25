@@ -119,7 +119,7 @@ export default function SelectedWork({
   return (
     <main className={`${styles.wrap} ${play ? styles.play : ""}`}>
       <div className={styles.head}>
-        <h1 className={styles.title}>Selected Work</h1>
+        <h1 className={styles.title}>Work</h1>
         <span className={styles.entries}>
           <span className={styles.dot} aria-hidden="true" />
           {items.length} PROJECTS

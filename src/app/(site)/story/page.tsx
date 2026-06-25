@@ -30,26 +30,25 @@ export default async function StoryPage() {
 
   return (
     <HoloFrame name={name}>
-      <HoloReveal>
-        <div className={`${page.head} ${story.titleRow} ${page.rise}`}>
-          <Image
-            src="/images/kendall-adkins.jpeg"
-            alt="Portrait of Kendall Adkins"
-            width={92}
-            height={92}
-            className={story.portrait}
-            priority
-          />
-          <h1 className={page.title}>
-            The <i>Story</i>
-          </h1>
-        </div>
-
-        <div className={`${page.crumb} ${page.rise}`}>
-          <span className={page.ps}>kendall@adkins:~$</span> cat story.md
-          <span className={page.cur} aria-hidden="true" />
-        </div>
-
+      <HoloReveal
+        command="cat story.md"
+        name={name}
+        head={
+          <div className={`${page.head} ${story.titleRow}`}>
+            <Image
+              src="/images/kendall-adkins.jpeg"
+              alt="Portrait of Kendall Adkins"
+              width={92}
+              height={92}
+              className={story.portrait}
+              priority
+            />
+            <h1 className={page.title}>
+              The <i>Story</i>
+            </h1>
+          </div>
+        }
+      >
         <p className={`${page.lede} ${page.rise}`}>
           A decade-long arc from leading teams to senior engineering. He spent
           years in management, taught himself to code, and now ships fast,

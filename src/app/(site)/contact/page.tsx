@@ -46,25 +46,22 @@ export default async function ContactPage() {
 
   return (
     <HoloFrame name={name}>
-      <HoloReveal wide>
-        <div className={`${page.head} ${page.rise}`}>
-          <h1 className={page.title}>
-            Get In <i>Touch</i>
-          </h1>
-          <span className={page.entries}>
-            <span className={page.dot} aria-hidden="true" />
-            CONNECTION OPEN
-          </span>
-        </div>
-
-        <div className={`${page.crumb} ${page.rise}`}>
-          <span className={page.ps}>
-            {name.split(" ")[0].toLowerCase()}@adkins:~$
-          </span>{" "}
-          ./contact.sh
-          <span className={page.cur} aria-hidden="true" />
-        </div>
-
+      <HoloReveal
+        wide
+        command="./contact.sh"
+        name={name}
+        head={
+          <div className={page.head}>
+            <h1 className={page.title}>
+              Get In <i>Touch</i>
+            </h1>
+            <span className={page.entries}>
+              <span className={page.dot} aria-hidden="true" />
+              CONNECTION OPEN
+            </span>
+          </div>
+        }
+      >
         <p className={`${page.lede} ${page.rise}`}>
           Got a project, a role, or a question? Send a note and I read every
           one. No email handy? Drop another way to reach you and I&rsquo;ll

@@ -4,6 +4,7 @@ import config from "../../../../keystatic.config";
 import HoloFrame from "@/components/holo/HoloFrame";
 import HoloReveal from "@/components/holo/HoloReveal";
 import FieldNotes, { type NoteItem } from "@/components/holo/FieldNotes";
+import page from "@/components/holo/holoPage.module.css";
 
 export const metadata: Metadata = {
   title: "Field Notes",
@@ -43,8 +44,23 @@ export default async function NotesPage() {
 
   return (
     <HoloFrame name={name}>
-      <HoloReveal wide>
-        <FieldNotes name={name} items={items} />
+      <HoloReveal
+        wide
+        command="ls notes/"
+        name={name}
+        head={
+          <div className={page.head}>
+            <h1 className={page.title}>
+              Field <i>Notes</i>
+            </h1>
+            <span className={page.entries}>
+              <span className={page.dot} aria-hidden="true" />
+              {items.length} PUBLISHED
+            </span>
+          </div>
+        }
+      >
+        <FieldNotes items={items} />
       </HoloReveal>
     </HoloFrame>
   );

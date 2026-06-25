@@ -75,25 +75,22 @@ export default async function StackPage() {
 
   return (
     <HoloFrame name={name}>
-      <HoloReveal wide>
-        <div className={`${page.head} ${page.rise}`}>
-          <h1 className={page.title}>
-            The <i>Stack</i>
-          </h1>
-          <span className={page.entries}>
-            <span className={page.dot} aria-hidden="true" />
-            {skills.length} TOOLS
-          </span>
-        </div>
-
-        <div className={`${page.crumb} ${page.rise}`}>
-          <span className={page.ps}>
-            {name.split(" ")[0].toLowerCase()}@adkins:~$
-          </span>{" "}
-          cat stack.txt
-          <span className={page.cur} aria-hidden="true" />
-        </div>
-
+      <HoloReveal
+        wide
+        command="cat stack.txt"
+        name={name}
+        head={
+          <div className={page.head}>
+            <h1 className={page.title}>
+              The <i>Stack</i>
+            </h1>
+            <span className={page.entries}>
+              <span className={page.dot} aria-hidden="true" />
+              {skills.length} TOOLS
+            </span>
+          </div>
+        }
+      >
         <p className={`${page.lede} ${page.rise}`}>
           What I build with, grouped by how often it is actually in my hands.
           The top of the list is daily-driver stuff; the bottom is where I go to

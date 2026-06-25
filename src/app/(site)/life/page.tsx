@@ -38,18 +38,18 @@ export default async function LifePage() {
 
   return (
     <HoloFrame name={name}>
-      <HoloReveal amber>
-        <div className={`${page.head} ${page.rise}`}>
-          <h1 className={page.title}>
-            The <i>Human</i>
-          </h1>
-        </div>
-
-        <div className={`${page.crumb} ${page.rise}`}>
-          <span className={page.ps}>kendall@adkins:~$</span> cat life.md
-          <span className={page.cur} aria-hidden="true" />
-        </div>
-
+      <HoloReveal
+        amber
+        command="cat life.md"
+        name={name}
+        head={
+          <div className={page.head}>
+            <h1 className={page.title}>
+              The <i>Human</i>
+            </h1>
+          </div>
+        }
+      >
         <p className={`${page.lede} ${page.rise}`}>
           There is a person behind the commits. Baltimore-raised, now in
           Southern California, with a list of things he chases once the laptop

@@ -96,23 +96,19 @@ export default async function ProjectDetailPage({ params }: Props) {
   return (
     <HoloFrame name={name}>
       <JsonLd data={breadcrumbSchema} />
-      <HoloReveal>
-        <div className={`${page.head} ${page.rise}`}>
-          <h1 className={page.title}>{item.title}</h1>
-          <span className={page.entries}>
-            <span className={page.dot} aria-hidden="true" />
-            {[year, "PROJECT"].filter(Boolean).join(" · ")}
-          </span>
-        </div>
-
-        <div className={`${page.crumb} ${page.rise}`}>
-          <span className={page.ps}>
-            {name.split(" ")[0].toLowerCase()}@adkins:~$
-          </span>{" "}
-          cat work/{slug}.md
-          <span className={page.cur} aria-hidden="true" />
-        </div>
-
+      <HoloReveal
+        command={`cat work/${slug}.md`}
+        name={name}
+        head={
+          <div className={page.head}>
+            <h1 className={page.title}>{item.title}</h1>
+            <span className={page.entries}>
+              <span className={page.dot} aria-hidden="true" />
+              {[year, "PROJECT"].filter(Boolean).join(" · ")}
+            </span>
+          </div>
+        }
+      >
         {item.description && (
           <p className={`${page.lede} ${page.rise}`}>{item.description}</p>
         )}

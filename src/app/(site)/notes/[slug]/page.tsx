@@ -82,17 +82,12 @@ export default async function NoteDetailPage({ params }: Props) {
     <>
       <JsonLd data={breadcrumbSchema} />
       <HoloFrame name={name}>
-        <HoloReveal amber={isLife}>
-          <h1 className={`${page.title} ${page.rise}`}>{item.title}</h1>
-
-          <div className={`${page.crumb} ${page.rise}`}>
-            <span className={page.ps}>
-              {name.split(" ")[0].toLowerCase()}@adkins:~$
-            </span>{" "}
-            cat notes/{slug}.md
-            <span className={page.cur} aria-hidden="true" />
-          </div>
-
+        <HoloReveal
+          amber={isLife}
+          command={`cat notes/${slug}.md`}
+          name={name}
+          head={<h1 className={page.title}>{item.title}</h1>}
+        >
           <div className={`${styles.metaRow} ${page.rise}`}>
             {item.date && (
               <span className={styles.date}>

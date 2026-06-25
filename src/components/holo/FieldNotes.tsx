@@ -40,13 +40,7 @@ function NoteCardLink({ item }: { item: NoteItem }) {
   );
 }
 
-export default function FieldNotes({
-  name,
-  items,
-}: {
-  name: string;
-  items: NoteItem[];
-}) {
+export default function FieldNotes({ items }: { items: NoteItem[] }) {
   const [filter, setFilter] = useState<"all" | "craft" | "life">("all");
 
   const counts = useMemo(() => {
@@ -65,24 +59,6 @@ export default function FieldNotes({
 
   return (
     <>
-      <div className={`${page.head} ${page.rise}`}>
-        <h1 className={page.title}>
-          Field <i>Notes</i>
-        </h1>
-        <span className={page.entries}>
-          <span className={page.dot} aria-hidden="true" />
-          {items.length} PUBLISHED
-        </span>
-      </div>
-
-      <div className={`${page.crumb} ${page.rise}`}>
-        <span className={page.ps}>
-          {name.split(" ")[0].toLowerCase()}@adkins:~$
-        </span>{" "}
-        ls notes/
-        <span className={page.cur} aria-hidden="true" />
-      </div>
-
       <p className={`${page.lede} ${page.rise}`}>
         Essays and the occasional reference. Short and honest, written when a
         thing was worth writing down. Not a content farm.
