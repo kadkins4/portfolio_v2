@@ -9,10 +9,12 @@
   color: var(--muted, rgba(234, 246, 244, 0.55));
   min-height: 1.2em;
 }
-/* Accent resolves across both token systems: --accent (holoPage, flips amber on
- * Life pages) → --cyan (careerLog/selectedWork) → literal cyan fallback. */
+/* Accent resolves --cyan first (careerLog/selectedWork pages) then --accent
+ * (holoPage, which flips amber on Life pages). --cyan must win because the
+ * legacy global `--accent: #a08060` (globals.css) would otherwise leak brown
+ * onto pages that only define --cyan. */
 .ps {
-  color: var(--accent, var(--cyan, oklch(0.86 0.13 190)));
+  color: var(--cyan, var(--accent, oklch(0.86 0.13 190)));
 }
 .cur {
   display: inline-block;
@@ -20,7 +22,7 @@
   height: 15px;
   vertical-align: -2px;
   margin-left: 2px;
-  background: var(--accent, var(--cyan, oklch(0.86 0.13 190)));
+  background: var(--cyan, var(--accent, oklch(0.86 0.13 190)));
   animation: tcBlink 1.1s steps(1) infinite;
 }
 
