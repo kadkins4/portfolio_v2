@@ -17,18 +17,10 @@ vi.mock("next/link", () => ({
   ),
 }));
 
-vi.mock("next/image", () => ({
-  default: ({ alt, ...props }: { alt: string; [key: string]: unknown }) => (
-    <img alt={alt} {...props} />
+vi.mock("@/components/holo/HoloFrame", () => ({
+  default: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
   ),
-}));
-
-vi.mock("@/components/Header", () => ({
-  default: () => <header data-testid="header" />,
-}));
-
-vi.mock("@/components/Footer", () => ({
-  default: () => <footer data-testid="footer" />,
 }));
 
 describe("NotFound", () => {
@@ -43,17 +35,11 @@ describe("NotFound", () => {
     expect(message).toBeInTheDocument();
   });
 
-  it("has Back to Home link", () => {
+  it("has a link back home", () => {
     render(<NotFound />);
     expect(screen.getByRole("link", { name: /home/i })).toHaveAttribute(
       "href",
       "/"
     );
-  });
-
-  it("renders header and footer", () => {
-    render(<NotFound />);
-    expect(screen.getByTestId("header")).toBeInTheDocument();
-    expect(screen.getByTestId("footer")).toBeInTheDocument();
   });
 });

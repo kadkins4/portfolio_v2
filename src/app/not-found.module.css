@@ -1,65 +1,82 @@
-.wrapper {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
+/* Holo-Terminal 404 — terminal "command not found" framing on the cyan shell.
+   Background + scanlines come from HoloFrame's .shell. */
 
-.container {
+.wrap {
+  --cyan: oklch(0.86 0.13 190);
+  --cyan-soft: oklch(0.7 0.1 190);
+  --muted: rgba(234, 246, 244, 0.55);
+
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   text-align: center;
-  padding: 24px;
-  padding-top: 60px;
-  overflow: hidden;
-  animation: fadeUp 0.6s ease both;
-  border-bottom: 1px solid var(--border);
+  gap: 14px;
+  padding: 40px 24px 80px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  animation: nfRise 0.5s ease both;
 }
 
-.illustration {
-  max-width: 280px;
-  width: 100%;
-  height: auto;
-  margin-bottom: 32px;
-  opacity: 0.9;
+.crumb {
+  font-size: 13px;
+  color: var(--muted);
+}
+.ps {
+  color: var(--cyan-soft);
 }
 
-.heading {
-  font-family: var(--font-syne), sans-serif;
-  font-weight: 800;
-  font-size: clamp(72px, 15vw, 120px);
+.err {
+  font-size: 13px;
+  color: oklch(0.74 0.16 35);
+}
+
+.code {
+  font-family: var(--font-display), var(--font-serif), Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(84px, 18vw, 140px);
   line-height: 1;
-  letter-spacing: -0.03em;
-  color: var(--accent);
-  margin-bottom: 16px;
+  margin: 4px 0;
+  color: var(--cyan);
+  text-shadow:
+    0 0 24px oklch(0.7 0.16 190 / 0.55),
+    0 0 4px oklch(0.85 0.12 190 / 0.4);
 }
 
 .message {
-  font-size: 18px;
-  color: var(--text-secondary);
-  max-width: 400px;
-  margin-bottom: 40px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: rgba(234, 246, 244, 0.7);
+  max-width: 42ch;
 }
 
-.backLink {
-  font-family: var(--font-mono), monospace;
-  font-size: 14px;
-  color: var(--accent);
-  text-decoration: underline;
-  text-underline-offset: 4px;
-  transition: opacity 0.2s ease;
+.back {
+  margin-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  color: var(--cyan);
+  text-decoration: none;
+  border: 1px solid oklch(0.7 0.1 190 / 0.4);
+  border-radius: 999px;
+  padding: 9px 18px;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
+}
+.back:hover,
+.back:focus-visible {
+  border-color: var(--cyan);
+  background: oklch(0.7 0.1 190 / 0.12);
+  outline: none;
 }
 
-.backLink:hover {
-  opacity: 0.7;
-}
-
-@keyframes fadeUp {
+@keyframes nfRise {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(16px);
   }
   to {
     opacity: 1;
@@ -68,7 +85,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .container {
+  .wrap {
     animation: none;
   }
 }

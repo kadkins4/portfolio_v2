@@ -10,9 +10,9 @@
   min-height: 1.2em;
 }
 /* Accent resolves --cyan first (careerLog/selectedWork pages) then --accent
- * (holoPage, which flips amber on Life pages). --cyan must win because the
- * legacy global `--accent: #a08060` (globals.css) would otherwise leak brown
- * onto pages that only define --cyan. */
+ * (holoPage .wrap, which flips amber on Life pages), then a cyan literal as a
+ * last resort. --cyan is listed first so cyan pages keep cyan while Life pages
+ * still pick up amber via --accent. */
 .ps {
   color: var(--cyan, var(--accent, oklch(0.86 0.13 190)));
 }

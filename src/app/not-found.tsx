@@ -1,30 +1,22 @@
 import Link from "next/link";
-import Image from "next/image";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import HoloFrame from "@/components/holo/HoloFrame";
 import NotFoundMessage from "@/components/NotFoundMessage";
 import styles from "./not-found.module.css";
 
 export default function NotFound() {
   return (
-    <div className={styles.wrapper}>
-      <Header />
-      <main className={styles.container}>
-        <Image
-          src="/images/404-illustration.svg"
-          alt=""
-          width={280}
-          height={200}
-          className={styles.illustration}
-          priority
-        />
-        <h1 className={styles.heading}>404</h1>
+    <HoloFrame>
+      <main className={styles.wrap}>
+        <div className={styles.crumb}>
+          <span className={styles.ps}>kendall@adkins</span>:~$ cd ./missing-page
+        </div>
+        <p className={styles.err}>cd: no such file or directory</p>
+        <h1 className={styles.code}>404</h1>
         <NotFoundMessage className={styles.message} />
-        <Link href="/" className={styles.backLink}>
-          Back to Home
+        <Link href="/" className={styles.back}>
+          → cd ~/home
         </Link>
       </main>
-      <Footer />
-    </div>
+    </HoloFrame>
   );
 }
