@@ -295,9 +295,23 @@
   color: var(--muted);
 }
 
-/* entrance cascade */
-.card {
-  opacity: 1;
+/* entrance cascade — everything below the crumb stays hidden until the
+   `ls work/` command finishes typing and .play is set (matches the resume
+   entrance). swRise uses `both`, so the final opacity:1 is held. */
+.lede,
+.filters,
+.card,
+.foot {
+  opacity: 0;
+}
+.play .lede {
+  animation: swRise 0.5s ease both 0.02s;
+}
+.play .filters {
+  animation: swRise 0.5s ease both 0.08s;
+}
+.play .foot {
+  animation: swRise 0.5s ease both;
 }
 .play .card {
   animation: swRise 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) both;
@@ -350,8 +364,12 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .play .lede,
+  .play .filters,
+  .play .foot,
   .play .card {
     animation: none;
+    opacity: 1;
   }
   .dot,
   .cur {

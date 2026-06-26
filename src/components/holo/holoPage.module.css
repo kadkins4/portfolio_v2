@@ -244,9 +244,11 @@
   color: var(--muted);
 }
 
-/* entrance cascade — add `.rise` to staggerable blocks; .play on .wrap */
+/* entrance cascade — add `.rise` to staggerable blocks; .play on .wrap.
+   Base is hidden so nothing shows until the crumb finishes typing and sets
+   .play (matches the resume entrance). hpRise uses `both`, holding opacity:1. */
 .rise {
-  opacity: 1;
+  opacity: 0;
 }
 .play .rise {
   animation: hpRise 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) both;
@@ -298,6 +300,7 @@
 @media (prefers-reduced-motion: reduce) {
   .play .rise {
     animation: none;
+    opacity: 1;
   }
   .dot,
   .cur {
