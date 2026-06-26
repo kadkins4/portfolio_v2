@@ -1,6 +1,10 @@
 import { render, screen } from "@testing-library/react";
 import NotFound from "./not-found";
 
+vi.mock("next/navigation", () => ({
+  usePathname: () => "/some/missing/page",
+}));
+
 vi.mock("next/link", () => ({
   default: ({
     href,
@@ -22,6 +26,21 @@ vi.mock("@/components/holo/HoloFrame", () => ({
     <div>{children}</div>
   ),
 }));
+
+beforeEach(() => {
+  vi.stubGlobal(
+    "matchMedia",
+    vi.fn().mockReturnValue({
+      matches: true,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      media: "",
+      dispatchEvent: vi.fn(),
+    })
+  );
+});
 
 describe("NotFound", () => {
   it("renders 404 heading", () => {

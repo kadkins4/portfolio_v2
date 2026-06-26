@@ -16,18 +16,16 @@ function randomMessage() {
   return messages[Math.floor(Math.random() * messages.length)];
 }
 
-type Props = {
-  className?: string;
-};
+type Props = React.ComponentPropsWithoutRef<"p">;
 
-export default function NotFoundMessage({ className }: Props) {
+export default function NotFoundMessage(props: Props) {
   // Picked once on mount via a lazy initializer (not during every render).
   // The server and client may pick different lines, which is purely cosmetic
   // on a 404 — suppressHydrationWarning silences the expected text mismatch.
   const [message] = useState(randomMessage);
 
   return (
-    <p className={className} suppressHydrationWarning>
+    <p suppressHydrationWarning {...props}>
       {message}
     </p>
   );

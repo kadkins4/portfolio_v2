@@ -1,22 +1,40 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import HoloFrame from "@/components/holo/HoloFrame";
 import NotFoundMessage from "@/components/NotFoundMessage";
+import TypedReveal from "@/components/holo/TypedReveal";
 import styles from "./not-found.module.css";
 
 export default function NotFound() {
+  const pathname = usePathname();
   return (
     <HoloFrame>
-      <main className={styles.wrap}>
-        <div className={styles.crumb}>
-          <span className={styles.ps}>kendall@adkins</span>:~$ cd ./missing-page
-        </div>
-        <p className={styles.err}>cd: no such file or directory</p>
-        <h1 className={styles.code}>404</h1>
-        <NotFoundMessage className={styles.message} />
-        <Link href="/" className={styles.back}>
-          → cd ~/home
-        </Link>
-      </main>
+      <TypedReveal
+        steps={[
+          { kind: "command", text: `cd .${pathname}` },
+          {
+            kind: "line",
+            text: "cd: no such file or directory",
+            tone: "error",
+          },
+          {
+            kind: "reveal",
+            node: (
+              <div className={styles.block}>
+                <h1 className={styles.code} data-rise>
+                  404
+                </h1>
+                <NotFoundMessage className={styles.message} data-rise />
+                <Link href="/" className={styles.back} data-rise>
+                  Back to Home
+                </Link>
+              </div>
+            ),
+          },
+        ]}
+      />
     </HoloFrame>
   );
 }

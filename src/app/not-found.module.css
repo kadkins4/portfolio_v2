@@ -1,37 +1,18 @@
 /* Holo-Terminal 404 — terminal "command not found" framing on the cyan shell.
-   Background + scanlines come from HoloFrame's .shell. */
+   Background + scanlines come from HoloFrame's .shell.
+   TypedReveal owns the prompt crumb + error line rendering now. */
 
-.wrap {
-  --cyan: oklch(0.86 0.13 190);
-  --cyan-soft: oklch(0.7 0.1 190);
-  --muted: rgba(234, 246, 244, 0.55);
-
-  flex: 1;
+.block {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   text-align: center;
   gap: 14px;
-  padding: 40px 24px 80px;
-  font-family: var(--font-mono), ui-monospace, monospace;
-  animation: nfRise 0.5s ease both;
-}
-
-.crumb {
-  font-size: 13px;
-  color: var(--muted);
-}
-.ps {
-  color: var(--cyan-soft);
-}
-
-.err {
-  font-size: 13px;
-  color: oklch(0.74 0.16 35);
+  padding: 40px 0 80px;
 }
 
 .code {
+  --cyan: oklch(0.86 0.13 190);
   font-family: var(--font-display), var(--font-serif), Georgia, serif;
   font-weight: 400;
   font-size: clamp(84px, 18vw, 140px);
@@ -51,6 +32,7 @@
 }
 
 .back {
+  --cyan: oklch(0.86 0.13 190);
   margin-top: 14px;
   display: inline-flex;
   align-items: center;
@@ -71,21 +53,4 @@
   border-color: var(--cyan);
   background: oklch(0.7 0.1 190 / 0.12);
   outline: none;
-}
-
-@keyframes nfRise {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .wrap {
-    animation: none;
-  }
 }
