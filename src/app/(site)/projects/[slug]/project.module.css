@@ -3,15 +3,69 @@
 
 .shot {
   position: relative;
+  display: block;
   aspect-ratio: 16 / 9;
   width: 100%;
   border-radius: 8px;
   overflow: hidden;
   background: #04100f;
   border: 1px solid var(--accent-bd);
+  margin-bottom: 24px;
 }
 .img {
   object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+/* clickable image → live site */
+.shotLink {
+  cursor: pointer;
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+.shotLink:hover {
+  border-color: var(--accent);
+  box-shadow: 0 14px 40px -18px oklch(0.7 0.12 190 / 0.5);
+}
+.shotLink:hover .img {
+  transform: scale(1.02);
+}
+.shotLink:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* tags + live link row, sits right above the image */
+.shotMeta {
+  display: flex;
+  align-items: center;
+  gap: 10px 12px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.liveLink {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11.5px;
+  letter-spacing: 0.04em;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--accent-bd);
+  background: var(--accent-fill);
+  color: var(--accent);
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
+}
+.liveLink:hover {
+  border-color: var(--accent);
+  background: oklch(0.7 0.1 190 / 0.18);
 }
 
 /* faint scanline overlay */
@@ -44,6 +98,23 @@
   right: 9px;
   border-bottom: 2px solid var(--accent);
   border-right: 2px solid var(--accent);
+}
+
+/* top back link — always visible in the head, lets the user bail fast */
+.backTop {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  color: var(--accent-soft);
+  text-decoration: none;
+  margin-bottom: 14px;
+  transition: color 0.2s;
+}
+.backTop:hover {
+  color: var(--accent);
 }
 
 /* in-page back link to /work */

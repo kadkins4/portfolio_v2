@@ -68,6 +68,23 @@ export default async function ProjectDetailPage({ params }: Props) {
   const year = yearOf(item.date ?? null);
   const tags = item.tags ?? [];
 
+  const shotInner = item.image ? (
+    <>
+      <Image
+        src={item.image}
+        alt={`${item.title} featured image`}
+        width={1200}
+        height={675}
+        className={styles.img}
+        style={{ objectPosition: item.imageFocus ?? "center" }}
+        priority
+      />
+      <span className={styles.sl} aria-hidden="true" />
+      <span className={`${styles.bk} ${styles.tl}`} aria-hidden="true" />
+      <span className={`${styles.bk} ${styles.br}`} aria-hidden="true" />
+    </>
+  ) : null;
+
   const breadcrumbSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -99,13 +116,18 @@ export default async function ProjectDetailPage({ params }: Props) {
       <TypedReveal
         name={name}
         head={
-          <div className={page.head}>
-            <h1 className={page.title}>{item.title}</h1>
-            <span className={page.entries}>
-              <span className={page.dot} aria-hidden="true" />
-              {[year, "PROJECT"].filter(Boolean).join(" · ")}
-            </span>
-          </div>
+          <>
+            <Link href="/work" className={styles.backTop}>
+              ← back to work
+            </Link>
+            <div className={page.head}>
+              <h1 className={page.title}>{item.title}</h1>
+              <span className={page.entries}>
+                <span className={page.dot} aria-hidden="true" />
+                {[year, "PROJECT"].filter(Boolean).join(" · ")}
+              </span>
+            </div>
+          </>
         }
         steps={[
           { kind: "command", text: `cat work/${slug}.md` },
@@ -119,38 +141,47 @@ export default async function ProjectDetailPage({ params }: Props) {
                   </p>
                 )}
 
-                {tags.length > 0 && (
-                  <div className={page.chips} data-rise>
-                    {tags.map((tag: string) => (
-                      <span key={tag} className={page.chip}>
-                        {tag}
-                      </span>
-                    ))}
+                {(tags.length > 0 || item.externalUrl) && (
+                  <div className={styles.shotMeta} data-rise>
+                    {tags.length > 0 && (
+                      <div className={page.chips}>
+                        {tags.map((tag: string) => (
+                          <span key={tag} className={page.chip}>
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    {item.externalUrl && (
+                      <a
+                        href={item.externalUrl}
+                        className={styles.liveLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        view live ↗
+                      </a>
+                    )}
                   </div>
                 )}
 
-                {item.image && (
-                  <div className={styles.shot} data-rise>
-                    <Image
-                      src={item.image}
-                      alt={`${item.title} featured image`}
-                      width={1200}
-                      height={675}
-                      className={styles.img}
-                      style={{ objectPosition: item.imageFocus ?? "center" }}
-                      priority
-                    />
-                    <span className={styles.sl} aria-hidden="true" />
-                    <span
-                      className={`${styles.bk} ${styles.tl}`}
-                      aria-hidden="true"
-                    />
-                    <span
-                      className={`${styles.bk} ${styles.br}`}
-                      aria-hidden="true"
-                    />
-                  </div>
-                )}
+                {item.image &&
+                  (item.externalUrl ? (
+                    <a
+                      href={item.externalUrl}
+                      className={`${styles.shot} ${styles.shotLink}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Open ${item.title} live site`}
+                      data-rise
+                    >
+                      {shotInner}
+                    </a>
+                  ) : (
+                    <div className={styles.shot} data-rise>
+                      {shotInner}
+                    </div>
+                  ))}
 
                 {contentResult && (
                   <div className={page.prose} data-rise>
@@ -158,22 +189,9 @@ export default async function ProjectDetailPage({ params }: Props) {
                   </div>
                 )}
 
-                {item.externalUrl && (
-                  <div data-rise>
-                    <a
-                      href={item.externalUrl}
-                      className={page.cta}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      view live ↗
-                    </a>
-                  </div>
-                )}
-
                 <div data-rise>
                   <Link href="/work" className={styles.back}>
-                    ← cd work/
+                    ← back to work
                   </Link>
                 </div>
 
