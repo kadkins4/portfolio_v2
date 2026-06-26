@@ -2,29 +2,6 @@
  * serif titles, category pills, and an opt-in interactive shell whose cursor
  * blinks only while focused. Wrapped by HoloFrame (shared nav chrome). */
 
-.wrap {
-  --cyan: oklch(0.86 0.13 190);
-  --cyan-soft: oklch(0.78 0.1 190 / 0.5);
-  --accent-bd: oklch(0.7 0.1 190 / 0.28);
-  --accent-fill: oklch(0.7 0.12 190 / 0.1);
-  --green: oklch(0.82 0.18 150);
-  --ink: #eaf6f4;
-  --muted: rgba(234, 246, 244, 0.55);
-
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 30px 18px 90px;
-  width: 100%;
-  box-sizing: border-box;
-  font-family: var(--font-mono), ui-monospace, monospace;
-  color: var(--ink);
-}
-@media (min-width: 820px) {
-  .wrap {
-    padding: 38px 32px 110px;
-  }
-}
-
 /* heading */
 .head {
   display: flex;
