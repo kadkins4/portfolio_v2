@@ -105,16 +105,7 @@
   border: 1px solid var(--accent-bd);
   background: rgba(0, 0, 0, 0.28);
   cursor: text;
-  opacity: 0;
-  transform: translateY(14px);
-  transition:
-    opacity 0.5s ease,
-    transform 0.5s ease,
-    border-color 0.2s ease;
-}
-.shell.in {
-  opacity: 1;
-  transform: none;
+  transition: border-color 0.2s ease;
 }
 .shell.shellFocused {
   border-color: oklch(0.75 0.12 190 / 0.55);
@@ -188,25 +179,12 @@
   bottom: 8px;
   width: 2px;
   background: linear-gradient(var(--cyan-soft), oklch(0.7 0.1 190 / 0.15));
-  opacity: 0;
-  transition: opacity 0.5s ease;
-}
-.timelineIn::before {
   opacity: 1;
 }
 
 .node {
   position: relative;
   margin-bottom: 18px;
-  opacity: 0;
-  transform: translateY(14px);
-  transition:
-    opacity 0.5s ease,
-    transform 0.5s ease;
-}
-.nodeIn {
-  opacity: 1;
-  transform: none;
 }
 .node::before {
   content: "";
@@ -392,13 +370,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .shell,
-  .node,
-  .timeline::before {
-    opacity: 1 !important;
-    transform: none !important;
-    transition: none !important;
-  }
   .cur,
   .shellCur {
     animation: none !important;

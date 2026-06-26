@@ -1,13 +1,7 @@
 "use client";
 
-import {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type KeyboardEvent,
-} from "react";
-import TypedCrumb from "./TypedCrumb";
+import { useMemo, useRef, useState, type KeyboardEvent } from "react";
+import TypedReveal from "./TypedReveal";
 import styles from "./careerLog.module.css";
 
 export type Experience = {
@@ -50,13 +44,6 @@ type OutLine = { cmd: string; out: string };
 const PROMPT = "kendall@adkins:~$";
 
 export default function CareerLog({ data }: { data: CareerLogData }) {
-  // entrance state (crumb typing lives in TypedCrumb; the rest is chained off
-  // its onDone via startReveal below)
-  const [summaryTyped, setSummaryTyped] = useState("");
-  const [revealed, setRevealed] = useState(false); // rail + shell in
-  const [nodesIn, setNodesIn] = useState(0);
-  const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
-
   // interaction state
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
   const [shellFocused, setShellFocused] = useState(false);
@@ -97,50 +84,6 @@ export default function CareerLog({ data }: { data: CareerLogData }) {
     }));
     return [...pro, ...early, ...edu];
   }, [data]);
-
-  // ---- entrance: fired by TypedCrumb.onDone once "cat resume.md" finishes
-  // typing → type the summary, reveal the shell + rail, then cascade nodes ----
-  function startReveal() {
-    const reduce = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
-
-    if (reduce) {
-      setSummaryTyped(data.summary);
-      setRevealed(true);
-      setNodesIn(entries.length);
-      return;
-    }
-
-    const timers = timersRef.current;
-    const at = (fn: () => void, ms: number) => timers.push(setTimeout(fn, ms));
-
-    // type the summary fast (~1.1s regardless of length)
-    const base = 180;
-    const sBudget = 1100;
-    const sStep = Math.max(1, Math.ceil(data.summary.length / (sBudget / 16)));
-    let shown = 0;
-    let frame = 0;
-    while (shown < data.summary.length) {
-      shown = Math.min(data.summary.length, shown + sStep);
-      const n = shown;
-      at(() => setSummaryTyped(data.summary.slice(0, n)), base + frame * 16);
-      frame++;
-    }
-    const sEnd = base + frame * 16;
-
-    // shell + rail reveal, then nodes cascade every 0.5s
-    at(() => setRevealed(true), sEnd);
-    for (let i = 0; i < entries.length; i++) {
-      at(() => setNodesIn(i + 1), sEnd + 200 + i * 500);
-    }
-  }
-
-  // clear any pending entrance timers on unmount
-  useEffect(() => {
-    const timers = timersRef.current;
-    return () => timers.forEach(clearTimeout);
-  }, []);
 
   const toggle = (i: number) =>
     setExpanded((prev) => {
@@ -218,141 +161,148 @@ export default function CareerLog({ data }: { data: CareerLogData }) {
   const showHint = !shellFocused && !input && output.length === 0;
 
   return (
-    <div className={styles.wrap}>
-      <div className={styles.head}>
-        <h1 className={styles.title}>Resume</h1>
-        <a className={styles.download} href={data.resumePdf} download>
-          ↓ download résumé.pdf
-        </a>
-      </div>
-
-      <TypedCrumb
-        command="cat resume.md"
-        name={data.name}
-        onDone={startReveal}
-      />
-
-      <p className={styles.summary}>{summaryTyped}</p>
-
-      {/* interactive shell — always shown, cursor blinks only when focused */}
-      <div
-        className={`${styles.shell} ${shellFocused ? styles.shellFocused : ""} ${
-          revealed ? styles.in : ""
-        }`}
-        onMouseDown={(e) => {
-          e.preventDefault();
-          inputRef.current?.focus();
-        }}
-      >
-        {output.length > 0 && (
-          <div className={styles.shellHistory}>
-            {output.map((o, i) => (
-              <div key={i}>
-                <div className={styles.shellEchoLine}>
-                  <span className={styles.ps}>{PROMPT}</span> {o.cmd}
-                </div>
-                <div className={styles.shellOut}>{o.out}</div>
-              </div>
-            ))}
-          </div>
-        )}
-        <div className={styles.shellLine}>
-          <span className={styles.ps}>{PROMPT}</span>
-          <span className={styles.shellEcho}>{input}</span>
-          <span className={styles.shellCur} aria-hidden="true" />
-          {showHint && (
-            <span className={styles.shellHint}>
-              type &quot;help&quot; — try ls · whoami · download
-            </span>
-          )}
-          <input
-            ref={inputRef}
-            className={styles.shellInput}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={onKeyDown}
-            onFocus={() => setShellFocused(true)}
-            onBlur={() => setShellFocused(false)}
-            autoComplete="off"
-            spellCheck={false}
-            aria-label="terminal command input"
-          />
+    <TypedReveal
+      wide
+      name={data.name}
+      head={
+        <div className={styles.head}>
+          <h1 className={styles.title}>Resume</h1>
+          <a className={styles.download} href={data.resumePdf} download>
+            ↓ download résumé.pdf
+          </a>
         </div>
-      </div>
-
-      <div
-        className={`${styles.timeline} ${revealed ? styles.timelineIn : ""}`}
-      >
-        {entries.map((e, i) => {
-          const open = expanded.has(i);
-          const hasBody =
-            !!e.detail || e.highlights.length > 0 || e.tech.length > 0;
-          return (
-            <div
-              key={e.org + i}
-              className={`${styles.node} ${i < nodesIn ? styles.nodeIn : ""}`}
-            >
+      }
+      steps={[
+        { kind: "command", text: "cat resume.md" },
+        {
+          kind: "line",
+          text: data.summary,
+          speed: "fast",
+          className: styles.summary,
+        },
+        {
+          kind: "reveal",
+          stagger: 500,
+          node: (
+            <>
+              {/* interactive shell — always shown, cursor blinks only when focused */}
               <div
-                className={`${styles.card} ${open ? styles.cardOpen : ""}`}
-                role={hasBody ? "button" : undefined}
-                tabIndex={hasBody ? 0 : undefined}
-                aria-expanded={hasBody ? open : undefined}
-                onClick={hasBody ? () => toggle(i) : undefined}
-                onKeyDown={
-                  hasBody
-                    ? (ev) => {
-                        if (ev.key === "Enter" || ev.key === " ") {
-                          ev.preventDefault();
-                          toggle(i);
-                        }
-                      }
-                    : undefined
-                }
-                style={hasBody ? undefined : { cursor: "default" }}
+                className={`${styles.shell} ${shellFocused ? styles.shellFocused : ""}`}
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  inputRef.current?.focus();
+                }}
               >
-                <div className={styles.main}>
-                  <div className={styles.period}>{e.period}</div>
-                  <h2 className={styles.role}>{e.title}</h2>
-                  {e.org && <div className={styles.org}>{e.org}</div>}
-                </div>
-                <div className={styles.right}>
-                  <span
-                    className={`${styles.pill} ${
-                      e.cat === "EDUCATION" ? styles.pillEdu : ""
-                    }`}
-                  >
-                    {e.cat}
-                  </span>
-                  {hasBody && <span className={styles.arrow}>▸</span>}
-                </div>
-                {hasBody && (
-                  <div className={styles.body}>
-                    <div className={styles.bodyInner}>
-                      {e.detail && <p className={styles.detail}>{e.detail}</p>}
-                      {e.highlights.length > 0 && (
-                        <ul className={styles.highlights}>
-                          {e.highlights.map((h, hi) => (
-                            <li key={hi}>{h}</li>
-                          ))}
-                        </ul>
-                      )}
-                      {e.tech.length > 0 && (
-                        <div className={styles.tech}>
-                          {e.tech.map((t) => (
-                            <span key={t} className={styles.techTag}>
-                              {t}
-                            </span>
-                          ))}
+                {output.length > 0 && (
+                  <div className={styles.shellHistory}>
+                    {output.map((o, i) => (
+                      <div key={i}>
+                        <div className={styles.shellEchoLine}>
+                          <span className={styles.ps}>{PROMPT}</span> {o.cmd}
                         </div>
-                      )}
-                    </div>
+                        <div className={styles.shellOut}>{o.out}</div>
+                      </div>
+                    ))}
                   </div>
                 )}
+                <div className={styles.shellLine}>
+                  <span className={styles.ps}>{PROMPT}</span>
+                  <span className={styles.shellEcho}>{input}</span>
+                  <span className={styles.shellCur} aria-hidden="true" />
+                  {showHint && (
+                    <span className={styles.shellHint}>
+                      type &quot;help&quot; — try ls · whoami · download
+                    </span>
+                  )}
+                  <input
+                    ref={inputRef}
+                    className={styles.shellInput}
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={onKeyDown}
+                    onFocus={() => setShellFocused(true)}
+                    onBlur={() => setShellFocused(false)}
+                    autoComplete="off"
+                    spellCheck={false}
+                    aria-label="terminal command input"
+                  />
+                </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
+
+              <div className={styles.timeline}>
+                {entries.map((e, i) => {
+                  const open = expanded.has(i);
+                  const hasBody =
+                    !!e.detail || e.highlights.length > 0 || e.tech.length > 0;
+                  return (
+                    <div key={e.org + i} className={styles.node} data-rise>
+                      <div
+                        className={`${styles.card} ${open ? styles.cardOpen : ""}`}
+                        role={hasBody ? "button" : undefined}
+                        tabIndex={hasBody ? 0 : undefined}
+                        aria-expanded={hasBody ? open : undefined}
+                        onClick={hasBody ? () => toggle(i) : undefined}
+                        onKeyDown={
+                          hasBody
+                            ? (ev) => {
+                                if (ev.key === "Enter" || ev.key === " ") {
+                                  ev.preventDefault();
+                                  toggle(i);
+                                }
+                              }
+                            : undefined
+                        }
+                        style={hasBody ? undefined : { cursor: "default" }}
+                      >
+                        <div className={styles.main}>
+                          <div className={styles.period}>{e.period}</div>
+                          <h2 className={styles.role}>{e.title}</h2>
+                          {e.org && <div className={styles.org}>{e.org}</div>}
+                        </div>
+                        <div className={styles.right}>
+                          <span
+                            className={`${styles.pill} ${
+                              e.cat === "EDUCATION" ? styles.pillEdu : ""
+                            }`}
+                          >
+                            {e.cat}
+                          </span>
+                          {hasBody && <span className={styles.arrow}>▸</span>}
+                        </div>
+                        {hasBody && (
+                          <div className={styles.body}>
+                            <div className={styles.bodyInner}>
+                              {e.detail && (
+                                <p className={styles.detail}>{e.detail}</p>
+                              )}
+                              {e.highlights.length > 0 && (
+                                <ul className={styles.highlights}>
+                                  {e.highlights.map((h, hi) => (
+                                    <li key={hi}>{h}</li>
+                                  ))}
+                                </ul>
+                              )}
+                              {e.tech.length > 0 && (
+                                <div className={styles.tech}>
+                                  {e.tech.map((t) => (
+                                    <span key={t} className={styles.techTag}>
+                                      {t}
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          ),
+        },
+      ]}
+    />
   );
 }
