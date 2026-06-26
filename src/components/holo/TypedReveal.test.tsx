@@ -1,5 +1,5 @@
-import { render, screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { act, render, screen } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import TypedReveal, { type TypedStep } from "./TypedReveal";
 
 // jsdom lacks matchMedia; default to "reduced motion" so content renders
@@ -43,5 +43,56 @@ describe("TypedReveal", () => {
     mockMatchMedia(true);
     render(<TypedReveal name="Kendall Adkins" steps={steps} />);
     expect(screen.getByText("kendall@adkins:~$")).toBeInTheDocument();
+  });
+});
+
+describe("TypedReveal – animated path (matches:false)", () => {
+  const animSteps: TypedStep[] = [
+    { kind: "command", text: "cat x.md" },
+    { kind: "reveal", node: <p data-rise>body</p> },
+  ];
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+  });
+
+  it("types incrementally then reveals after timers advance", () => {
+    mockMatchMedia(false); // motion ENABLED – animated path
+    vi.useFakeTimers();
+
+    const { container } = render(
+      <TypedReveal name="Kendall Adkins" steps={animSteps} />
+    );
+
+    // Immediately after mount: typing in progress — full command not yet present,
+    // cursor element is shown (component renders showCursor=true while active).
+    expect(screen.queryByText("cat x.md")).not.toBeInTheDocument();
+    expect(container.querySelector('[aria-hidden="true"]')).toBeInTheDocument();
+
+    // First advance: finishes all typing timers and fires setCurrent(1).
+    // act() flushes the resulting re-render + effects, which schedules the
+    // reveal step's setTimeout(0).
+    act(() => {
+      vi.advanceTimersByTime(3000);
+    });
+    // Second advance: fires the reveal step's setTimeout(0) → setCurrent(2).
+    // act() flushes that re-render + RevealBlock's useEffect (sets animationDelay).
+    act(() => {
+      vi.advanceTimersByTime(100);
+    });
+
+    // Full command text rendered
+    expect(screen.getByText("cat x.md")).toBeInTheDocument();
+    // Reveal body present
+    expect(screen.getByText("body")).toBeInTheDocument();
+    // RevealBlock gained active class
+    expect(
+      container.querySelector('[class*="revealActive"]')
+    ).toBeInTheDocument();
+    // RevealBlock useEffect set animationDelay on the [data-rise] element
+    const riseEl = container.querySelector("[data-rise]") as HTMLElement;
+    expect(riseEl).toBeInTheDocument();
+    expect(riseEl.style.animationDelay).toBe("0ms");
   });
 });
