@@ -1,5 +1,5 @@
-/* Note detail — article body. Accent vars cascade from holoPage .wrap (cyan,
- * or amber when HoloReveal amber is set for Life-side notes). */
+/* Note detail — article body. Accent vars cascade from TypedReveal .wrap (cyan,
+ * or amber when TypedReveal amber is set for Life-side notes). */
 
 .metaRow {
   display: flex;

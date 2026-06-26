@@ -162,7 +162,6 @@ export default function CareerLog({ data }: { data: CareerLogData }) {
 
   return (
     <TypedReveal
-      wide
       name={data.name}
       head={
         <div className={styles.head}>

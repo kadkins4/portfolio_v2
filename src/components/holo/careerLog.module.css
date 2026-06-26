@@ -167,6 +167,8 @@
 
 /* ---- timeline ---- */
 .timeline {
+  --cyan-soft: oklch(0.78 0.1 190 / 0.5);
+
   position: relative;
   margin-top: 32px;
   padding-left: 46px;

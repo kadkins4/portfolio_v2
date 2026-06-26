@@ -1,5 +1,5 @@
 /* Page-specific bits for The Story. Uses the cascading --accent* / --ink vars
- * from .wrap on the HoloReveal main. */
+ * from .wrap on the TypedReveal main. */
 
 .titleRow {
   display: flex;
