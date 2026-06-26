@@ -9,7 +9,7 @@ import config from "../../../../../keystatic.config";
 import JsonLd from "@/components/JsonLd";
 import { SITE_URL } from "@/lib/constants";
 import HoloFrame from "@/components/holo/HoloFrame";
-import HoloReveal from "@/components/holo/HoloReveal";
+import TypedReveal from "@/components/holo/TypedReveal";
 import page from "@/components/holo/holoPage.module.css";
 import styles from "./project.module.css";
 
@@ -96,8 +96,7 @@ export default async function ProjectDetailPage({ params }: Props) {
   return (
     <HoloFrame name={name}>
       <JsonLd data={breadcrumbSchema} />
-      <HoloReveal
-        command={`cat work/${slug}.md`}
+      <TypedReveal
         name={name}
         head={
           <div className={page.head}>
@@ -108,68 +107,85 @@ export default async function ProjectDetailPage({ params }: Props) {
             </span>
           </div>
         }
-      >
-        {item.description && (
-          <p className={`${page.lede} ${page.rise}`}>{item.description}</p>
-        )}
+        steps={[
+          { kind: "command", text: `cat work/${slug}.md` },
+          {
+            kind: "reveal",
+            node: (
+              <>
+                {item.description && (
+                  <p className={page.lede} data-rise>
+                    {item.description}
+                  </p>
+                )}
 
-        {tags.length > 0 && (
-          <div className={`${page.chips} ${page.rise}`}>
-            {tags.map((tag: string) => (
-              <span key={tag} className={page.chip}>
-                {tag}
-              </span>
-            ))}
-          </div>
-        )}
+                {tags.length > 0 && (
+                  <div className={page.chips} data-rise>
+                    {tags.map((tag: string) => (
+                      <span key={tag} className={page.chip}>
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
 
-        {item.image && (
-          <div className={`${styles.shot} ${page.rise}`}>
-            <Image
-              src={item.image}
-              alt={`${item.title} featured image`}
-              width={1200}
-              height={675}
-              className={styles.img}
-              style={{ objectPosition: item.imageFocus ?? "center" }}
-              priority
-            />
-            <span className={styles.sl} aria-hidden="true" />
-            <span className={`${styles.bk} ${styles.tl}`} aria-hidden="true" />
-            <span className={`${styles.bk} ${styles.br}`} aria-hidden="true" />
-          </div>
-        )}
+                {item.image && (
+                  <div className={styles.shot} data-rise>
+                    <Image
+                      src={item.image}
+                      alt={`${item.title} featured image`}
+                      width={1200}
+                      height={675}
+                      className={styles.img}
+                      style={{ objectPosition: item.imageFocus ?? "center" }}
+                      priority
+                    />
+                    <span className={styles.sl} aria-hidden="true" />
+                    <span
+                      className={`${styles.bk} ${styles.tl}`}
+                      aria-hidden="true"
+                    />
+                    <span
+                      className={`${styles.bk} ${styles.br}`}
+                      aria-hidden="true"
+                    />
+                  </div>
+                )}
 
-        {contentResult && (
-          <div className={`${page.prose} ${page.rise}`}>
-            {renderMarkdoc(contentResult)}
-          </div>
-        )}
+                {contentResult && (
+                  <div className={page.prose} data-rise>
+                    {renderMarkdoc(contentResult)}
+                  </div>
+                )}
 
-        {item.externalUrl && (
-          <div className={page.rise}>
-            <a
-              href={item.externalUrl}
-              className={page.cta}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              view live ↗
-            </a>
-          </div>
-        )}
+                {item.externalUrl && (
+                  <div data-rise>
+                    <a
+                      href={item.externalUrl}
+                      className={page.cta}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      view live ↗
+                    </a>
+                  </div>
+                )}
 
-        <div className={page.rise}>
-          <Link href="/work" className={styles.back}>
-            ← cd work/
-          </Link>
-        </div>
+                <div data-rise>
+                  <Link href="/work" className={styles.back}>
+                    ← cd work/
+                  </Link>
+                </div>
 
-        <div className={`${page.foot} ${page.rise}`}>
-          &gt; eof
-          <span className={page.cur} aria-hidden="true" />
-        </div>
-      </HoloReveal>
+                <div className={page.foot} data-rise>
+                  &gt; eof
+                  <span className={page.cur} aria-hidden="true" />
+                </div>
+              </>
+            ),
+          },
+        ]}
+      />
     </HoloFrame>
   );
 }

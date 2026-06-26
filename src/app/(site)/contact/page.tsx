@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { createReader } from "@keystatic/core/reader";
 import config from "../../../../keystatic.config";
 import HoloFrame from "@/components/holo/HoloFrame";
-import HoloReveal from "@/components/holo/HoloReveal";
+import TypedReveal from "@/components/holo/TypedReveal";
 import ContactForm from "@/components/ContactForm";
 import page from "@/components/holo/holoPage.module.css";
 import styles from "./contact.module.css";
@@ -46,9 +46,8 @@ export default async function ContactPage() {
 
   return (
     <HoloFrame name={name}>
-      <HoloReveal
+      <TypedReveal
         wide
-        command="./contact.sh"
         name={name}
         head={
           <div className={page.head}>
@@ -61,74 +60,97 @@ export default async function ContactPage() {
             </span>
           </div>
         }
-      >
-        <p className={`${page.lede} ${page.rise}`}>
-          Got a project, a role, or a question? Send a note and I read every
-          one. No email handy? Drop another way to reach you and I&rsquo;ll
-          follow up.
-        </p>
+        steps={[
+          { kind: "command", text: "./contact.sh" },
+          {
+            kind: "reveal",
+            node: (
+              <>
+                <p className={page.lede} data-rise>
+                  Got a project, a role, or a question? Send a note and I read
+                  every one. No email handy? Drop another way to reach you and
+                  I&rsquo;ll follow up.
+                </p>
 
-        <div className={`${styles.grid} ${page.rise}`}>
-          <ContactForm endpoint={FORMSPREE_ENDPOINT} />
+                <div className={styles.grid} data-rise>
+                  <ContactForm endpoint={FORMSPREE_ENDPOINT} />
 
-          <div className={styles.channels}>
-            <div className={styles.scan} aria-hidden="true" />
-            <div className={styles.inner}>
-              <div className={styles.heading}>&gt; direct --channels</div>
+                  <div className={styles.channels}>
+                    <div className={styles.scan} aria-hidden="true" />
+                    <div className={styles.inner}>
+                      <div className={styles.heading}>
+                        &gt; direct --channels
+                      </div>
 
-              <a
-                href={`mailto:${EMAIL}`}
-                className={`${styles.row} ${styles.email}`}
-              >
-                <span className={styles.glyph} aria-hidden="true">
-                  @
-                </span>
-                <span className={styles.meta}>
-                  <span className={styles.metaLabel}>EMAIL</span>
-                  <span className={styles.metaValue}>{EMAIL}</span>
-                </span>
-              </a>
-
-              {socials.length > 0 && (
-                <>
-                  <div className={styles.sockets}>SOCKETS</div>
-                  <div className={styles.socketList}>
-                    {socials.map((s) => (
                       <a
-                        key={s.platform}
-                        href={s.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={styles.row}
+                        href={`mailto:${EMAIL}`}
+                        className={`${styles.row} ${styles.email}`}
                       >
                         <span className={styles.glyph} aria-hidden="true">
-                          {SOCIAL_GLYPH[s.platform] ?? "·"}
+                          @
                         </span>
-                        <span className={styles.metaValue} style={{ flex: 1 }}>
-                          {SOCIAL_LABEL[s.platform] ?? s.platform}
-                        </span>
-                        <span className={styles.arrow} aria-hidden="true">
-                          ↗
+                        <span className={styles.meta}>
+                          <span className={styles.metaLabel}>EMAIL</span>
+                          <span className={styles.metaValue}>{EMAIL}</span>
                         </span>
                       </a>
-                    ))}
+
+                      {socials.length > 0 && (
+                        <>
+                          <div className={styles.sockets}>SOCKETS</div>
+                          <div className={styles.socketList}>
+                            {socials.map((s) => (
+                              <a
+                                key={s.platform}
+                                href={s.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={styles.row}
+                              >
+                                <span
+                                  className={styles.glyph}
+                                  aria-hidden="true"
+                                >
+                                  {SOCIAL_GLYPH[s.platform] ?? "·"}
+                                </span>
+                                <span
+                                  className={styles.metaValue}
+                                  style={{ flex: 1 }}
+                                >
+                                  {SOCIAL_LABEL[s.platform] ?? s.platform}
+                                </span>
+                                <span
+                                  className={styles.arrow}
+                                  aria-hidden="true"
+                                >
+                                  ↗
+                                </span>
+                              </a>
+                            ))}
+                          </div>
+                        </>
+                      )}
+
+                      <div className={styles.replies}>
+                        <span
+                          className={styles.repliesDot}
+                          aria-hidden="true"
+                        />
+                        USUALLY REPLIES WITHIN 24H
+                      </div>
+                    </div>
                   </div>
-                </>
-              )}
+                </div>
 
-              <div className={styles.replies}>
-                <span className={styles.repliesDot} aria-hidden="true" />
-                USUALLY REPLIES WITHIN 24H
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className={`${page.foot} ${page.rise}`}>
-          &gt; connection open · awaiting input
-          <span className={page.cur} aria-hidden="true" />
-        </div>
-      </HoloReveal>
+                <div className={page.foot} data-rise>
+                  &gt; connection open · awaiting input
+                  <span className={page.cur} aria-hidden="true" />
+                </div>
+              </>
+            ),
+          },
+        ]}
+      />
     </HoloFrame>
   );
 }

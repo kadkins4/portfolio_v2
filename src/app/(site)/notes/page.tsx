@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { createReader } from "@keystatic/core/reader";
 import config from "../../../../keystatic.config";
 import HoloFrame from "@/components/holo/HoloFrame";
-import HoloReveal from "@/components/holo/HoloReveal";
+import TypedReveal from "@/components/holo/TypedReveal";
 import FieldNotes, { type NoteItem } from "@/components/holo/FieldNotes";
 import page from "@/components/holo/holoPage.module.css";
 
@@ -44,9 +44,8 @@ export default async function NotesPage() {
 
   return (
     <HoloFrame name={name}>
-      <HoloReveal
+      <TypedReveal
         wide
-        command="ls notes/"
         name={name}
         head={
           <div className={page.head}>
@@ -59,9 +58,11 @@ export default async function NotesPage() {
             </span>
           </div>
         }
-      >
-        <FieldNotes items={items} />
-      </HoloReveal>
+        steps={[
+          { kind: "command", text: "ls notes/" },
+          { kind: "reveal", node: <FieldNotes items={items} /> },
+        ]}
+      />
     </HoloFrame>
   );
 }

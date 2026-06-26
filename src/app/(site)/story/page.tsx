@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { createReader } from "@keystatic/core/reader";
 import config from "../../../../keystatic.config";
 import HoloFrame from "@/components/holo/HoloFrame";
-import HoloReveal from "@/components/holo/HoloReveal";
+import TypedReveal from "@/components/holo/TypedReveal";
 import { renderMarkdoc } from "@/lib/renderMarkdoc";
 import page from "@/components/holo/holoPage.module.css";
 import story from "./story.module.css";
@@ -30,8 +30,7 @@ export default async function StoryPage() {
 
   return (
     <HoloFrame name={name}>
-      <HoloReveal
-        command="cat story.md"
+      <TypedReveal
         name={name}
         head={
           <div className={`${page.head} ${story.titleRow}`}>
@@ -48,36 +47,52 @@ export default async function StoryPage() {
             </h1>
           </div>
         }
-      >
-        <p className={`${page.lede} ${page.rise}`}>
-          A decade-long arc from leading teams to senior engineering. He spent
-          years in management, taught himself to code, and now ships fast,
-          polished web experiences while still mentoring the people around him.
-        </p>
+        steps={[
+          { kind: "command", text: "cat story.md" },
+          {
+            kind: "reveal",
+            node: (
+              <>
+                <p className={page.lede} data-rise>
+                  A decade-long arc from leading teams to senior engineering. He
+                  spent years in management, taught himself to code, and now
+                  ships fast, polished web experiences while still mentoring the
+                  people around him.
+                </p>
 
-        <section className={`${page.section} ${page.rise}`}>
-          <div className={page.sectionLabel}>~/ WHAT I DO</div>
-          <div className={page.prose}>{whatIDo && renderMarkdoc(whatIDo)}</div>
-        </section>
+                <section className={page.section} data-rise>
+                  <div className={page.sectionLabel}>~/ WHAT I DO</div>
+                  <div className={page.prose}>
+                    {whatIDo && renderMarkdoc(whatIDo)}
+                  </div>
+                </section>
 
-        <section className={`${page.section} ${page.rise}`}>
-          <div className={page.sectionLabel}>~/ HOW I GOT HERE</div>
-          <div className={page.prose}>
-            {howIGotHere && renderMarkdoc(howIGotHere)}
-          </div>
-        </section>
+                <section className={page.section} data-rise>
+                  <div className={page.sectionLabel}>~/ HOW I GOT HERE</div>
+                  <div className={page.prose}>
+                    {howIGotHere && renderMarkdoc(howIGotHere)}
+                  </div>
+                </section>
 
-        <div className={`${story.ctaRow} ${page.rise}`}>
-          <a href="/kendall-adkins-resume.pdf" download className={page.cta}>
-            ↓ download resume.pdf
-          </a>
-        </div>
+                <div className={story.ctaRow} data-rise>
+                  <a
+                    href="/kendall-adkins-resume.pdf"
+                    download
+                    className={page.cta}
+                  >
+                    ↓ download resume.pdf
+                  </a>
+                </div>
 
-        <div className={`${page.foot} ${page.rise}`}>
-          &gt; end of story.md
-          <span className={page.cur} aria-hidden="true" />
-        </div>
-      </HoloReveal>
+                <div className={page.foot} data-rise>
+                  &gt; end of story.md
+                  <span className={page.cur} aria-hidden="true" />
+                </div>
+              </>
+            ),
+          },
+        ]}
+      />
     </HoloFrame>
   );
 }

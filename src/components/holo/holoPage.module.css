@@ -244,44 +244,6 @@
   color: var(--muted);
 }
 
-/* entrance cascade — add `.rise` to staggerable blocks; .play on .wrap.
-   Base is hidden so nothing shows until the crumb finishes typing and sets
-   .play (matches the resume entrance). hpRise uses `both`, holding opacity:1. */
-.rise {
-  opacity: 0;
-}
-.play .rise {
-  animation: hpRise 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-}
-.play .rise:nth-child(1) {
-  animation-delay: 0.04s;
-}
-.play .rise:nth-child(2) {
-  animation-delay: 0.1s;
-}
-.play .rise:nth-child(3) {
-  animation-delay: 0.16s;
-}
-.play .rise:nth-child(4) {
-  animation-delay: 0.22s;
-}
-.play .rise:nth-child(5) {
-  animation-delay: 0.28s;
-}
-.play .rise:nth-child(n + 6) {
-  animation-delay: 0.34s;
-}
-
-@keyframes hpRise {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 @keyframes hpBlink {
   50% {
     opacity: 0;
@@ -298,10 +260,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .play .rise {
-    animation: none;
-    opacity: 1;
-  }
   .dot,
   .cur {
     animation: none;

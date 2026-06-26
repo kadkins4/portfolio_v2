@@ -22,11 +22,9 @@ function yearOf(date: string | null): string {
 
 function NoteCardLink({ item }: { item: NoteItem }) {
   const meta = [yearOf(item.date), item.tags[0]].filter(Boolean).join(" · ");
-  const cardClass = `${styles.card} ${page.rise} ${
-    item.side === "life" ? styles.amber : ""
-  }`;
+  const cardClass = `${styles.card} ${item.side === "life" ? styles.amber : ""}`;
   return (
-    <Link href={`/notes/${item.slug}`} className={cardClass}>
+    <Link href={`/notes/${item.slug}`} className={cardClass} data-rise>
       <div className={styles.meta}>
         <span className={styles.sideTag}>{item.side}</span>
         {meta && <> · {meta}</>}
@@ -59,12 +57,12 @@ export default function FieldNotes({ items }: { items: NoteItem[] }) {
 
   return (
     <>
-      <p className={`${page.lede} ${page.rise}`}>
+      <p className={page.lede} data-rise>
         Essays and the occasional reference. Short and honest, written when a
         thing was worth writing down. Not a content farm.
       </p>
 
-      <div className={`${styles.filters} ${page.rise}`}>
+      <div className={styles.filters} data-rise>
         {tabs.map((t) => (
           <button
             key={t}
@@ -77,7 +75,7 @@ export default function FieldNotes({ items }: { items: NoteItem[] }) {
         ))}
       </div>
 
-      <div className={`${styles.list} ${page.rise}`}>
+      <div className={styles.list} data-rise>
         {visible.length > 0 ? (
           visible.map((it) => <NoteCardLink key={it.slug} item={it} />)
         ) : (
@@ -85,7 +83,7 @@ export default function FieldNotes({ items }: { items: NoteItem[] }) {
         )}
       </div>
 
-      <div className={`${page.foot} ${page.rise}`}>
+      <div className={page.foot} data-rise>
         &gt; {items.length} published
         <span className={page.cur} aria-hidden="true" />
       </div>

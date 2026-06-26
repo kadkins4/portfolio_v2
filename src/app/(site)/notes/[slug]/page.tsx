@@ -9,7 +9,7 @@ import config from "../../../../../keystatic.config";
 import JsonLd from "@/components/JsonLd";
 import { SITE_URL } from "@/lib/constants";
 import HoloFrame from "@/components/holo/HoloFrame";
-import HoloReveal from "@/components/holo/HoloReveal";
+import TypedReveal from "@/components/holo/TypedReveal";
 import page from "@/components/holo/holoPage.module.css";
 import styles from "./note.module.css";
 
@@ -82,58 +82,66 @@ export default async function NoteDetailPage({ params }: Props) {
     <>
       <JsonLd data={breadcrumbSchema} />
       <HoloFrame name={name}>
-        <HoloReveal
+        <TypedReveal
           amber={isLife}
-          command={`cat notes/${slug}.md`}
           name={name}
           head={<h1 className={page.title}>{item.title}</h1>}
-        >
-          <div className={`${styles.metaRow} ${page.rise}`}>
-            {item.date && (
-              <span className={styles.date}>
-                {new Date(item.date).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </span>
-            )}
-            {tags.length > 0 && (
-              <div className={page.chips}>
-                {tags.map((tag) => (
-                  <span key={tag} className={page.chip}>
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
+          steps={[
+            { kind: "command", text: `cat notes/${slug}.md` },
+            {
+              kind: "reveal",
+              node: (
+                <>
+                  <div className={styles.metaRow} data-rise>
+                    {item.date && (
+                      <span className={styles.date}>
+                        {new Date(item.date).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })}
+                      </span>
+                    )}
+                    {tags.length > 0 && (
+                      <div className={page.chips}>
+                        {tags.map((tag) => (
+                          <span key={tag} className={page.chip}>
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
 
-          {item.image && (
-            <div className={page.rise}>
-              <Image
-                src={item.image}
-                alt={`${item.title} featured image`}
-                width={1200}
-                height={675}
-                className={styles.image}
-                priority
-              />
-            </div>
-          )}
+                  {item.image && (
+                    <div data-rise>
+                      <Image
+                        src={item.image}
+                        alt={`${item.title} featured image`}
+                        width={1200}
+                        height={675}
+                        className={styles.image}
+                        priority
+                      />
+                    </div>
+                  )}
 
-          {contentResult && (
-            <article className={`${page.prose} ${page.rise}`}>
-              {renderMarkdoc(contentResult)}
-            </article>
-          )}
+                  {contentResult && (
+                    <article className={page.prose} data-rise>
+                      {renderMarkdoc(contentResult)}
+                    </article>
+                  )}
 
-          <div className={`${styles.back} ${page.rise}`}>
-            <Link href="/notes" className={page.cta}>
-              ← cd notes/
-            </Link>
-          </div>
-        </HoloReveal>
+                  <div className={styles.back} data-rise>
+                    <Link href="/notes" className={page.cta}>
+                      ← cd notes/
+                    </Link>
+                  </div>
+                </>
+              ),
+            },
+          ]}
+        />
       </HoloFrame>
     </>
   );

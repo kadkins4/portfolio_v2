@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { createReader } from "@keystatic/core/reader";
 import config from "../../../../keystatic.config";
 import HoloFrame from "@/components/holo/HoloFrame";
-import HoloReveal from "@/components/holo/HoloReveal";
+import TypedReveal from "@/components/holo/TypedReveal";
 import { renderMarkdoc } from "@/lib/renderMarkdoc";
 import page from "@/components/holo/holoPage.module.css";
 
@@ -38,9 +38,8 @@ export default async function LifePage() {
 
   return (
     <HoloFrame name={name}>
-      <HoloReveal
+      <TypedReveal
         amber
-        command="cat life.md"
         name={name}
         head={
           <div className={page.head}>
@@ -49,32 +48,41 @@ export default async function LifePage() {
             </h1>
           </div>
         }
-      >
-        <p className={`${page.lede} ${page.rise}`}>
-          There is a person behind the commits. Baltimore-raised, now in
-          Southern California, with a list of things he chases once the laptop
-          closes.
-        </p>
+        steps={[
+          { kind: "command", text: "cat life.md" },
+          {
+            kind: "reveal",
+            node: (
+              <>
+                <p className={page.lede} data-rise>
+                  There is a person behind the commits. Baltimore-raised, now in
+                  Southern California, with a list of things he chases once the
+                  laptop closes.
+                </p>
 
-        <section className={`${page.section} ${page.rise}`}>
-          <div className={page.prose}>
-            {outsideOfCode && renderMarkdoc(outsideOfCode)}
-          </div>
-        </section>
+                <section className={page.section} data-rise>
+                  <div className={page.prose}>
+                    {outsideOfCode && renderMarkdoc(outsideOfCode)}
+                  </div>
+                </section>
 
-        <div className={`${page.chips} ${page.rise}`}>
-          {INTERESTS.map((t) => (
-            <span key={t} className={page.chip}>
-              {t}
-            </span>
-          ))}
-        </div>
+                <div className={page.chips} data-rise>
+                  {INTERESTS.map((t) => (
+                    <span key={t} className={page.chip}>
+                      {t}
+                    </span>
+                  ))}
+                </div>
 
-        <div className={`${page.foot} ${page.rise}`}>
-          &gt; end of life.md
-          <span className={page.cur} aria-hidden="true" />
-        </div>
-      </HoloReveal>
+                <div className={page.foot} data-rise>
+                  &gt; end of life.md
+                  <span className={page.cur} aria-hidden="true" />
+                </div>
+              </>
+            ),
+          },
+        ]}
+      />
     </HoloFrame>
   );
 }

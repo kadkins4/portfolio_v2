@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { createReader } from "@keystatic/core/reader";
 import config from "../../../../keystatic.config";
 import HoloFrame from "@/components/holo/HoloFrame";
-import HoloReveal from "@/components/holo/HoloReveal";
+import TypedReveal from "@/components/holo/TypedReveal";
 import page from "@/components/holo/holoPage.module.css";
 import styles from "./stack.module.css";
 
@@ -75,9 +75,8 @@ export default async function StackPage() {
 
   return (
     <HoloFrame name={name}>
-      <HoloReveal
+      <TypedReveal
         wide
-        command="cat stack.txt"
         name={name}
         head={
           <div className={page.head}>
@@ -90,44 +89,53 @@ export default async function StackPage() {
             </span>
           </div>
         }
-      >
-        <p className={`${page.lede} ${page.rise}`}>
-          What I build with, grouped by how often it is actually in my hands.
-          The top of the list is daily-driver stuff; the bottom is where I go to
-          play. No percentages, no proficiency bars. Just an honest map of the
-          toolbox.
-        </p>
+        steps={[
+          { kind: "command", text: "cat stack.txt" },
+          {
+            kind: "reveal",
+            node: (
+              <>
+                <p className={page.lede} data-rise>
+                  What I build with, grouped by how often it is actually in my
+                  hands. The top of the list is daily-driver stuff; the bottom
+                  is where I go to play. No percentages, no proficiency bars.
+                  Just an honest map of the toolbox.
+                </p>
 
-        <div className={`${styles.grid} ${page.rise}`}>
-          {cards.map((card) => (
-            <div key={card.group} className={styles.scard}>
-              <span className={styles.sl} aria-hidden="true" />
-              <span
-                className={`${styles.bk} ${styles.tl}`}
-                aria-hidden="true"
-              />
-              <span
-                className={`${styles.bk} ${styles.br}`}
-                aria-hidden="true"
-              />
-              <h3 className={styles.group}>{card.group}</h3>
-              <p className={styles.tagline}>{card.tagline}</p>
-              <div className={styles.items}>
-                {card.items.map((item) => (
-                  <span key={item} className={page.chip}>
-                    {item}
-                  </span>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
+                <div className={styles.grid} data-rise>
+                  {cards.map((card) => (
+                    <div key={card.group} className={styles.scard}>
+                      <span className={styles.sl} aria-hidden="true" />
+                      <span
+                        className={`${styles.bk} ${styles.tl}`}
+                        aria-hidden="true"
+                      />
+                      <span
+                        className={`${styles.bk} ${styles.br}`}
+                        aria-hidden="true"
+                      />
+                      <h3 className={styles.group}>{card.group}</h3>
+                      <p className={styles.tagline}>{card.tagline}</p>
+                      <div className={styles.items}>
+                        {card.items.map((item) => (
+                          <span key={item} className={page.chip}>
+                            {item}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
 
-        <div className={`${page.foot} ${page.rise}`}>
-          &gt; end of stack.txt
-          <span className={page.cur} aria-hidden="true" />
-        </div>
-      </HoloReveal>
+                <div className={page.foot} data-rise>
+                  &gt; end of stack.txt
+                  <span className={page.cur} aria-hidden="true" />
+                </div>
+              </>
+            ),
+          },
+        ]}
+      />
     </HoloFrame>
   );
 }
