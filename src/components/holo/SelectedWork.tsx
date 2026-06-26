@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import TypedCrumb from "./TypedCrumb";
+import TypedReveal from "./TypedReveal";
 import styles from "./selectedWork.module.css";
 
 export type WorkItem = {
@@ -28,7 +28,7 @@ function Card({ item }: { item: WorkItem }) {
   const meta = [yearOf(item.date), item.tags[0]].filter(Boolean).join(" · ");
 
   return (
-    <Link href={`/projects/${item.slug}`} className={styles.card}>
+    <Link href={`/projects/${item.slug}`} className={styles.card} data-rise>
       <div className={styles.shot}>
         {item.image ? (
           <Image
@@ -101,7 +101,6 @@ export default function SelectedWork({
   name?: string;
   items: WorkItem[];
 }) {
-  const [play, setPlay] = useState(false);
   const [filter, setFilter] = useState<string>("all");
 
   const tags = useMemo(() => {
@@ -117,48 +116,60 @@ export default function SelectedWork({
   );
 
   return (
-    <main className={`${styles.wrap} ${play ? styles.play : ""}`}>
-      <div className={styles.head}>
-        <h1 className={styles.title}>Work</h1>
-        <span className={styles.entries}>
-          <span className={styles.dot} aria-hidden="true" />
-          {items.length} PROJECTS
-        </span>
-      </div>
-
-      <TypedCrumb command="ls work/" name={name} onDone={() => setPlay(true)} />
-
-      <p className={styles.lede}>
-        Shipping for millions one day, building a fantasy-draft tool the next.
-        Sports betting and cybersecurity at scale, plus the side projects I run
-        myself. Click any card for the writeup; live ones link out.
-      </p>
-
-      {tags.length > 1 && (
-        <div className={styles.filters}>
-          {tags.map((t) => (
-            <button
-              key={t}
-              type="button"
-              className={`${styles.fchip} ${filter === t ? styles.fon : ""}`}
-              onClick={() => setFilter(t)}
-            >
-              {t === "all" ? "all" : t}
-            </button>
-          ))}
+    <TypedReveal
+      wide
+      name={name}
+      head={
+        <div className={styles.head}>
+          <h1 className={styles.title}>Work</h1>
+          <span className={styles.entries}>
+            <span className={styles.dot} aria-hidden="true" />
+            {items.length} PROJECTS
+          </span>
         </div>
-      )}
+      }
+      steps={[
+        { kind: "command", text: "ls work/" },
+        {
+          kind: "reveal",
+          node: (
+            <>
+              <p className={styles.lede} data-rise>
+                Shipping for millions one day, building a fantasy-draft tool the
+                next. Sports betting and cybersecurity at scale, plus the side
+                projects I run myself. Click any card for the writeup; live ones
+                link out.
+              </p>
 
-      <div className={styles.grid}>
-        {visible.map((it) => (
-          <Card key={it.slug} item={it} />
-        ))}
-      </div>
+              {tags.length > 1 && (
+                <div className={styles.filters} data-rise>
+                  {tags.map((t) => (
+                    <button
+                      key={t}
+                      type="button"
+                      className={`${styles.fchip} ${filter === t ? styles.fon : ""}`}
+                      onClick={() => setFilter(t)}
+                    >
+                      {t === "all" ? "all" : t}
+                    </button>
+                  ))}
+                </div>
+              )}
 
-      <div className={styles.foot}>
-        &gt; {visible.length} of {items.length} shown — still shipping
-        <span className={styles.cur} aria-hidden="true" />
-      </div>
-    </main>
+              <div className={styles.grid}>
+                {visible.map((it) => (
+                  <Card key={it.slug} item={it} />
+                ))}
+              </div>
+
+              <div className={styles.foot} data-rise>
+                &gt; {visible.length} of {items.length} shown — still shipping
+                <span className={styles.cur} aria-hidden="true" />
+              </div>
+            </>
+          ),
+        },
+      ]}
+    />
   );
 }

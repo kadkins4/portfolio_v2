@@ -55,14 +55,6 @@
   box-shadow: 0 0 8px var(--green);
   animation: swPulse 1.9s ease-in-out infinite;
 }
-.crumb {
-  font-size: 12px;
-  color: var(--cyan);
-  margin-bottom: 12px;
-}
-.crumb .ps {
-  color: var(--cyan-soft);
-}
 .cur {
   display: inline-block;
   width: 8px;
@@ -295,59 +287,6 @@
   color: var(--muted);
 }
 
-/* entrance cascade — everything below the crumb stays hidden until the
-   `ls work/` command finishes typing and .play is set (matches the resume
-   entrance). swRise uses `both`, so the final opacity:1 is held. */
-.lede,
-.filters,
-.card,
-.foot {
-  opacity: 0;
-}
-.play .lede {
-  animation: swRise 0.5s ease both 0.02s;
-}
-.play .filters {
-  animation: swRise 0.5s ease both 0.08s;
-}
-.play .foot {
-  animation: swRise 0.5s ease both;
-}
-.play .card {
-  animation: swRise 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-}
-.play .card:nth-child(1) {
-  animation-delay: 0.04s;
-}
-.play .card:nth-child(2) {
-  animation-delay: 0.1s;
-}
-.play .card:nth-child(3) {
-  animation-delay: 0.16s;
-}
-.play .card:nth-child(4) {
-  animation-delay: 0.22s;
-}
-.play .card:nth-child(5) {
-  animation-delay: 0.28s;
-}
-.play .card:nth-child(6) {
-  animation-delay: 0.34s;
-}
-.play .card:nth-child(n + 7) {
-  animation-delay: 0.4s;
-}
-
-@keyframes swRise {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 @keyframes swBlink {
   50% {
     opacity: 0;
@@ -364,13 +303,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .play .lede,
-  .play .filters,
-  .play .foot,
-  .play .card {
-    animation: none;
-    opacity: 1;
-  }
   .dot,
   .cur {
     animation: none;
