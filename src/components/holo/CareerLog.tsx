@@ -163,6 +163,8 @@ export default function CareerLog({ data }: { data: CareerLogData }) {
   return (
     <TypedReveal
       name={data.name}
+      backHref="/"
+      backLabel="back to home"
       head={
         <div className={styles.head}>
           <h1 className={styles.title}>Resume</h1>
