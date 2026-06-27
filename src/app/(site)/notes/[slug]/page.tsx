@@ -134,7 +134,7 @@ export default async function NoteDetailPage({ params }: Props) {
 
                   <div className={styles.back} data-rise>
                     <Link href="/notes" className={page.cta}>
-                      ← cd notes/
+                      ← back to notes
                     </Link>
                   </div>
                 </>
