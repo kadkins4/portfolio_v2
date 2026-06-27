@@ -32,6 +32,8 @@ export default async function StoryPage() {
     <HoloFrame name={name}>
       <TypedReveal
         name={name}
+        backHref="/"
+        backLabel="back to home"
         head={
           <div className={`${page.head} ${story.titleRow}`}>
             <Image

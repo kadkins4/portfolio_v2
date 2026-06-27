@@ -37,6 +37,39 @@
   }
 }
 
+/* back-up-one-level links — top is always visible (quick exit), bottom fades
+   in once the reveal has finished so it never floats over mid-animation. */
+.backTop,
+.backBottom {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  color: var(--accent-soft);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.backTop:hover,
+.backBottom:hover {
+  color: var(--accent);
+}
+.backTop {
+  margin-bottom: 16px;
+}
+.backBottom {
+  margin-top: 36px;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.5s ease 0.15s,
+    color 0.2s ease;
+}
+.backBottomShown {
+  opacity: 1;
+  pointer-events: auto;
+}
+
 /* typed command / output lines */
 .crumb {
   margin: 18px 0 0;
@@ -92,6 +125,11 @@
 @media (prefers-reduced-motion: reduce) {
   .cur {
     animation: none;
+  }
+  .backBottom {
+    opacity: 1;
+    pointer-events: auto;
+    transition: color 0.2s ease;
   }
   .reveal,
   .revealActive {

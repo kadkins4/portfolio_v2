@@ -136,6 +136,8 @@ export default function SelectedWork({
     <TypedReveal
       wide
       name={name}
+      backHref="/"
+      backLabel="back to home"
       head={
         <div className={styles.head}>
           <h1 className={styles.title}>Projects</h1>

@@ -49,6 +49,8 @@ export default async function ContactPage() {
       <TypedReveal
         wide
         name={name}
+        backHref="/"
+        backLabel="back to home"
         head={
           <div className={page.head}>
             <h1 className={page.title}>

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import Image from "next/image";
 import { cache } from "react";
 import { createReader } from "@keystatic/core/reader";
@@ -85,6 +84,8 @@ export default async function NoteDetailPage({ params }: Props) {
         <TypedReveal
           amber={isLife}
           name={name}
+          backHref="/notes"
+          backLabel="back to notes"
           head={<h1 className={page.title}>{item.title}</h1>}
           steps={[
             { kind: "command", text: `cat notes/${slug}.md` },
@@ -131,12 +132,6 @@ export default async function NoteDetailPage({ params }: Props) {
                       {renderMarkdoc(contentResult)}
                     </article>
                   )}
-
-                  <div className={styles.back} data-rise>
-                    <Link href="/notes" className={page.cta}>
-                      ← back to notes
-                    </Link>
-                  </div>
                 </>
               ),
             },

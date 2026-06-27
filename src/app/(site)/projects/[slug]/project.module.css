@@ -99,36 +99,3 @@
   border-bottom: 2px solid var(--accent);
   border-right: 2px solid var(--accent);
 }
-
-/* top back link — always visible in the head, lets the user bail fast */
-.backTop {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 12px;
-  letter-spacing: 0.03em;
-  color: var(--accent-soft);
-  text-decoration: none;
-  margin-bottom: 14px;
-  transition: color 0.2s;
-}
-.backTop:hover {
-  color: var(--accent);
-}
-
-/* in-page back link to /work */
-.back {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 12px;
-  letter-spacing: 0.03em;
-  color: var(--accent-soft);
-  text-decoration: none;
-  transition: color 0.2s;
-}
-.back:hover {
-  color: var(--accent);
-}

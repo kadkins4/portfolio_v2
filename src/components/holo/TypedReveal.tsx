@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import styles from "./typedReveal.module.css";
 
 export type TypedStep =
@@ -66,12 +67,16 @@ export default function TypedReveal({
   amber = false,
   head,
   steps,
+  backHref,
+  backLabel,
 }: {
   name?: string;
   wide?: boolean;
   amber?: boolean;
   head?: React.ReactNode;
   steps: TypedStep[];
+  backHref?: string;
+  backLabel?: string;
 }) {
   const prompt = `${name.split(" ")[0].toLowerCase()}@adkins:~$`;
   const [current, setCurrent] = useState(0); // index of the running step
@@ -144,10 +149,18 @@ export default function TypedReveal({
     return () => all.forEach(clearTimeout);
   }, []);
 
+  const showBack = Boolean(backHref && backLabel);
+  const done = current >= steps.length;
+
   return (
     <main
       className={cx(styles.wrap, wide && styles.wide, amber && styles.amber)}
     >
+      {showBack && (
+        <Link href={backHref!} className={styles.backTop}>
+          ← {backLabel}
+        </Link>
+      )}
       {head}
       {steps.map((step, i) => {
         const past = i < current;
@@ -182,6 +195,16 @@ export default function TypedReveal({
           </div>
         );
       })}
+      {showBack && (
+        <div>
+          <Link
+            href={backHref!}
+            className={cx(styles.backBottom, done && styles.backBottomShown)}
+          >
+            ← {backLabel}
+          </Link>
+        </div>
+      )}
     </main>
   );
 }

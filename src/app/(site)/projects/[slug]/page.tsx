@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import Image from "next/image";
 import { cache } from "react";
 import { createReader } from "@keystatic/core/reader";
@@ -115,19 +114,16 @@ export default async function ProjectDetailPage({ params }: Props) {
       <JsonLd data={breadcrumbSchema} />
       <TypedReveal
         name={name}
+        backHref="/projects"
+        backLabel="back to projects"
         head={
-          <>
-            <Link href="/projects" className={styles.backTop}>
-              ← back to projects
-            </Link>
-            <div className={page.head}>
-              <h1 className={page.title}>{item.title}</h1>
-              <span className={page.entries}>
-                <span className={page.dot} aria-hidden="true" />
-                {[year, "PROJECT"].filter(Boolean).join(" · ")}
-              </span>
-            </div>
-          </>
+          <div className={page.head}>
+            <h1 className={page.title}>{item.title}</h1>
+            <span className={page.entries}>
+              <span className={page.dot} aria-hidden="true" />
+              {[year, "PROJECT"].filter(Boolean).join(" · ")}
+            </span>
+          </div>
         }
         steps={[
           { kind: "command", text: `cat projects/${slug}.md` },
@@ -188,12 +184,6 @@ export default async function ProjectDetailPage({ params }: Props) {
                     {renderMarkdoc(contentResult)}
                   </div>
                 )}
-
-                <div data-rise>
-                  <Link href="/projects" className={styles.back}>
-                    ← back to projects
-                  </Link>
-                </div>
 
                 <div className={page.foot} data-rise>
                   &gt; eof
