@@ -27,7 +27,13 @@ const TIERS: Tier[] = [
     group: "Backend & Data",
     tagline:
       "The other half of the stack. APIs, services, and the data behind them.",
-    match: ["Node.js", "GraphQL", "REST APIs", "Python"],
+    match: ["Node.js", "GraphQL", "REST APIs", "Python", "Ruby on Rails"],
+  },
+  {
+    group: "Worked With, Not Daily",
+    tagline:
+      "Shipped real work in these, but they aren't my daily drivers. Comfortable, not claiming expert.",
+    match: ["Angular", "Vue"],
   },
   {
     group: "Quality",
