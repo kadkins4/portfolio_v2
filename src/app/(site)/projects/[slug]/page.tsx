@@ -98,8 +98,8 @@ export default async function ProjectDetailPage({ params }: Props) {
       {
         "@type": "ListItem",
         position: 2,
-        name: "Selected Work",
-        item: `${SITE_URL}/work`,
+        name: "Projects",
+        item: `${SITE_URL}/projects`,
       },
       {
         "@type": "ListItem",
@@ -117,8 +117,8 @@ export default async function ProjectDetailPage({ params }: Props) {
         name={name}
         head={
           <>
-            <Link href="/work" className={styles.backTop}>
-              ← back to work
+            <Link href="/projects" className={styles.backTop}>
+              ← back to projects
             </Link>
             <div className={page.head}>
               <h1 className={page.title}>{item.title}</h1>
@@ -130,7 +130,7 @@ export default async function ProjectDetailPage({ params }: Props) {
           </>
         }
         steps={[
-          { kind: "command", text: `cat work/${slug}.md` },
+          { kind: "command", text: `cat projects/${slug}.md` },
           {
             kind: "reveal",
             node: (
@@ -190,8 +190,8 @@ export default async function ProjectDetailPage({ params }: Props) {
                 )}
 
                 <div data-rise>
-                  <Link href="/work" className={styles.back}>
-                    ← back to work
+                  <Link href="/projects" className={styles.back}>
+                    ← back to projects
                   </Link>
                 </div>
 

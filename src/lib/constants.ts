@@ -10,6 +10,6 @@ export const SITE_DESCRIPTION =
 export type NavItem = { label: string; href: string };
 export const NAV_ITEMS: NavItem[] = [
   { label: "about", href: "/story" },
-  { label: "work", href: "/work" },
+  { label: "projects", href: "/projects" },
   { label: "resume", href: "/resume" },
 ];

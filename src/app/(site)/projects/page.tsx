@@ -8,12 +8,13 @@ import HoloFrame from "@/components/holo/HoloFrame";
 import SelectedWork, { type WorkItem } from "@/components/holo/SelectedWork";
 
 export const metadata: Metadata = {
-  title: "Selected Work",
+  title: "Projects",
   description:
     "Selected projects by Kendall Adkins — sports betting and cybersecurity at scale, plus self-run side projects.",
+  alternates: { canonical: "/projects" },
 };
 
-export default async function WorkPage() {
+export default async function ProjectsPage() {
   const reader = createReader(process.cwd(), config);
   const [home, projects] = await Promise.all([
     reader.singletons.home.read(),

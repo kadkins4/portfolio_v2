@@ -32,10 +32,10 @@ export default async function HomePage() {
           "A decade shipping high-traffic web apps — sports betting, fintech, and cybersecurity. React and TypeScript, owned end to end.",
         dirs: [
           {
-            name: "work/",
+            name: "projects/",
             desc: "selected projects",
             meta: String(projectCount),
-            href: "/work",
+            href: "/projects",
             preview: "thescore bet · loresmith · on the clock · vantage …",
           },
           {

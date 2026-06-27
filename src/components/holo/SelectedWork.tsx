@@ -138,7 +138,7 @@ export default function SelectedWork({
       name={name}
       head={
         <div className={styles.head}>
-          <h1 className={styles.title}>Work</h1>
+          <h1 className={styles.title}>Projects</h1>
           <span className={styles.entries}>
             <span className={styles.dot} aria-hidden="true" />
             {items.length} PROJECTS
@@ -146,7 +146,7 @@ export default function SelectedWork({
         </div>
       }
       steps={[
-        { kind: "command", text: "ls work/" },
+        { kind: "command", text: "ls projects/" },
         {
           kind: "reveal",
           node: (
