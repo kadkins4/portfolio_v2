@@ -122,7 +122,6 @@
   line-height: 1.58;
   color: rgba(234, 246, 244, 0.66);
   margin: 0 0 14px;
-  max-width: 68ch;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
