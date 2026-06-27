@@ -1,10 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState, type KeyboardEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import TypedReveal from "./TypedReveal";
 import styles from "./selectedWork.module.css";
+
+const PROMPT = "kendall@adkins:~$";
 
 export type WorkItem = {
   slug: string;
@@ -102,6 +104,9 @@ export default function SelectedWork({
   items: WorkItem[];
 }) {
   const [filter, setFilter] = useState<string>("all");
+  const [query, setQuery] = useState("");
+  const [shellFocused, setShellFocused] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const tags = useMemo(() => {
     const seen = new Set<string>();
@@ -109,11 +114,23 @@ export default function SelectedWork({
     return ["all", ...Array.from(seen)];
   }, [items]);
 
-  const visible = useMemo(
-    () =>
-      filter === "all" ? items : items.filter((it) => it.tags.includes(filter)),
-    [items, filter]
-  );
+  const visible = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return items.filter((it) => {
+      if (filter !== "all" && !it.tags.includes(filter)) return false;
+      if (!q) return true;
+      const hay =
+        `${it.title} ${it.description} ${it.tags.join(" ")}`.toLowerCase();
+      return hay.includes(q);
+    });
+  }, [items, filter, query]);
+
+  function onKeyDown(e: KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Escape") {
+      e.preventDefault();
+      setQuery("");
+    }
+  }
 
   return (
     <TypedReveal
@@ -141,6 +158,40 @@ export default function SelectedWork({
                 link out.
               </p>
 
+              <div
+                className={`${styles.shell} ${shellFocused ? styles.shellFocused : ""}`}
+                data-rise
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  inputRef.current?.focus();
+                }}
+              >
+                <div className={styles.shellLine}>
+                  <span className={styles.ps}>{PROMPT}</span>
+                  <span className={styles.shellCmd}>grep</span>
+                  <span className={styles.shellEcho}>{query}</span>
+                  <span className={styles.shellCur} aria-hidden="true" />
+                  {!query && (
+                    <span className={styles.shellHint}>
+                      type to filter — try &quot;fantasy&quot; or
+                      &quot;security&quot;
+                    </span>
+                  )}
+                  <input
+                    ref={inputRef}
+                    className={styles.shellInput}
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    onKeyDown={onKeyDown}
+                    onFocus={() => setShellFocused(true)}
+                    onBlur={() => setShellFocused(false)}
+                    autoComplete="off"
+                    spellCheck={false}
+                    aria-label="search projects"
+                  />
+                </div>
+              </div>
+
               {tags.length > 1 && (
                 <div className={styles.filters} data-rise>
                   {tags.map((t) => (
@@ -156,11 +207,21 @@ export default function SelectedWork({
                 </div>
               )}
 
-              <div className={styles.grid}>
-                {visible.map((it) => (
-                  <Card key={it.slug} item={it} />
-                ))}
-              </div>
+              {visible.length > 0 ? (
+                <div className={styles.grid}>
+                  {visible.map((it) => (
+                    <Card key={it.slug} item={it} />
+                  ))}
+                </div>
+              ) : (
+                <p className={styles.empty} data-rise>
+                  No projects match{" "}
+                  <span className={styles.emptyQ}>
+                    &ldquo;{query.trim()}&rdquo;
+                  </span>
+                  . Try a different term or clear the search.
+                </p>
+              )}
 
               <div className={styles.foot} data-rise>
                 &gt; {visible.length} of {items.length} shown — still shipping

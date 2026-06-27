@@ -81,6 +81,74 @@
   color: var(--ink);
 }
 
+/* search shell — terminal-styled live filter (mirrors the resume shell) */
+.shell {
+  position: relative;
+  margin: 0 0 16px;
+  padding: 12px 15px;
+  border-radius: 10px;
+  border: 1px solid var(--cyan-bd);
+  background: rgba(0, 0, 0, 0.28);
+  cursor: text;
+  transition: border-color 0.2s ease;
+}
+.shell.shellFocused {
+  border-color: oklch(0.75 0.12 190 / 0.55);
+}
+.shellLine {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 13px;
+  color: var(--muted);
+}
+.ps {
+  margin-right: 7px;
+  color: var(--cyan-soft);
+}
+.shellCmd {
+  margin-right: 7px;
+  color: var(--cyan);
+}
+.shellEcho {
+  color: var(--ink);
+  white-space: pre;
+}
+.shellCur {
+  display: inline-block;
+  width: 8px;
+  height: 15px;
+  vertical-align: -2px;
+  margin-left: 1px;
+  background: var(--cyan);
+  box-shadow: 0 0 8px var(--cyan);
+  animation: swBlink 1.1s step-end infinite;
+}
+.shellHint {
+  color: rgba(234, 246, 244, 0.32);
+  margin-left: 8px;
+}
+.shellInput {
+  position: absolute;
+  left: -9999px;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
+/* empty search state */
+.empty {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--muted);
+  padding: 28px 0;
+}
+.emptyQ {
+  color: var(--ink);
+}
+
 /* grid */
 .grid {
   display: grid;
@@ -282,7 +350,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .dot,
-  .cur {
+  .cur,
+  .shellCur {
     animation: none;
   }
   .card:hover {
