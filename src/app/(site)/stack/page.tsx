@@ -38,7 +38,7 @@ const TIERS: Tier[] = [
   {
     group: "Quality",
     tagline: "How I keep shipped work honest.",
-    match: ["Testing (Jest/Vitest)"],
+    match: ["Testing (Jest/Vitest)", "Playwright", "Code Review"],
   },
   {
     group: "How I Work",
@@ -48,7 +48,7 @@ const TIERS: Tier[] = [
   {
     group: "Playing Around",
     tagline: "Side-project territory. Picked up for the fun of it.",
-    match: ["Unity 2D"],
+    match: ["Unity 2D", "Phaser"],
   },
 ];
 
