@@ -28,7 +28,7 @@ export default function NotFound() {
                 </h1>
                 <NotFoundMessage className={styles.message} data-rise />
                 <Link href="/" className={styles.back} data-rise>
-                  Back to Home
+                  ← back to home
                 </Link>
               </div>
             ),

@@ -155,7 +155,7 @@ export default async function ProjectDetailPage({ params }: Props) {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        view live ↗
+                        live ↗
                       </a>
                     )}
                   </div>

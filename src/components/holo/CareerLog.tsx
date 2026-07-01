@@ -1,7 +1,15 @@
 "use client";
 
-import { useMemo, useRef, useState, type KeyboardEvent } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type KeyboardEvent,
+} from "react";
 import TypedReveal from "./TypedReveal";
+import TerminalShell from "./TerminalShell";
+import { promptFor } from "./prompt";
 import styles from "./careerLog.module.css";
 
 export type Experience = {
@@ -41,17 +49,22 @@ type Entry = {
 };
 type OutLine = { cmd: string; out: string };
 
-const PROMPT = "kendall@adkins:~$";
-
 export default function CareerLog({ data }: { data: CareerLogData }) {
+  const prompt = promptFor(data.name);
+
   // interaction state
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
-  const [shellFocused, setShellFocused] = useState(false);
   const [input, setInput] = useState("");
   const [output, setOutput] = useState<OutLine[]>([]);
   const [history, setHistory] = useState<string[]>([]);
   const histIdx = useRef<number>(-1);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const logRef = useRef<HTMLDivElement>(null);
+
+  // keep the newest command/output in view as the log grows and scrolls
+  useEffect(() => {
+    const el = logRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [output]);
 
   // unified, most-recent-first timeline (source is already ordered newest→oldest)
   const entries: Entry[] = useMemo(() => {
@@ -104,7 +117,7 @@ export default function CareerLog({ data }: { data: CareerLogData }) {
           "available commands:\n" +
           "  ls         list roles\n" +
           "  whoami     summary\n" +
-          "  download   grab the PDF résumé\n" +
+          "  download   grab the PDF resume\n" +
           "  clear      clear the log";
         break;
       case "ls":
@@ -116,7 +129,7 @@ export default function CareerLog({ data }: { data: CareerLogData }) {
       case "download":
       case "resume":
       case "pdf":
-        out = "opening résumé.pdf…";
+        out = "opening resume.pdf…";
         window.open(data.resumePdf, "_blank");
         break;
       case "clear":
@@ -158,7 +171,7 @@ export default function CareerLog({ data }: { data: CareerLogData }) {
     }
   }
 
-  const showHint = !shellFocused && !input && output.length === 0;
+  const showHint = !input && output.length === 0;
 
   return (
     <TypedReveal
@@ -169,7 +182,7 @@ export default function CareerLog({ data }: { data: CareerLogData }) {
         <div className={styles.head}>
           <h1 className={styles.title}>Resume</h1>
           <a className={styles.download} href={data.resumePdf} download>
-            ↓ download résumé.pdf
+            ↓ download resume.pdf
           </a>
         </div>
       }
@@ -186,49 +199,33 @@ export default function CareerLog({ data }: { data: CareerLogData }) {
           stagger: 500,
           node: (
             <>
-              {/* interactive shell — always shown, cursor blinks only when focused */}
-              <div
-                className={`${styles.shell} ${shellFocused ? styles.shellFocused : ""}`}
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                  inputRef.current?.focus();
-                }}
+              {/* interactive shell — runs commands, keeps a history log above */}
+              <TerminalShell
+                prompt={prompt}
+                value={input}
+                onChange={setInput}
+                onKeyDown={onKeyDown}
+                ariaLabel="terminal command input"
+                className={styles.resumeShell}
+                hint={
+                  showHint ? (
+                    <>type &quot;help&quot; — try ls · whoami · download</>
+                  ) : null
+                }
               >
                 {output.length > 0 && (
-                  <div className={styles.shellHistory}>
+                  <div className={styles.shellHistory} ref={logRef}>
                     {output.map((o, i) => (
                       <div key={i}>
                         <div className={styles.shellEchoLine}>
-                          <span className={styles.ps}>{PROMPT}</span> {o.cmd}
+                          <span className={styles.ps}>{prompt}</span> {o.cmd}
                         </div>
                         <div className={styles.shellOut}>{o.out}</div>
                       </div>
                     ))}
                   </div>
                 )}
-                <div className={styles.shellLine}>
-                  <span className={styles.ps}>{PROMPT}</span>
-                  <span className={styles.shellEcho}>{input}</span>
-                  <span className={styles.shellCur} aria-hidden="true" />
-                  {showHint && (
-                    <span className={styles.shellHint}>
-                      type &quot;help&quot; — try ls · whoami · download
-                    </span>
-                  )}
-                  <input
-                    ref={inputRef}
-                    className={styles.shellInput}
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    onKeyDown={onKeyDown}
-                    onFocus={() => setShellFocused(true)}
-                    onBlur={() => setShellFocused(false)}
-                    autoComplete="off"
-                    spellCheck={false}
-                    aria-label="terminal command input"
-                  />
-                </div>
-              </div>
+              </TerminalShell>
 
               <div className={styles.timeline}>
                 {entries.map((e, i) => {

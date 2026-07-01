@@ -8,7 +8,7 @@ import CareerLog from "@/components/holo/CareerLog";
 export const metadata: Metadata = {
   title: "Resume",
   description:
-    "A terminal-style résumé. A decade of engineering, most recent first.",
+    "A terminal-style resume. A decade of engineering, most recent first.",
 };
 
 export default async function ResumePage() {

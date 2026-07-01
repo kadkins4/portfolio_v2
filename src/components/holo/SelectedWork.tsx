@@ -1,12 +1,12 @@
 "use client";
 
-import { useMemo, useRef, useState, type KeyboardEvent } from "react";
+import { useMemo, useState, type KeyboardEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import TypedReveal from "./TypedReveal";
+import TerminalShell from "./TerminalShell";
+import { promptFor } from "./prompt";
 import styles from "./selectedWork.module.css";
-
-const PROMPT = "kendall@adkins:~$";
 
 export type WorkItem = {
   slug: string;
@@ -105,8 +105,6 @@ export default function SelectedWork({
 }) {
   const [filter, setFilter] = useState<string>("all");
   const [query, setQuery] = useState("");
-  const [shellFocused, setShellFocused] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   const tags = useMemo(() => {
     const seen = new Set<string>();
@@ -160,38 +158,23 @@ export default function SelectedWork({
                 link out.
               </p>
 
-              <div
-                className={`${styles.shell} ${shellFocused ? styles.shellFocused : ""}`}
-                data-rise
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                  inputRef.current?.focus();
-                }}
-              >
-                <div className={styles.shellLine}>
-                  <span className={styles.ps}>{PROMPT}</span>
-                  <span className={styles.shellCmd}>grep</span>
-                  <span className={styles.shellEcho}>{query}</span>
-                  <span className={styles.shellCur} aria-hidden="true" />
-                  {!query && (
-                    <span className={styles.shellHint}>
-                      type to filter — try &quot;fantasy&quot; or
-                      &quot;security&quot;
-                    </span>
-                  )}
-                  <input
-                    ref={inputRef}
-                    className={styles.shellInput}
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    onKeyDown={onKeyDown}
-                    onFocus={() => setShellFocused(true)}
-                    onBlur={() => setShellFocused(false)}
-                    autoComplete="off"
-                    spellCheck={false}
-                    aria-label="search projects"
-                  />
-                </div>
+              <div className={styles.searchRow} data-rise>
+                <TerminalShell
+                  prompt={promptFor(name)}
+                  cmd="grep"
+                  value={query}
+                  onChange={setQuery}
+                  onKeyDown={onKeyDown}
+                  ariaLabel="search projects"
+                  hint={
+                    !query ? (
+                      <>
+                        type to filter — try &quot;fantasy&quot; or
+                        &quot;security&quot;
+                      </>
+                    ) : null
+                  }
+                />
               </div>
 
               {tags.length > 1 && (

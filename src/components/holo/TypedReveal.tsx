@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { promptFor } from "./prompt";
 import styles from "./typedReveal.module.css";
 
 export type TypedStep =
@@ -78,7 +79,7 @@ export default function TypedReveal({
   backHref?: string;
   backLabel?: string;
 }) {
-  const prompt = `${name.split(" ")[0].toLowerCase()}@adkins:~$`;
+  const prompt = promptFor(name);
   const [current, setCurrent] = useState(0); // index of the running step
   const [typed, setTyped] = useState(""); // typed-so-far for the active typed step
   const reduceRef = useRef(false);
