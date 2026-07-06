@@ -16,6 +16,13 @@ siteSummary: >-
 
 resumePdf: /kendall-adkins-resume.pdf
 
+# First professional dev role — the site derives "N+ YRS" from this (YYYY-MM),
+# so it ticks up automatically on the next build after each anniversary.
+careerStart: "2017-11"
+
+# Availability status shown on the resume ticket.
+siteStatus: OPEN TO WORK
+
 # Short bio shown on the site resume "ticket" (distinct from the full summary).
 siteBio: >-
   Senior frontend engineer, 8+ years. Builds fast, accessible interfaces for

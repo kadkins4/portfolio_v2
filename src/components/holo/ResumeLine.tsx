@@ -47,6 +47,8 @@ export default function ResumeLine({
   bio,
   resumePdf,
   experienceLabel,
+  status,
+  updated,
   skillGroups,
   stations,
   socials,
@@ -55,6 +57,8 @@ export default function ResumeLine({
   bio: string;
   resumePdf: string;
   experienceLabel: string;
+  status: string;
+  updated: string;
   skillGroups: SkillGroup[];
   stations: Station[];
   socials?: SocialLink[];
@@ -125,7 +129,7 @@ export default function ResumeLine({
             <div className={styles.specRow}>
               <span className={styles.specLabel}>STATUS</span>
               <span className={`${styles.specVal} ${styles.specValGreen}`}>
-                ● OPEN TO INTERESTING
+                ● {status}
               </span>
             </div>
 
@@ -161,7 +165,7 @@ export default function ResumeLine({
             </a>
             <div className={styles.barcode} aria-hidden="true" />
             <div className={styles.finePrint}>
-              PDF · UPDATED 2026.07 · ATS-FRIENDLY
+              PDF · UPDATED {updated} · ATS-FRIENDLY
             </div>
           </div>
         </div>

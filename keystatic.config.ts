@@ -72,6 +72,18 @@ export default config({
           label: "Downloadable PDF path",
           description: "Path under /public. Keep in sync with the file there.",
         }),
+        careerStart: fields.text({
+          label: "Career start (YYYY-MM)",
+          description: "Generated from resume.source.yaml — do not hand-edit.",
+        }),
+        status: fields.text({
+          label: "Availability status",
+          description: "Generated from resume.source.yaml — do not hand-edit.",
+        }),
+        updated: fields.text({
+          label: "Last updated (YYYY.MM)",
+          description: "Stamped by the resume sync — do not hand-edit.",
+        }),
         skillGroups: fields.array(
           fields.object({
             label: fields.text({ label: "Group label" }),

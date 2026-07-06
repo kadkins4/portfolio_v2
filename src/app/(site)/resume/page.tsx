@@ -33,6 +33,17 @@ function yearRange(period: string): string {
   const end = years[years.length - 1];
   return start === end ? start : `${start} — ${end}`;
 }
+
+// full years elapsed since a "YYYY-MM" start (computed at build time)
+function yearsSince(start: string): number {
+  const [y, m] = start.split("-").map(Number);
+  if (!y) return 0;
+  const now = new Date();
+  let years = now.getFullYear() - y;
+  if (m && now.getMonth() + 1 < m) years -= 1;
+  return Math.max(0, years);
+}
+
 export default async function ResumePage() {
   const reader = createReader(process.cwd(), config);
   const [home, resume, settings] = await Promise.all([
@@ -90,6 +101,10 @@ export default async function ResumePage() {
 
   const roleCount = resume.experience.length + resume.earlier.length;
 
+  // derive "N+ YRS" from the career start (YYYY-MM) so it ticks up on each
+  // build after the anniversary — no manual edits.
+  const years = yearsSince(resume.careerStart);
+
   const socials = toSocialLinks(settings);
   const skillGroups: SkillGroup[] = resume.skillGroups.map((g) => ({
     label: g.label.toUpperCase(),
@@ -102,7 +117,9 @@ export default async function ResumePage() {
       name={home?.title ?? "Kendall Adkins"}
       bio={resume.bio}
       resumePdf={resume.resumePdf || "/kendall-adkins-resume.pdf"}
-      experienceLabel={`8+ YRS · ${roleCount} STOPS`}
+      experienceLabel={`${years}+ YRS · ${roleCount} STOPS`}
+      status={resume.status}
+      updated={resume.updated}
       skillGroups={skillGroups}
       stations={stations}
       socials={socials}

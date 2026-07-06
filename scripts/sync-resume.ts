@@ -36,6 +36,8 @@ type Source = {
   siteSummary: string;
   siteBio: string;
   siteSkillGroups: SkillGroup[];
+  careerStart: string;
+  siteStatus: string;
   resumePdf: string;
   summaries: Record<string, string>;
   variantMeta: Record<string, VariantMeta>;
@@ -49,10 +51,20 @@ type Source = {
 const src = yaml.load(fs.readFileSync(SRC, "utf8")) as Source;
 
 // --- 1. Site subset (matches keystatic.config.ts `resume` singleton) ---
+// stamp "last updated" (YYYY.MM) at sync time
+const now = new Date();
+const updated = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(
+  2,
+  "0"
+)}`;
+
 const site = {
   summary: src.siteSummary,
   bio: src.siteBio,
   resumePdf: src.resumePdf,
+  careerStart: src.careerStart,
+  status: src.siteStatus,
+  updated,
   skillGroups: src.siteSkillGroups,
   experience: src.experience,
   earlier: src.earlier,
