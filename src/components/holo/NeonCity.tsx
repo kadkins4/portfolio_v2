@@ -252,8 +252,7 @@ export default function NeonCity({
           prog < 0.5 ? 2 * prog * prog : 1 - Math.pow(-2 * prog + 2, 2) / 2;
         p.x = g.fromX + (g.toX - g.fromX) * e;
         p.y = g.fromY + (g.toY - g.fromY) * e;
-        p.ang =
-          (Math.atan2(g.toY - g.fromY, g.toX - g.fromX) * 180) / Math.PI + 90;
+        p.ang = (Math.atan2(g.toY - g.fromY, g.toX - g.fromX) * 180) / Math.PI;
         moving = true;
         if (prog >= 1) {
           const key = g.key;
@@ -290,7 +289,7 @@ export default function NeonCity({
         }
         moving = vx !== 0 || vy !== 0;
         if (moving) {
-          p.ang = (Math.atan2(vy, vx) * 180) / Math.PI + 90;
+          p.ang = (Math.atan2(vy, vx) * 180) / Math.PI;
           // axis-separated collision
           const nx = Math.max(MARGIN, Math.min(WORLD.w - MARGIN, p.x + vx));
           if (!hitsSolid(nx, p.y)) p.x = nx;
@@ -326,7 +325,9 @@ export default function NeonCity({
 
       // ---- avatar ----
       if (charRef.current)
-        charRef.current.style.transform = `translate(${p.x}px, ${p.y}px)`;
+        charRef.current.style.transform = `translate(${p.x - 14}px, ${
+          p.y - 14
+        }px)`;
       if (avatarRef.current)
         avatarRef.current.style.transform = `rotate(${p.ang}deg)`;
       if (charRef.current) {
@@ -745,21 +746,24 @@ export default function NeonCity({
           </div>
         ))}
 
-        {/* character */}
+        {/* character — the mock-up "person" (28×28 box centered on position) */}
         <div
           ref={charRef}
           className={styles.char}
-          style={{ transform: `translate(${SPAWN.x}px, ${SPAWN.y}px)` }}
+          style={{
+            transform: `translate(${SPAWN.x - 14}px, ${SPAWN.y - 14}px)`,
+          }}
         >
           <div className={styles.charShadow} />
           <div className={styles.ring} />
           <div ref={avatarRef} className={styles.avatar}>
+            <div className={styles.legA} />
+            <div className={styles.legB} />
+            <div className={styles.footA} />
+            <div className={styles.footB} />
             <div className={styles.torso} />
-            <div className={`${styles.leg} ${styles.legL}`} />
-            <div className={`${styles.leg} ${styles.legR}`} />
-            <div className={styles.head}>
-              <div className={styles.face} />
-            </div>
+            <div className={styles.head} />
+            <div className={styles.nose} />
           </div>
         </div>
       </div>
