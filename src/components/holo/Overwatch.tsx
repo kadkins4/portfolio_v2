@@ -10,8 +10,12 @@ import styles from "./overwatch.module.css";
 // camera-drop and routes into the walkable /city.
 export default function Overwatch({
   name = "Kendall Adkins",
+  tagline,
+  intro,
 }: {
   name?: string;
+  tagline?: string;
+  intro?: string;
 }) {
   const router = useRouter();
   const [first, ...rest] = name.split(" ");
@@ -177,6 +181,9 @@ export default function Overwatch({
             <h1 className={styles.title}>
               {first} {last && <i>{last}</i>}
             </h1>
+
+            {tagline && <div className={styles.tagline}>{tagline}</div>}
+            {intro && <p className={styles.intro}>{intro}</p>}
 
             <div className={styles.chips}>
               <Link

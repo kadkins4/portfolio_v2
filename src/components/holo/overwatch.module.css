@@ -273,13 +273,30 @@
   font-weight: 400;
   font-size: 46px;
   line-height: 1;
-  margin: 0 0 30px;
+  margin: 0 0 12px;
   color: #efecfa;
   text-shadow: 0 0 30px rgba(180, 170, 240, 0.35);
 }
 .title i {
   font-style: italic;
   font-family: var(--font-instrument), Georgia, serif;
+}
+.tagline {
+  font-family: var(--font-mono), monospace;
+  font-size: 11px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  text-shadow: 0 0 10px oklch(0.8 0.1 190 / 0.4);
+  margin: 0 0 14px;
+}
+.intro {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(243, 237, 226, 0.68);
+  max-width: 440px;
+  margin: 0 auto 26px;
 }
 
 .chips {

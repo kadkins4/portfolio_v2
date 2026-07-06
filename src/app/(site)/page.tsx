@@ -15,5 +15,11 @@ export default async function HomePage() {
   const home = await reader.singletons.home.read();
   const name = home?.title ?? "Kendall Adkins";
 
-  return <Overwatch name={name} />;
+  return (
+    <Overwatch
+      name={name}
+      tagline={home?.tagline || undefined}
+      intro={home?.intro || undefined}
+    />
+  );
 }
