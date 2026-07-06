@@ -1,0 +1,251 @@
+/* Shared "Post Office" contact dispatch — lavender chrome. Collapsed summon
+   strip expands (CRT boot) into the desk wrapping the existing ContactForm. */
+.anchor {
+  scroll-margin-top: 90px;
+}
+
+/* ---- collapsed summon strip ---- */
+.summon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  width: 100%;
+  text-align: left;
+  border: 1px solid rgba(170, 160, 235, 0.4);
+  border-radius: 5px;
+  background: linear-gradient(
+    160deg,
+    rgba(150, 140, 220, 0.08),
+    rgba(60, 50, 120, 0.03)
+  );
+  padding: 15px 22px;
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    box-shadow 0.25s,
+    border-color 0.25s;
+}
+.summon:hover,
+.summon:focus-visible {
+  box-shadow: 0 0 32px rgba(120, 110, 210, 0.25);
+  border-color: rgba(190, 180, 245, 0.65);
+  outline: none;
+}
+.summonKicker {
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  color: var(--lavender);
+}
+.summonCta {
+  font-family: var(--font-mono), monospace;
+  font-size: 12px;
+  color: rgba(170, 235, 190, 0.95);
+  text-shadow: 0 0 12px rgba(120, 200, 150, 0.5);
+}
+.summonStatus {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: rgba(243, 237, 226, 0.45);
+}
+
+/* ---- expanded desk ---- */
+.desk {
+  position: relative;
+  border: 1px solid rgba(170, 160, 235, 0.4);
+  border-radius: 6px;
+  background: linear-gradient(
+    160deg,
+    rgba(150, 140, 220, 0.09),
+    rgba(60, 50, 120, 0.03)
+  );
+  box-shadow:
+    0 0 44px rgba(120, 110, 210, 0.16),
+    inset 0 0 60px rgba(100, 90, 190, 0.05);
+  overflow: hidden;
+  padding: 30px 30px 26px;
+  transform-origin: 50% 50%;
+  animation: cbCrt 0.6s cubic-bezier(0.6, 0, 0.25, 1) both;
+}
+.scan {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(180, 170, 240, 0.04) 0 1px,
+    transparent 1px 4px
+  );
+}
+.minimize {
+  position: absolute;
+  top: 12px;
+  right: 18px;
+  z-index: 5;
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: rgba(234, 230, 250, 0.5);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 3px 6px;
+  transition: color 0.2s;
+}
+.minimize:hover,
+.minimize:focus-visible {
+  color: var(--ink);
+  outline: none;
+}
+
+.head {
+  position: relative;
+  margin-bottom: 18px;
+  animation: ncRise 0.5s ease both 0.3s;
+}
+.kicker {
+  display: flex;
+  gap: 10px;
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  color: var(--lavender);
+  margin-bottom: 12px;
+}
+.dim {
+  color: rgba(234, 230, 250, 0.35);
+}
+.title {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 400;
+  font-size: 34px;
+  line-height: 1.02;
+  margin: 0 0 8px;
+  color: var(--parchment);
+}
+.title i {
+  font-style: italic;
+  font-family: var(--font-instrument), Georgia, serif;
+}
+.blurb {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(243, 237, 226, 0.6);
+  margin: 0;
+  max-width: 440px;
+}
+
+.sockets {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(170, 160, 235, 0.18);
+}
+.socketsLabel {
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: rgba(234, 230, 250, 0.4);
+  margin-right: 8px;
+}
+.socket {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  text-decoration: none;
+  font-family: var(--font-mono), monospace;
+  font-size: 11px;
+  color: var(--sock);
+  border: 1px solid color-mix(in oklch, var(--sock) 35%, transparent);
+  border-radius: 4px;
+  padding: 7px 13px;
+  transition: background 0.2s;
+}
+.socket:hover,
+.socket:focus-visible {
+  background: rgba(150, 140, 220, 0.1);
+  outline: none;
+}
+.up {
+  opacity: 0.6;
+}
+
+/* ---- shared corner brackets + cursor ---- */
+.bracket {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  pointer-events: none;
+  animation: ncFlicker 10s infinite;
+}
+.tl {
+  top: 9px;
+  left: 9px;
+  border-top: 2px solid var(--lavender);
+  border-left: 2px solid var(--lavender);
+}
+.tr {
+  top: 9px;
+  right: 9px;
+  border-top: 2px solid var(--lavender);
+  border-right: 2px solid var(--lavender);
+  animation-delay: -4s;
+}
+.bl {
+  bottom: 9px;
+  left: 9px;
+  border-bottom: 2px solid var(--lavender);
+  border-left: 2px solid var(--lavender);
+  animation-delay: -7s;
+}
+.br {
+  bottom: 9px;
+  right: 9px;
+  border-bottom: 2px solid var(--lavender);
+  border-right: 2px solid var(--lavender);
+  animation-delay: -2s;
+}
+.cursor {
+  display: inline-block;
+  width: 6px;
+  height: 11px;
+  margin-left: 5px;
+  vertical-align: -1px;
+  background: rgba(170, 235, 190, 0.9);
+  animation: ncBlink 1.1s step-end infinite;
+}
+.statusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 8px var(--green);
+  animation: ncPulse 2s ease-in-out infinite;
+}
+
+@keyframes cbCrt {
+  0% {
+    transform: scaleY(0.04);
+    filter: brightness(2.6);
+  }
+  60% {
+    transform: scaleY(1.01);
+    filter: brightness(1.35);
+  }
+  100% {
+    transform: scaleY(1);
+    filter: brightness(1);
+  }
+}

@@ -9,7 +9,7 @@ export const SITE_DESCRIPTION =
 // page via HoloNav (used by both HoloFrame inner pages and the Gateway home).
 export type NavItem = { label: string; href: string };
 export const NAV_ITEMS: NavItem[] = [
-  { label: "about", href: "/story" },
   { label: "projects", href: "/projects" },
   { label: "resume", href: "/resume" },
+  { label: "about", href: "/about" },
 ];

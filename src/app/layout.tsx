@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import {
   Playfair_Display,
-  Inter,
+  DM_Sans,
+  Instrument_Serif,
   JetBrains_Mono,
   Libre_Caslon_Display,
 } from "next/font/google";
@@ -22,9 +23,17 @@ const playfair = Playfair_Display({
   display: "swap",
 });
 
-const inter = Inter({
+const dmSans = DM_Sans({
   subsets: ["latin"],
   variable: "--font-sans",
+  display: "swap",
+});
+
+const instrumentSerif = Instrument_Serif({
+  weight: "400",
+  style: ["normal", "italic"],
+  subsets: ["latin"],
+  variable: "--font-instrument",
   display: "swap",
 });
 
@@ -91,7 +100,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${playfair.variable} ${inter.variable} ${jetbrainsMono.variable} ${libreCaslon.variable}`}
+      className={`${playfair.variable} ${dmSans.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable} ${libreCaslon.variable}`}
     >
       <body>
         <JsonLd data={personSchema} />

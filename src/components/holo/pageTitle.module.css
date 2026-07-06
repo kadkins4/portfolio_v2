@@ -1,0 +1,56 @@
+/* Shared page title block — kicker + chromatic-split h1 + sub-kicker cursor.
+   Hue-specific colors arrive as inline --pt-* vars from the component. */
+.wrap {
+  padding: 56px 0 34px;
+}
+
+.kicker {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.32em;
+  color: var(--pt-kick);
+  margin-bottom: 16px;
+  animation: ncRise 0.5s ease both;
+}
+.door {
+  color: rgba(243, 237, 226, 0.35);
+  letter-spacing: 0.2em;
+}
+
+.h1 {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(42px, 5.5vw, 60px);
+  line-height: 1;
+  margin: 0 0 12px;
+  color: var(--ink);
+  text-shadow:
+    3px 0 oklch(0.75 0.16 340 / 0.45),
+    -3px 0 var(--pt-split);
+  animation: ncRise 0.5s ease both 0.08s;
+}
+.h1 i {
+  font-style: italic;
+  font-family: var(--font-instrument), Georgia, serif;
+}
+
+.sub {
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: rgba(243, 237, 226, 0.5);
+  animation: ncRise 0.5s ease both 0.14s;
+}
+.cursor {
+  display: inline-block;
+  width: 7px;
+  height: 12px;
+  vertical-align: -1px;
+  margin-left: 6px;
+  background: var(--pt-accent);
+  animation: ncBlink 0.8s step-end infinite;
+}

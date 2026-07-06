@@ -1,0 +1,38 @@
+/* Shared page frame: dark 60px grid + fixed scanlines + centered column. */
+.page {
+  min-height: 100vh;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(150, 140, 220, 0.035) 0 1px,
+      transparent 1px 60px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      rgba(150, 140, 220, 0.035) 0 1px,
+      transparent 1px 60px
+    ),
+    var(--page);
+  color: var(--parchment);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  position: relative;
+}
+
+.scan {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 60;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(180, 190, 255, 0.02) 0 1px,
+    transparent 1px 4px
+  );
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 clamp(20px, 4vw, 48px);
+  box-sizing: border-box;
+}
