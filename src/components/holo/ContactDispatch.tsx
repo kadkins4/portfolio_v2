@@ -19,17 +19,12 @@ const SOCIAL_META: Record<
   instagram: { glyph: "[o]", label: "instagram", color: "var(--amber)" },
 };
 
-const DEFAULT_SOCIALS: SocialLink[] = [
-  { platform: "github", url: "https://github.com/kadkins4" },
-  { platform: "linkedin", url: "https://www.linkedin.com/in/adkinskendall/" },
-  { platform: "instagram", url: "https://www.instagram.com/kadkins4/" },
-];
-
 // Shared "Post Office" contact block, dropped at the foot of every page.
 // Collapsed it's a summon strip; clicking CRT-boots the dispatch desk, which
 // wraps the existing ContactForm (Formspree) plus social "sockets".
+// Sockets come straight from the CMS — no entry, no socket (no fallback).
 export default function ContactDispatch({
-  socials = DEFAULT_SOCIALS,
+  socials,
   endpoint = FORMSPREE_ENDPOINT,
   startOpen = false,
 }: {
@@ -38,7 +33,7 @@ export default function ContactDispatch({
   startOpen?: boolean;
 }) {
   const [open, setOpen] = useState(startOpen);
-  const links = socials.filter((s) => SOCIAL_META[s.platform]);
+  const links = (socials ?? []).filter((s) => SOCIAL_META[s.platform]);
 
   return (
     <div id="contact-anchor" className={styles.anchor}>
@@ -86,26 +81,28 @@ export default function ContactDispatch({
 
           <ContactForm endpoint={endpoint} />
 
-          <div className={styles.sockets}>
-            <span className={styles.socketsLabel}>SOCKETS</span>
-            {links.map((s) => {
-              const meta = SOCIAL_META[s.platform];
-              return (
-                <a
-                  key={s.platform}
-                  href={s.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.socket}
-                  style={{ "--sock": meta.color } as CSSProperties}
-                >
-                  <span>{meta.glyph}</span>
-                  <span>{meta.label}</span>
-                  <span className={styles.up}>↗</span>
-                </a>
-              );
-            })}
-          </div>
+          {links.length > 0 && (
+            <div className={styles.sockets}>
+              <span className={styles.socketsLabel}>SOCKETS</span>
+              {links.map((s) => {
+                const meta = SOCIAL_META[s.platform];
+                return (
+                  <a
+                    key={s.platform}
+                    href={s.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.socket}
+                    style={{ "--sock": meta.color } as CSSProperties}
+                  >
+                    <span>{meta.glyph}</span>
+                    <span>{meta.label}</span>
+                    <span className={styles.up}>↗</span>
+                  </a>
+                );
+              })}
+            </div>
+          )}
         </div>
       ) : (
         <button
