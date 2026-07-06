@@ -17,3 +17,24 @@ skills:
   - Project Planning
   - Unity 2D
   - Phaser
+shelf:
+  - title: Bachata
+    caption: Still learning. The best kind of homework.
+    emoji: 💃
+    accent: pink
+  - title: Rollercoasters
+    caption: Always chasing the next best drop.
+    emoji: 🎢
+    accent: amber
+  - title: Hot yoga
+    caption: 105° and zero unread notifications.
+    emoji: 🧘
+    accent: cyan
+  - title: Beach volleyball
+    caption: A serve that's still a work in progress.
+    emoji: 🏐
+    accent: lavender
+  - title: D&D + board games
+    caption: A long-running campaign, good friends, bad dice.
+    emoji: 🎲
+    accent: green

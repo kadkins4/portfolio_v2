@@ -3,7 +3,9 @@ import { notFound } from "next/navigation";
 import { createReader } from "@keystatic/core/reader";
 import config from "../../../../keystatic.config";
 import { renderMarkdoc } from "@/lib/renderMarkdoc";
-import AboutResidence from "@/components/holo/AboutResidence";
+import AboutResidence, {
+  type ShelfCard,
+} from "@/components/holo/AboutResidence";
 import { toSocialLinks } from "@/lib/socialLinks";
 
 export const metadata: Metadata = {
@@ -26,14 +28,23 @@ export default async function AboutPage() {
   const name = home?.title ?? "Kendall Adkins";
   const whatIDo = await about.whatIDo();
   const howIGotHere = await about.howIGotHere();
+  const outsideOfCode = await about.outsideOfCode();
 
   const socials = toSocialLinks(settings);
+  const shelf: ShelfCard[] = about.shelf.map((c) => ({
+    title: c.title,
+    caption: c.caption,
+    emoji: c.emoji,
+    accent: c.accent,
+  }));
 
   return (
     <AboutResidence
       name={name}
       portrait="/images/kendall-adkins.jpeg"
       socials={socials}
+      shelf={shelf}
+      shelfIntro={outsideOfCode ? renderMarkdoc(outsideOfCode) : undefined}
       story={
         <>
           {whatIDo && renderMarkdoc(whatIDo)}

@@ -129,6 +129,17 @@
   height: 1px;
   background: rgba(170, 160, 235, 0.2);
 }
+.shelfIntro {
+  max-width: 680px;
+  margin: 0 0 22px;
+}
+.shelfIntro p {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+  color: rgba(243, 237, 226, 0.62);
+  margin: 0;
+}
 .polaroids {
   display: grid;
   grid-template-columns: repeat(5, 1fr);

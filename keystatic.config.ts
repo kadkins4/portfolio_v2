@@ -29,6 +29,32 @@ export default config({
           label: "Skills",
           itemLabel: (props) => props.value ?? "Skill",
         }),
+        shelf: fields.array(
+          fields.object({
+            title: fields.text({ label: "Title" }),
+            caption: fields.text({ label: "Caption", multiline: true }),
+            emoji: fields.text({
+              label: "Emoji",
+              description: "A single emoji shown on the card.",
+            }),
+            accent: fields.select({
+              label: "Accent color",
+              options: [
+                { label: "Pink", value: "pink" },
+                { label: "Amber", value: "amber" },
+                { label: "Cyan", value: "cyan" },
+                { label: "Lavender", value: "lavender" },
+                { label: "Green", value: "green" },
+              ],
+              defaultValue: "cyan",
+            }),
+          }),
+          {
+            label: "Shelf (life outside the code)",
+            description: "Polaroid cards on the About page.",
+            itemLabel: (props) => props.fields.title.value ?? "Card",
+          }
+        ),
       },
     }),
 

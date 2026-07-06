@@ -5,68 +5,37 @@ import PageTitle from "./PageTitle";
 import ContactDispatch, { type SocialLink } from "./ContactDispatch";
 import styles from "./aboutResidence.module.css";
 
-type Polaroid = {
+export type ShelfCard = {
   title: string;
   caption: string;
-  glyph: string;
-  hue: number;
-  chroma: number;
-  tilt: string;
+  emoji: string;
+  accent: string; // pink | amber | cyan | lavender | green
 };
 
-// Drawn from the real "outside of code" bio — placeholders for photos.
-const POLAROIDS: Polaroid[] = [
-  {
-    title: "Bachata",
-    caption: "Still learning. The best kind of homework.",
-    glyph: "💃",
-    hue: 340,
-    chroma: 0.16,
-    tilt: "-1.2deg",
-  },
-  {
-    title: "Rollercoasters",
-    caption: "Always chasing the next best drop.",
-    glyph: "🎢",
-    hue: 46,
-    chroma: 0.14,
-    tilt: "0.8deg",
-  },
-  {
-    title: "Hot yoga",
-    caption: "105° and zero unread notifications.",
-    glyph: "🧘",
-    hue: 190,
-    chroma: 0.13,
-    tilt: "-0.6deg",
-  },
-  {
-    title: "Beach volleyball",
-    caption: "A serve that's still a work in progress.",
-    glyph: "🏐",
-    hue: 300,
-    chroma: 0.11,
-    tilt: "1deg",
-  },
-  {
-    title: "D&D + board games",
-    caption: "A long-running campaign, good friends, bad dice.",
-    glyph: "🎲",
-    hue: 150,
-    chroma: 0.15,
-    tilt: "-0.9deg",
-  },
-];
+// named accents → oklch hue/chroma (mirrors the global neon palette)
+const ACCENT: Record<string, { hue: number; chroma: number }> = {
+  pink: { hue: 340, chroma: 0.16 },
+  amber: { hue: 46, chroma: 0.14 },
+  cyan: { hue: 190, chroma: 0.13 },
+  lavender: { hue: 300, chroma: 0.11 },
+  green: { hue: 150, chroma: 0.15 },
+};
+// scattered-photo tilts, applied by position so the shelf stays lively
+const TILTS = ["-1.2deg", "0.8deg", "-0.6deg", "1deg", "-0.9deg"];
 
 export default function AboutResidence({
   name = "Kendall Adkins",
   story,
   portrait,
+  shelf,
+  shelfIntro,
   socials,
 }: {
   name?: string;
   story: ReactNode;
   portrait?: string;
+  shelf: ShelfCard[];
+  shelfIntro?: ReactNode;
   socials?: SocialLink[];
 }) {
   return (
@@ -127,29 +96,33 @@ export default function AboutResidence({
           </span>
           <span className={styles.shelfHair} aria-hidden="true" />
         </div>
+        {shelfIntro && <div className={styles.shelfIntro}>{shelfIntro}</div>}
         <div className={styles.polaroids}>
-          {POLAROIDS.map((p) => (
-            <div
-              key={p.title}
-              className={styles.polaroid}
-              style={
-                {
-                  "--tilt": p.tilt,
-                  "--ph": `oklch(0.84 ${p.chroma} ${p.hue})`,
-                  "--ph-dim": `oklch(0.8 ${p.chroma} ${p.hue} / 0.35)`,
-                  "--ph-glow": `oklch(0.7 ${p.chroma} ${p.hue} / 0.22)`,
-                } as CSSProperties
-              }
-            >
-              <div className={styles.polaroidPh}>
-                <span className={styles.polaroidGlyph} aria-hidden="true">
-                  {p.glyph}
-                </span>
+          {shelf.map((p, i) => {
+            const acc = ACCENT[p.accent] ?? ACCENT.cyan;
+            return (
+              <div
+                key={`${p.title}-${i}`}
+                className={styles.polaroid}
+                style={
+                  {
+                    "--tilt": TILTS[i % TILTS.length],
+                    "--ph": `oklch(0.84 ${acc.chroma} ${acc.hue})`,
+                    "--ph-dim": `oklch(0.8 ${acc.chroma} ${acc.hue} / 0.35)`,
+                    "--ph-glow": `oklch(0.7 ${acc.chroma} ${acc.hue} / 0.22)`,
+                  } as CSSProperties
+                }
+              >
+                <div className={styles.polaroidPh}>
+                  <span className={styles.polaroidGlyph} aria-hidden="true">
+                    {p.emoji}
+                  </span>
+                </div>
+                <h3 className={styles.polaroidTitle}>{p.title}</h3>
+                <p className={styles.polaroidCap}>{p.caption}</p>
               </div>
-              <h3 className={styles.polaroidTitle}>{p.title}</h3>
-              <p className={styles.polaroidCap}>{p.caption}</p>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
