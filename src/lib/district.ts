@@ -1,7 +1,7 @@
 // Project "districts" — the neon-city categorization that colors project cards,
-// the detail page, and (later) the city. Derived from the project slug first
-// (Kenny's approved mapping), falling back to tag keywords for anything new.
-// A real `district` field can override this in Keystatic later.
+// the detail page, and the city. An explicit Keystatic `district` field wins;
+// otherwise it's derived from the slug (Kenny's approved mapping), falling back
+// to tag keywords for anything new.
 
 export type DistrictKey = "sports" | "games" | "tools" | "client-web";
 
@@ -36,7 +36,17 @@ const SLUG_DISTRICT: Record<string, DistrictKey> = {
   saul: "client-web",
 };
 
-export function districtOf(slug: string, tags: string[] = []): District {
+export function isDistrictKey(v: unknown): v is DistrictKey {
+  return typeof v === "string" && v in DISTRICTS;
+}
+
+export function districtOf(
+  slug: string,
+  tags: string[] = [],
+  explicit?: string | null
+): District {
+  // an explicit Keystatic district field wins over any derivation
+  if (isDistrictKey(explicit)) return DISTRICTS[explicit];
   const known = SLUG_DISTRICT[slug];
   if (known) return DISTRICTS[known];
   const hay = tags.join(" ").toLowerCase();

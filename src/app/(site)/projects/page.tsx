@@ -42,6 +42,7 @@ export default async function ProjectsPage() {
       externalUrl: item.entry.externalUrl ?? null,
       featured: item.entry.featured ?? false,
       order: item.entry.order ?? null,
+      district: item.entry.district ?? null,
     }))
   );
 
@@ -55,6 +56,7 @@ export default async function ProjectsPage() {
     imageFocus: it.imageFocus,
     blurDataURL: it.blurDataURL,
     externalUrl: it.externalUrl,
+    district: it.district,
   }));
 
   // craft-side notes get pinned between the storefronts

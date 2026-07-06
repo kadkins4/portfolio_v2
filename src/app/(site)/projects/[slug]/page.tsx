@@ -65,7 +65,7 @@ export default async function ProjectDetailPage({ params }: Props) {
 
   const name = home?.title ?? "Kendall Adkins";
   const tags = [...(item.tags ?? [])];
-  const district = districtOf(slug, tags);
+  const district = districtOf(slug, tags, item.district);
   const contentResult = await item.content();
 
   // ordered slug list → find the next storefront
@@ -83,6 +83,7 @@ export default async function ProjectDetailPage({ params }: Props) {
       externalUrl: p.entry.externalUrl ?? null,
       featured: p.entry.featured ?? false,
       order: p.entry.order ?? null,
+      district: p.entry.district ?? null,
     }))
   );
   const idx = ordered.findIndex((p) => p.slug === slug);
@@ -92,7 +93,7 @@ export default async function ProjectDetailPage({ params }: Props) {
     ? {
         slug: nextItem.slug,
         title: nextItem.title,
-        district: districtOf(nextItem.slug, nextItem.tags),
+        district: districtOf(nextItem.slug, nextItem.tags, nextItem.district),
       }
     : null;
 

@@ -168,6 +168,19 @@ export default config({
           description:
             "Lower numbers appear first among featured items. Leave empty for date-based sorting.",
         }),
+        district: fields.select({
+          label: "District",
+          description:
+            "Neon-city category (sets the accent color + grouping). Auto derives it from the slug/tags.",
+          options: [
+            { label: "Auto (derive from slug)", value: "auto" },
+            { label: "Sports", value: "sports" },
+            { label: "Games", value: "games" },
+            { label: "Tools", value: "tools" },
+            { label: "Client Web", value: "client-web" },
+          ],
+          defaultValue: "auto",
+        }),
         content: fields.markdoc({ label: "Content" }),
       },
     }),

@@ -34,4 +34,5 @@ export type StudioItem = {
   externalUrl: string | null; // projects only; null for notes
   featured: boolean; // projects only; false for notes
   order: number | null; // ordering among featured items; null = date-based
+  district?: string | null; // explicit Keystatic district; "auto"/undefined = derive
 };

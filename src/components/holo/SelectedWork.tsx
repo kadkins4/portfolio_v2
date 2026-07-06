@@ -18,6 +18,7 @@ export type WorkItem = {
   imageFocus: string;
   blurDataURL?: string;
   externalUrl: string | null;
+  district?: string | null;
 };
 
 function yearOf(date: string | null): string {

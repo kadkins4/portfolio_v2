@@ -33,7 +33,7 @@ function yearOf(date: string | null): string {
 }
 
 function ProjectCard({ item }: { item: WorkItem }) {
-  const d = districtOf(item.slug, item.tags);
+  const d = districtOf(item.slug, item.tags, item.district);
   const vars = {
     "--acc": districtColor(d, 0.84),
     "--acc-dim": districtColor(d, 0.8, 0.3),
@@ -113,7 +113,7 @@ export default function ProjectsDistrict({
 
   const presentDistricts: DistrictKey[] = [];
   for (const p of projects) {
-    const k = districtOf(p.slug, p.tags).key;
+    const k = districtOf(p.slug, p.tags, p.district).key;
     if (!presentDistricts.includes(k)) presentDistricts.push(k);
   }
 
@@ -125,7 +125,8 @@ export default function ProjectsDistrict({
       ? []
       : projects.filter(
           (p) =>
-            (filter === "all" || districtOf(p.slug, p.tags).key === filter) &&
+            (filter === "all" ||
+              districtOf(p.slug, p.tags, p.district).key === filter) &&
             matchesQuery(`${p.title} ${p.description} ${p.tags.join(" ")}`)
         );
 
