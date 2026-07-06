@@ -6,7 +6,7 @@ import ResumeLine, {
   type Station,
   type SkillGroup,
 } from "@/components/holo/ResumeLine";
-import type { SocialLink } from "@/components/holo/ContactDispatch";
+import { toSocialLinks } from "@/lib/socialLinks";
 
 export const metadata: Metadata = {
   title: "Resume",
@@ -113,10 +113,7 @@ export default async function ResumePage() {
 
   const roleCount = resume.experience.length + resume.earlier.length;
 
-  const socials: SocialLink[] = (settings?.socialLinks ?? []).map((s) => ({
-    platform: s.platform,
-    url: s.url,
-  }));
+  const socials = toSocialLinks(settings);
 
   return (
     <ResumeLine
@@ -126,7 +123,7 @@ export default async function ResumePage() {
       experienceLabel={`8+ YRS · ${roleCount} STOPS`}
       skillGroups={SKILL_GROUPS}
       stations={stations}
-      socials={socials.length ? socials : undefined}
+      socials={socials}
     />
   );
 }

@@ -4,7 +4,7 @@ import { createReader } from "@keystatic/core/reader";
 import config from "../../../../keystatic.config";
 import { renderMarkdoc } from "@/lib/renderMarkdoc";
 import AboutResidence from "@/components/holo/AboutResidence";
-import type { SocialLink } from "@/components/holo/ContactDispatch";
+import { toSocialLinks } from "@/lib/socialLinks";
 
 export const metadata: Metadata = {
   title: "About",
@@ -27,16 +27,13 @@ export default async function AboutPage() {
   const whatIDo = await about.whatIDo();
   const howIGotHere = await about.howIGotHere();
 
-  const socials: SocialLink[] = (settings?.socialLinks ?? []).map((s) => ({
-    platform: s.platform,
-    url: s.url,
-  }));
+  const socials = toSocialLinks(settings);
 
   return (
     <AboutResidence
       name={name}
       portrait="/images/kendall-adkins.jpeg"
-      socials={socials.length ? socials : undefined}
+      socials={socials}
       story={
         <>
           {whatIDo && renderMarkdoc(whatIDo)}

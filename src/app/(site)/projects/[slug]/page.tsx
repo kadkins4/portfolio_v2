@@ -13,7 +13,7 @@ import type { StudioItem } from "@/types";
 import ProjectStorefront, {
   type NextStorefront,
 } from "@/components/holo/ProjectStorefront";
-import type { SocialLink } from "@/components/holo/ContactDispatch";
+import { toSocialLinks } from "@/lib/socialLinks";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -98,10 +98,7 @@ export default async function ProjectDetailPage({ params }: Props) {
 
   const blurDataURL = item.image ? await getBlurDataURL(item.image) : undefined;
 
-  const socials: SocialLink[] = (settings?.socialLinks ?? []).map((s) => ({
-    platform: s.platform,
-    url: s.url,
-  }));
+  const socials = toSocialLinks(settings);
 
   const breadcrumbSchema = {
     "@context": "https://schema.org",
@@ -138,7 +135,7 @@ export default async function ProjectDetailPage({ params }: Props) {
         blurDataURL={blurDataURL}
         tags={tags}
         next={next}
-        socials={socials.length ? socials : undefined}
+        socials={socials}
       >
         {contentResult && renderMarkdoc(contentResult)}
       </ProjectStorefront>

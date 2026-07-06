@@ -7,12 +7,12 @@ import type { StudioItem } from "@/types";
 import ProjectsDistrict from "@/components/holo/ProjectsDistrict";
 import type { WorkItem } from "@/components/holo/SelectedWork";
 import type { NoteItem } from "@/components/holo/ProjectsDistrict";
-import type { SocialLink } from "@/components/holo/ContactDispatch";
+import { toSocialLinks } from "@/lib/socialLinks";
 
 export const metadata: Metadata = {
   title: "Projects",
   description:
-    "Selected projects by Kendall Adkins — sports betting and cybersecurity at scale, plus self-run side projects.",
+    "Selected projects by Kendall Adkins: sports betting and cybersecurity at scale, plus self-run side projects.",
   alternates: { canonical: "/projects" },
 };
 
@@ -70,10 +70,7 @@ export default async function ProjectsPage() {
       date: n.entry.date ?? null,
     }));
 
-  const socials: SocialLink[] = (settings?.socialLinks ?? []).map((s) => ({
-    platform: s.platform,
-    url: s.url,
-  }));
+  const socials = toSocialLinks(settings);
 
   const name = home?.title ?? "Kendall Adkins";
 
@@ -82,7 +79,7 @@ export default async function ProjectsPage() {
       name={name}
       projects={items}
       notes={craftNotes}
-      socials={socials.length ? socials : undefined}
+      socials={socials}
     />
   );
 }
