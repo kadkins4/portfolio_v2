@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, type CSSProperties } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import PageShell from "./PageShell";
 import PageTitle from "./PageTitle";
 import ContactDispatch, { type SocialLink } from "./ContactDispatch";
+import { yearsSince } from "@/lib/yearsSince";
 import styles from "./resumeLine.module.css";
 
 export type Station = {
@@ -46,7 +47,9 @@ export default function ResumeLine({
   name = "Kendall Adkins",
   bio,
   resumePdf,
-  experienceLabel,
+  careerStart,
+  initialYears,
+  stops,
   status,
   updated,
   skillGroups,
@@ -56,7 +59,9 @@ export default function ResumeLine({
   name?: string;
   bio: string;
   resumePdf: string;
-  experienceLabel: string;
+  careerStart: string;
+  initialYears: number;
+  stops: number;
   status: string;
   updated: string;
   skillGroups: SkillGroup[];
@@ -65,6 +70,11 @@ export default function ResumeLine({
 }) {
   // single open station; first one open by default
   const [openRow, setOpenRow] = useState<number | null>(0);
+
+  // Seed with the server value (no hydration mismatch), then recompute against
+  // the viewer's clock so "N+ YRS" is always current without a rebuild.
+  const [years, setYears] = useState(initialYears);
+  useEffect(() => setYears(yearsSince(careerStart)), [careerStart]);
 
   return (
     <PageShell active="resume" name={name}>
@@ -118,7 +128,9 @@ export default function ResumeLine({
 
             <div className={styles.specRow}>
               <span className={styles.specLabel}>EXPERIENCE</span>
-              <span className={styles.specVal}>{experienceLabel}</span>
+              <span className={styles.specVal}>
+                {years}+ YRS · {stops} STOPS
+              </span>
             </div>
             <div className={styles.specRow}>
               <span className={styles.specLabel}>CORE STACK</span>
