@@ -1,0 +1,428 @@
+/* Overwatch home — HUD hovering over the neon city at altitude. */
+.stage {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #07060e;
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+.world {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1140px;
+  height: 720px;
+  transform-origin: center;
+}
+
+/* ---- city backdrop ---- */
+.city {
+  position: absolute;
+  inset: -40px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(150, 140, 220, 0.05) 0 1px,
+      transparent 1px 54px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      rgba(150, 140, 220, 0.05) 0 1px,
+      transparent 1px 54px
+    ),
+    #0a0913;
+  transform: rotate(-2deg) scale(1);
+  transform-origin: 277px 350px;
+  transition: transform 2.2s cubic-bezier(0.55, 0, 0.25, 1);
+  will-change: transform;
+}
+.cityDrop {
+  transform: rotate(0deg) scale(2.5);
+}
+
+.roadH {
+  position: absolute;
+  left: 0;
+  width: 120%;
+  height: 52px;
+  background: #0d0c17;
+}
+.roadV {
+  position: absolute;
+  top: 0;
+  width: 52px;
+  height: 120%;
+  background: #0d0c17;
+}
+.laneH {
+  position: absolute;
+  left: 0;
+  width: 120%;
+  height: 2px;
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgba(243, 237, 226, 0.1) 0 18px,
+    transparent 18px 42px
+  );
+}
+
+.bldg {
+  position: absolute;
+  background: #110f1e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.bldg span {
+  font-family: var(--font-mono), monospace;
+  font-size: 9px;
+  letter-spacing: 0.26em;
+  animation: ncFlicker 7s infinite;
+}
+.cyan {
+  border: 1px solid oklch(0.8 0.12 190 / 0.4);
+  box-shadow: 0 0 20px oklch(0.75 0.12 190 / 0.25);
+}
+.cyan span {
+  color: var(--cyan);
+  text-shadow: 0 0 10px oklch(0.8 0.13 190);
+}
+.pink {
+  border: 1px solid oklch(0.75 0.16 340 / 0.4);
+  box-shadow: 0 0 20px oklch(0.72 0.16 340 / 0.25);
+}
+.pink span {
+  color: var(--pink);
+  text-shadow: 0 0 10px oklch(0.75 0.17 340);
+}
+.amber {
+  border: 1px solid oklch(0.8 0.13 46 / 0.4);
+  box-shadow: 0 0 20px oklch(0.78 0.13 46 / 0.25);
+}
+.amber span {
+  color: var(--amber);
+  text-shadow: 0 0 10px oklch(0.8 0.14 46);
+}
+
+.filler {
+  position: absolute;
+  background: #100e1c;
+  border: 1px solid rgba(150, 140, 220, 0.18);
+}
+
+.park {
+  position: absolute;
+  border-radius: 20px 10px 26px 8px;
+  background: radial-gradient(120% 120% at 30% 25%, #101b13, #0b130e 70%);
+  border: 1px solid rgba(110, 190, 140, 0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+}
+.parkName {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 12px;
+  color: var(--parchment);
+  text-shadow: 0 0 10px rgba(243, 237, 226, 0.4);
+}
+.parkName i {
+  font-style: italic;
+  font-family: var(--font-instrument), Georgia, serif;
+}
+.parkTag {
+  font-family: var(--font-mono), monospace;
+  font-size: 5px;
+  letter-spacing: 0.3em;
+  color: rgba(140, 210, 160, 0.55);
+}
+
+.car {
+  position: absolute;
+  left: 0;
+  width: 24px;
+  height: 11px;
+  border-radius: 3px;
+}
+.carCyan {
+  background: var(--cyan);
+  box-shadow: 0 0 14px oklch(0.8 0.13 190 / 0.8);
+  animation: owCarX 9s linear infinite;
+}
+.carAmber {
+  background: var(--amber);
+  box-shadow: 0 0 14px oklch(0.78 0.14 46 / 0.8);
+  animation: owCarX 7s linear infinite -3s;
+}
+.carV {
+  top: 0;
+  width: 11px;
+  height: 24px;
+}
+.carPink {
+  background: var(--pink);
+  box-shadow: 0 0 14px oklch(0.72 0.17 340 / 0.8);
+  animation: owCarY 8.5s linear infinite;
+}
+
+/* ---- overlays ---- */
+.dim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    75% 70% at 50% 46%,
+    rgba(4, 3, 10, 0.72) 0%,
+    rgba(4, 3, 10, 0.5) 55%,
+    rgba(4, 3, 10, 0.35) 100%
+  );
+  transition: opacity 1.7s ease;
+}
+.fade {
+  opacity: 0;
+}
+.scan {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(180, 190, 255, 0.03) 0 1px,
+    transparent 1px 4px
+  );
+}
+.vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    120% 100% at 50% 45%,
+    transparent 60%,
+    rgba(4, 3, 10, 0.5) 100%
+  );
+}
+
+/* ---- HUD card ---- */
+.hud {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(var(--hud-scale, 1));
+  width: 560px;
+  max-width: 92%;
+  z-index: 10;
+  transition:
+    opacity 0.9s ease,
+    transform 1.4s cubic-bezier(0.55, 0, 0.25, 1);
+}
+.hudDrop {
+  opacity: 0;
+  transform: translate(-50%, -42%) scale(calc(var(--hud-scale, 1) * 0.88));
+  pointer-events: none;
+}
+.card {
+  position: relative;
+  border-radius: 6px;
+  background: rgba(10, 9, 20, 0.72);
+  border: 1px solid rgba(170, 160, 235, 0.45);
+  box-shadow:
+    0 0 60px rgba(120, 110, 210, 0.28),
+    inset 0 0 60px rgba(100, 90, 190, 0.06);
+  backdrop-filter: blur(10px);
+  padding: 40px 40px 34px;
+  text-align: center;
+}
+.bk {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  animation: ncFlicker 9s infinite;
+}
+.bkTL {
+  top: 11px;
+  left: 11px;
+  border-top: 2px solid var(--lavender);
+  border-left: 2px solid var(--lavender);
+}
+.bkTR {
+  top: 11px;
+  right: 11px;
+  border-top: 2px solid var(--lavender);
+  border-right: 2px solid var(--lavender);
+  animation-delay: -4s;
+}
+.bkBL {
+  bottom: 11px;
+  left: 11px;
+  border-bottom: 2px solid var(--lavender);
+  border-left: 2px solid var(--lavender);
+  animation-delay: -7s;
+}
+.bkBR {
+  bottom: 11px;
+  right: 11px;
+  border-bottom: 2px solid var(--lavender);
+  border-right: 2px solid var(--lavender);
+  animation-delay: -2s;
+}
+
+.title {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 400;
+  font-size: 46px;
+  line-height: 1;
+  margin: 0 0 30px;
+  color: #efecfa;
+  text-shadow: 0 0 30px rgba(180, 170, 240, 0.35);
+}
+.title i {
+  font-style: italic;
+  font-family: var(--font-instrument), Georgia, serif;
+}
+
+.chips {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.chip {
+  font-family: var(--font-mono), monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  padding: 9px 18px;
+  border-radius: 3px;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.chipCyan {
+  border: 1px solid oklch(0.8 0.12 190 / 0.5);
+  color: oklch(0.88 0.11 190);
+  background: oklch(0.7 0.1 190 / 0.1);
+}
+.chipCyan:hover {
+  background: oklch(0.7 0.1 190 / 0.22);
+}
+.chipPink {
+  border: 1px solid oklch(0.75 0.16 340 / 0.5);
+  color: oklch(0.8 0.15 340);
+  background: oklch(0.7 0.15 340 / 0.1);
+}
+.chipPink:hover {
+  background: oklch(0.7 0.15 340 / 0.22);
+}
+.chipAmber {
+  border: 1px solid oklch(0.8 0.13 46 / 0.5);
+  color: oklch(0.86 0.13 46);
+  background: oklch(0.75 0.12 46 / 0.1);
+}
+.chipAmber:hover {
+  background: oklch(0.75 0.12 46 / 0.22);
+}
+
+.or {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 22px;
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  color: rgba(234, 230, 250, 0.4);
+}
+.rule {
+  flex: 1;
+  height: 1px;
+  background: rgba(170, 160, 235, 0.25);
+}
+
+.descend {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 26px;
+  border-radius: 4px;
+  border: 1px solid rgba(140, 210, 160, 0.5);
+  background: rgba(16, 27, 19, 0.6);
+  cursor: pointer;
+  font-family: var(--font-mono), monospace;
+  font-size: 13px;
+  color: rgba(170, 235, 190, 0.95);
+  text-shadow: 0 0 14px rgba(120, 200, 150, 0.5);
+  transition: box-shadow 0.25s;
+}
+.descend:hover,
+.descend:focus-visible {
+  box-shadow: 0 0 30px rgba(110, 190, 140, 0.35);
+  outline: none;
+}
+.descendDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(160, 230, 180, 1);
+  box-shadow: 0 0 10px rgba(140, 210, 160, 0.9);
+}
+
+/* ---- readouts ---- */
+.altitude,
+.clock {
+  position: absolute;
+  top: 20px;
+  z-index: 11;
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+}
+.altitude {
+  left: 26px;
+  color: rgba(243, 237, 226, 0.45);
+}
+.dropping {
+  color: rgba(170, 235, 190, 0.85);
+  text-shadow: 0 0 10px rgba(120, 200, 150, 0.5);
+}
+.clock {
+  right: 26px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(243, 237, 226, 0.55);
+}
+.clockDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #aab4e8;
+  box-shadow: 0 0 8px #aab4e8;
+  animation: ncPulse 2s ease-in-out infinite;
+}
+.cursor {
+  display: inline-block;
+  width: 6px;
+  height: 10px;
+  margin-left: 3px;
+  vertical-align: -1px;
+  background: rgba(170, 235, 190, 0.85);
+  animation: ncBlink 0.5s step-end infinite;
+}
+
+@keyframes owCarX {
+  from {
+    transform: translateX(-40px);
+  }
+  to {
+    transform: translateX(1300px);
+  }
+}
+@keyframes owCarY {
+  from {
+    transform: translateY(-30px);
+  }
+  to {
+    transform: translateY(860px);
+  }
+}
