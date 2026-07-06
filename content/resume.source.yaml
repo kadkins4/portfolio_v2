@@ -16,6 +16,24 @@ siteSummary: >-
 
 resumePdf: /kendall-adkins-resume.pdf
 
+# Short bio shown on the site resume "ticket" (distinct from the full summary).
+siteBio: >-
+  Senior frontend engineer, 8+ years. Builds fast, accessible interfaces for
+  real-money products, and ships side projects solo end to end.
+
+# Curated skill groups for the site resume ticket. accent = neon color
+# (cyan | amber | pink | lavender | green).
+siteSkillGroups:
+  - label: Frontend
+    accent: cyan
+    items: [react, typescript, next.js, css/anim, a11y]
+  - label: Backend
+    accent: pink
+    items: [node, rails, java, graphql, sql]
+  - label: Practice
+    accent: lavender
+    items: [testing, playwright, ai-native, mentoring]
+
 # Application-resume summaries, swapped per variant by the generator.
 summaries:
   A: >-

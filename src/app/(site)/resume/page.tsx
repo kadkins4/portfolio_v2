@@ -33,29 +33,6 @@ function yearRange(period: string): string {
   const end = years[years.length - 1];
   return start === end ? start : `${start} — ${end}`;
 }
-
-// hand-curated skill groups drawn from the real stack
-const SKILL_GROUPS: SkillGroup[] = [
-  {
-    label: "FRONTEND",
-    hue: 190,
-    chroma: 0.13,
-    items: ["react", "typescript", "next.js", "css/anim", "a11y"],
-  },
-  {
-    label: "BACKEND",
-    hue: 340,
-    chroma: 0.16,
-    items: ["node", "rails", "java", "graphql", "sql"],
-  },
-  {
-    label: "PRACTICE",
-    hue: 300,
-    chroma: 0.11,
-    items: ["testing", "playwright", "ai-native", "mentoring"],
-  },
-];
-
 export default async function ResumePage() {
   const reader = createReader(process.cwd(), config);
   const [home, resume, settings] = await Promise.all([
@@ -114,14 +91,19 @@ export default async function ResumePage() {
   const roleCount = resume.experience.length + resume.earlier.length;
 
   const socials = toSocialLinks(settings);
+  const skillGroups: SkillGroup[] = resume.skillGroups.map((g) => ({
+    label: g.label.toUpperCase(),
+    accent: g.accent,
+    items: [...g.items],
+  }));
 
   return (
     <ResumeLine
       name={home?.title ?? "Kendall Adkins"}
-      bio="Senior frontend engineer, 8+ years. Builds fast, accessible interfaces for real-money products, and ships side projects solo end to end."
+      bio={resume.bio}
       resumePdf={resume.resumePdf || "/kendall-adkins-resume.pdf"}
       experienceLabel={`8+ YRS · ${roleCount} STOPS`}
-      skillGroups={SKILL_GROUPS}
+      skillGroups={skillGroups}
       stations={stations}
       socials={socials}
     />

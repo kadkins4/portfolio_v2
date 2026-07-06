@@ -20,9 +20,17 @@ export type Station = {
 
 export type SkillGroup = {
   label: string;
-  hue: number;
-  chroma: number;
+  accent: string; // cyan | amber | pink | lavender | green
   items: string[];
+};
+
+// named accents → oklch hue/chroma (mirrors the global neon palette)
+const ACCENT: Record<string, { hue: number; chroma: number }> = {
+  cyan: { hue: 190, chroma: 0.13 },
+  amber: { hue: 46, chroma: 0.14 },
+  pink: { hue: 340, chroma: 0.16 },
+  lavender: { hue: 300, chroma: 0.11 },
+  green: { hue: 150, chroma: 0.15 },
 };
 
 function eraVars(hue: number, chroma: number): CSSProperties {
@@ -122,27 +130,30 @@ export default function ResumeLine({
             </div>
 
             <div className={styles.groups}>
-              {skillGroups.map((g) => (
-                <div
-                  key={g.label}
-                  className={styles.group}
-                  style={
-                    {
-                      "--gh": `oklch(0.84 ${g.chroma} ${g.hue})`,
-                      "--gh-dim": `oklch(0.8 ${g.chroma} ${g.hue} / 0.35)`,
-                    } as CSSProperties
-                  }
-                >
-                  <div className={styles.groupHead}>{g.label}</div>
-                  <div className={styles.groupChips}>
-                    {g.items.map((it) => (
-                      <span key={it} className={styles.gchip}>
-                        {it}
-                      </span>
-                    ))}
+              {skillGroups.map((g) => {
+                const acc = ACCENT[g.accent] ?? ACCENT.cyan;
+                return (
+                  <div
+                    key={g.label}
+                    className={styles.group}
+                    style={
+                      {
+                        "--gh": `oklch(0.84 ${acc.chroma} ${acc.hue})`,
+                        "--gh-dim": `oklch(0.8 ${acc.chroma} ${acc.hue} / 0.35)`,
+                      } as CSSProperties
+                    }
+                  >
+                    <div className={styles.groupHead}>{g.label}</div>
+                    <div className={styles.groupChips}>
+                      {g.items.map((it) => (
+                        <span key={it} className={styles.gchip}>
+                          {it}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             <a href={resumePdf} download className={styles.download}>

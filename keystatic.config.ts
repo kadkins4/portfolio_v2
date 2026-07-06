@@ -63,10 +63,41 @@ export default config({
       path: "content/resume",
       schema: {
         summary: fields.text({ label: "Summary", multiline: true }),
+        bio: fields.text({
+          label: "Site bio (resume ticket)",
+          description: "Generated from resume.source.yaml — do not hand-edit.",
+          multiline: true,
+        }),
         resumePdf: fields.text({
           label: "Downloadable PDF path",
           description: "Path under /public. Keep in sync with the file there.",
         }),
+        skillGroups: fields.array(
+          fields.object({
+            label: fields.text({ label: "Group label" }),
+            accent: fields.select({
+              label: "Accent",
+              options: [
+                { label: "Cyan", value: "cyan" },
+                { label: "Amber", value: "amber" },
+                { label: "Pink", value: "pink" },
+                { label: "Lavender", value: "lavender" },
+                { label: "Green", value: "green" },
+              ],
+              defaultValue: "cyan",
+            }),
+            items: fields.array(fields.text({ label: "Skill" }), {
+              label: "Skills",
+              itemLabel: (p) => p.value ?? "Skill",
+            }),
+          }),
+          {
+            label: "Skill groups (resume ticket)",
+            description:
+              "Generated from resume.source.yaml — do not hand-edit.",
+            itemLabel: (p) => p.fields.label.value ?? "Group",
+          }
+        ),
         experience: fields.array(
           fields.object({
             org: fields.text({ label: "Organization" }),

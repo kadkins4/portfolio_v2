@@ -31,8 +31,11 @@ type Earlier = { org: string; role: string; period: string; detail: string };
 type Project = { name: string; detail: string; url: string };
 type Edu = { school: string; credential: string; year: string };
 type VariantMeta = { label: string; useWhen: string };
+type SkillGroup = { label: string; accent: string; items: string[] };
 type Source = {
   siteSummary: string;
+  siteBio: string;
+  siteSkillGroups: SkillGroup[];
   resumePdf: string;
   summaries: Record<string, string>;
   variantMeta: Record<string, VariantMeta>;
@@ -48,7 +51,9 @@ const src = yaml.load(fs.readFileSync(SRC, "utf8")) as Source;
 // --- 1. Site subset (matches keystatic.config.ts `resume` singleton) ---
 const site = {
   summary: src.siteSummary,
+  bio: src.siteBio,
   resumePdf: src.resumePdf,
+  skillGroups: src.siteSkillGroups,
   experience: src.experience,
   earlier: src.earlier,
   education: src.education,
