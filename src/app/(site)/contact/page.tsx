@@ -20,9 +20,6 @@ const FORMSPREE_ENDPOINT =
   process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT ??
   "https://formspree.io/f/mqeoeqgb";
 
-// Placeholder contact address — swap for the real inbox when wired up.
-const EMAIL = "hello@kendalladkins.dev";
-
 const SOCIAL_GLYPH: Record<string, string> = {
   github: "{ }",
   linkedin: "in",
@@ -83,19 +80,6 @@ export default async function ContactPage() {
                       <div className={styles.heading}>
                         &gt; direct --channels
                       </div>
-
-                      <a
-                        href={`mailto:${EMAIL}`}
-                        className={`${styles.row} ${styles.email}`}
-                      >
-                        <span className={styles.glyph} aria-hidden="true">
-                          @
-                        </span>
-                        <span className={styles.meta}>
-                          <span className={styles.metaLabel}>EMAIL</span>
-                          <span className={styles.metaValue}>{EMAIL}</span>
-                        </span>
-                      </a>
 
                       {socials.length > 0 && (
                         <>
