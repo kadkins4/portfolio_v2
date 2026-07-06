@@ -557,8 +557,11 @@ export default function NeonCity({
 
   const activePanel = panel ? dest[panel] : null;
 
-  return (
-    <div ref={stageRef} className={styles.stage}>
+  // The static world (~300 nodes) only depends on `onPad` for the pad glow;
+  // memoizing it keeps the 1Hz clock tick and teaser state from reconciling
+  // the whole city every render. Per-frame motion is imperative via refs.
+  const world = useMemo(
+    () => (
       <div ref={worldRef} className={styles.world}>
         {/* district ground blobs */}
         <div
@@ -760,6 +763,15 @@ export default function NeonCity({
           </div>
         </div>
       </div>
+    ),
+    // refs/cars/name are stable; only onPad changes the rendered world
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [onPad, name]
+  );
+
+  return (
+    <div ref={stageRef} className={styles.stage}>
+      {world}
 
       {/* ---- overlays ---- */}
       <div ref={daytintRef} className={styles.daytint} style={{ opacity: 0 }} />
