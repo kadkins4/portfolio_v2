@@ -84,8 +84,8 @@ export default async function NoteDetailPage({ params }: Props) {
         <TypedReveal
           amber={isLife}
           name={name}
-          backHref="/notes"
-          backLabel="back to notes"
+          backHref="/projects"
+          backLabel="back to projects"
           head={<h1 className={page.title}>{item.title}</h1>}
           steps={[
             { kind: "command", text: `cat notes/${slug}.md` },

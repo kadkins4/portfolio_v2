@@ -17,9 +17,13 @@ const nextConfig: NextConfig = {
     },
   ],
   redirects: async () => [
-    // Old paths from the pre-Holo-Terminal site. Keep external/bookmarked
-    // links and the published note's /studio link from 404ing.
-    { source: "/about", destination: "/story", permanent: true },
+    // Neon City IA — three doors absorb the old standalone pages.
+    // Projects holds notes; Resume holds the stack; About holds story + life.
+    { source: "/story", destination: "/about", permanent: true },
+    { source: "/life", destination: "/about", permanent: true },
+    { source: "/stack", destination: "/resume", permanent: true },
+    { source: "/notes", destination: "/projects", permanent: true },
+    // Older pre-Holo-Terminal paths.
     { source: "/work", destination: "/projects", permanent: true },
     { source: "/studio", destination: "/projects", permanent: true },
   ],
