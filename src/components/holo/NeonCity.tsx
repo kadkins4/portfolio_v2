@@ -1091,7 +1091,6 @@ function ParkLayer({
         <div className={styles.npName}>
           {first} {last && <i>{last}</i>}
         </div>
-        <div className={styles.npTag}>ENGINEER BY DAY · HUMAN BY DESIGN</div>
       </div>
       {/* station platform under the rail */}
       <div
