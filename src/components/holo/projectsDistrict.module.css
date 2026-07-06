@@ -1,0 +1,315 @@
+/* Projects — "Mixed District": masonry of storefront cards + newsstand notes. */
+.lede {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.65;
+  color: rgba(243, 237, 226, 0.6);
+  max-width: 620px;
+  margin: 0 0 6px;
+}
+
+/* ---- sticky filter bar ---- */
+.filterBar {
+  position: sticky;
+  top: 62px;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 16px 0 22px;
+  margin-top: 26px;
+  border-top: 1px solid rgba(170, 160, 235, 0.16);
+  background: rgba(7, 6, 14, 0.92);
+  backdrop-filter: blur(8px);
+}
+.grep {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #0a0913;
+  border: 1px solid rgba(170, 160, 235, 0.3);
+  border-radius: 4px;
+  padding: 8px 12px;
+}
+.grepLabel {
+  font-family: var(--font-mono), monospace;
+  font-size: 12px;
+  color: var(--lavender);
+}
+.grepInput {
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--font-mono), monospace;
+  font-size: 12px;
+  color: var(--ink);
+  width: 170px;
+}
+.chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.chip {
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  border: 1px solid rgba(170, 160, 235, 0.25);
+  color: rgba(243, 237, 226, 0.55);
+  background: transparent;
+  transition:
+    border-color 0.2s,
+    color 0.2s;
+}
+.chip:hover {
+  border-color: rgba(190, 180, 245, 0.6);
+}
+.chipOn {
+  color: oklch(0.88 0.11 190);
+  border-color: oklch(0.8 0.12 190 / 0.55);
+  background: oklch(0.7 0.1 190 / 0.16);
+}
+.chipNote {
+  color: oklch(0.84 0.14 46 / 0.8);
+}
+.chipNote.chipOn {
+  color: oklch(0.86 0.13 46);
+  border-color: oklch(0.8 0.13 46 / 0.55);
+  background: oklch(0.75 0.12 46 / 0.16);
+}
+.count {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: rgba(243, 237, 226, 0.5);
+}
+.countDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 8px var(--green);
+  animation: ncPulse 2s ease-in-out infinite;
+}
+
+/* ---- masonry grid ---- */
+.grid {
+  columns: 3 320px;
+  column-gap: 18px;
+  padding-bottom: 20px;
+}
+
+.card,
+.note {
+  break-inside: avoid;
+  margin: 0 0 18px;
+  display: block;
+  position: relative;
+  border-radius: 6px;
+  overflow: hidden;
+  text-decoration: none;
+  animation: ncRise 0.5s ease both;
+}
+
+/* project storefront card */
+.card {
+  background: #110f1e;
+  border: 1px solid var(--acc-dim);
+  transition:
+    transform 0.35s cubic-bezier(0.4, 0.1, 0.2, 1),
+    box-shadow 0.35s,
+    border-color 0.35s;
+}
+.card:hover,
+.card:focus-visible {
+  transform: translateY(-5px);
+  box-shadow: 0 0 42px var(--acc-glow);
+  border-color: var(--acc);
+  outline: none;
+}
+.topStrip {
+  display: block;
+  height: 3px;
+  background: var(--acc);
+  box-shadow: 0 0 14px var(--acc);
+  opacity: 0.85;
+}
+.shot {
+  position: relative;
+  height: 170px;
+  margin: 12px 12px 0;
+  background: #0d0b18;
+  overflow: hidden;
+}
+.img {
+  object-fit: cover;
+}
+.bk {
+  position: absolute;
+  width: 11px;
+  height: 11px;
+  opacity: 0.75;
+  z-index: 2;
+}
+.tl {
+  top: 7px;
+  left: 7px;
+  border-top: 2px solid var(--acc);
+  border-left: 2px solid var(--acc);
+}
+.br {
+  bottom: 7px;
+  right: 7px;
+  border-bottom: 2px solid var(--acc);
+  border-right: 2px solid var(--acc);
+}
+.body {
+  padding: 16px 19px 15px;
+}
+.metaRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  font-family: var(--font-mono), monospace;
+  margin-bottom: 9px;
+}
+.tag {
+  font-size: 9.5px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--acc);
+  text-shadow: 0 0 12px var(--acc);
+}
+.metaRight {
+  font-size: 9.5px;
+  color: rgba(243, 237, 226, 0.5);
+  white-space: nowrap;
+}
+.cardTitle {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 400;
+  font-size: 26px;
+  line-height: 1.12;
+  margin: 0;
+  color: var(--ink);
+}
+.blurb {
+  font-size: 13px;
+  line-height: 1.55;
+  color: rgba(243, 237, 226, 0.55);
+  margin: 8px 0 0;
+}
+.cardFoot {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-family: var(--font-mono), monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.13em;
+}
+.status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: oklch(0.82 0.15 150);
+}
+.statusDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 7px var(--green);
+  animation: ncPulse 2.4s ease-in-out infinite;
+}
+.openLink {
+  color: var(--acc);
+}
+
+/* newsstand note card */
+.note {
+  background: linear-gradient(165deg, #16110c, #100d09);
+  border: 1px solid oklch(0.8 0.14 46 / 0.3);
+  transition:
+    transform 0.35s cubic-bezier(0.4, 0.1, 0.2, 1),
+    box-shadow 0.35s,
+    border-color 0.35s;
+}
+.note:hover,
+.note:focus-visible {
+  transform: translateY(-5px);
+  box-shadow: 0 0 42px oklch(0.75 0.14 46 / 0.24);
+  border-color: oklch(0.84 0.14 46);
+  outline: none;
+}
+.noteBody {
+  padding: 16px 19px 15px;
+}
+.noteTag {
+  font-family: var(--font-mono), monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.24em;
+  color: var(--amber);
+  text-shadow: 0 0 12px oklch(0.8 0.14 46 / 0.6);
+  margin-bottom: 9px;
+}
+.noteTitle {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 400;
+  font-size: 21px;
+  line-height: 1.15;
+  margin: 0;
+  color: #f6efea;
+}
+.noteSummary {
+  font-size: 13px;
+  line-height: 1.55;
+  color: rgba(246, 239, 234, 0.55);
+  margin: 8px 0 0;
+}
+.noteRead {
+  display: inline-block;
+  margin-top: 14px;
+  font-family: var(--font-mono), monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.13em;
+  color: var(--amber);
+}
+
+.empty {
+  font-family: var(--font-mono), monospace;
+  font-size: 12px;
+  color: rgba(243, 237, 226, 0.45);
+  padding: 10px 0 40px;
+}
+
+.contactWrap {
+  padding: 40px 0 14px;
+}
+.footer {
+  text-align: center;
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: rgba(243, 237, 226, 0.3);
+  padding: 14px 0 30px;
+}
+
+@media (max-width: 640px) {
+  .grid {
+    columns: 1;
+  }
+  .count {
+    margin-left: 0;
+  }
+}

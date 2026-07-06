@@ -4,8 +4,10 @@ import config from "../../../../keystatic.config";
 import { getBlurDataURL } from "@/lib/getBlurDataURL";
 import { sortStudioItems } from "@/lib/sortStudioItems";
 import type { StudioItem } from "@/types";
-import HoloFrame from "@/components/holo/HoloFrame";
-import SelectedWork, { type WorkItem } from "@/components/holo/SelectedWork";
+import ProjectsDistrict from "@/components/holo/ProjectsDistrict";
+import type { WorkItem } from "@/components/holo/SelectedWork";
+import type { NoteItem } from "@/components/holo/ProjectsDistrict";
+import type { SocialLink } from "@/components/holo/ContactDispatch";
 
 export const metadata: Metadata = {
   title: "Projects",
@@ -16,9 +18,11 @@ export const metadata: Metadata = {
 
 export default async function ProjectsPage() {
   const reader = createReader(process.cwd(), config);
-  const [home, projects] = await Promise.all([
+  const [home, projects, notes, settings] = await Promise.all([
     reader.singletons.home.read(),
     reader.collections.projects.all(),
+    reader.collections.notes.all(),
+    reader.singletons.siteSettings.read(),
   ]);
 
   const studioItems: StudioItem[] = await Promise.all(
@@ -53,11 +57,32 @@ export default async function ProjectsPage() {
     externalUrl: it.externalUrl,
   }));
 
+  // craft-side notes get pinned between the storefronts
+  const craftNotes: NoteItem[] = notes
+    .filter((n) => n.entry.side !== "life")
+    .sort((a, b) => (b.entry.date ?? "").localeCompare(a.entry.date ?? ""))
+    .map((n) => ({
+      slug: n.slug,
+      title: n.entry.title,
+      summary: n.entry.summary,
+      tags: [...(n.entry.tags ?? [])],
+      side: "craft" as const,
+      date: n.entry.date ?? null,
+    }));
+
+  const socials: SocialLink[] = (settings?.socialLinks ?? []).map((s) => ({
+    platform: s.platform,
+    url: s.url,
+  }));
+
   const name = home?.title ?? "Kendall Adkins";
 
   return (
-    <HoloFrame name={name}>
-      <SelectedWork name={name} items={items} />
-    </HoloFrame>
+    <ProjectsDistrict
+      name={name}
+      projects={items}
+      notes={craftNotes}
+      socials={socials.length ? socials : undefined}
+    />
   );
 }

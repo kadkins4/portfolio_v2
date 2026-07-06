@@ -1,16 +1,19 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import { cache } from "react";
 import { createReader } from "@keystatic/core/reader";
 import { renderMarkdoc } from "@/lib/renderMarkdoc";
+import { getBlurDataURL } from "@/lib/getBlurDataURL";
+import { sortStudioItems } from "@/lib/sortStudioItems";
+import { districtOf } from "@/lib/district";
 import config from "../../../../../keystatic.config";
 import JsonLd from "@/components/JsonLd";
 import { SITE_URL } from "@/lib/constants";
-import HoloFrame from "@/components/holo/HoloFrame";
-import TypedReveal from "@/components/holo/TypedReveal";
-import page from "@/components/holo/holoPage.module.css";
-import styles from "./project.module.css";
+import type { StudioItem } from "@/types";
+import ProjectStorefront, {
+  type NextStorefront,
+} from "@/components/holo/ProjectStorefront";
+import type { SocialLink } from "@/components/holo/ContactDispatch";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -32,9 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: item.title,
     description: item.description,
-    alternates: {
-      canonical: `/projects/${slug}`,
-    },
+    alternates: { canonical: `/projects/${slug}` },
     openGraph: {
       title: item.title,
       description: item.description,
@@ -53,47 +54,60 @@ function yearOf(date: string | null): string {
 export default async function ProjectDetailPage({ params }: Props) {
   const reader = getReader();
   const { slug } = await params;
-  const [item, home] = await Promise.all([
+  const [item, home, allProjects, settings] = await Promise.all([
     reader.collections.projects.read(slug),
     reader.singletons.home.read(),
+    reader.collections.projects.all(),
+    reader.singletons.siteSettings.read(),
   ]);
 
-  if (!item) {
-    notFound();
-  }
+  if (!item) notFound();
 
   const name = home?.title ?? "Kendall Adkins";
+  const tags = [...(item.tags ?? [])];
+  const district = districtOf(slug, tags);
   const contentResult = await item.content();
-  const year = yearOf(item.date ?? null);
-  const tags = item.tags ?? [];
 
-  const shotInner = item.image ? (
-    <>
-      <Image
-        src={item.image}
-        alt={`${item.title} featured image`}
-        width={1200}
-        height={675}
-        className={styles.img}
-        style={{ objectPosition: item.imageFocus ?? "center" }}
-        priority
-      />
-      <span className={styles.sl} aria-hidden="true" />
-      <span className={`${styles.bk} ${styles.tl}`} aria-hidden="true" />
-      <span className={`${styles.bk} ${styles.br}`} aria-hidden="true" />
-    </>
-  ) : null;
+  // ordered slug list → find the next storefront
+  const ordered: StudioItem[] = sortStudioItems(
+    allProjects.map((p) => ({
+      kind: "project" as const,
+      slug: p.slug,
+      href: `/projects/${p.slug}`,
+      title: p.entry.title,
+      description: p.entry.description,
+      tags: [...(p.entry.tags ?? [])],
+      date: p.entry.date ?? null,
+      image: p.entry.image ?? null,
+      imageFocus: p.entry.imageFocus ?? "center",
+      externalUrl: p.entry.externalUrl ?? null,
+      featured: p.entry.featured ?? false,
+      order: p.entry.order ?? null,
+    }))
+  );
+  const idx = ordered.findIndex((p) => p.slug === slug);
+  const nextItem =
+    ordered.length > 1 ? ordered[(idx + 1) % ordered.length] : null;
+  const next: NextStorefront | null = nextItem
+    ? {
+        slug: nextItem.slug,
+        title: nextItem.title,
+        district: districtOf(nextItem.slug, nextItem.tags),
+      }
+    : null;
+
+  const blurDataURL = item.image ? await getBlurDataURL(item.image) : undefined;
+
+  const socials: SocialLink[] = (settings?.socialLinks ?? []).map((s) => ({
+    platform: s.platform,
+    url: s.url,
+  }));
 
   const breadcrumbSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: SITE_URL,
-      },
+      { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
       {
         "@type": "ListItem",
         position: 2,
@@ -110,90 +124,24 @@ export default async function ProjectDetailPage({ params }: Props) {
   };
 
   return (
-    <HoloFrame name={name}>
+    <>
       <JsonLd data={breadcrumbSchema} />
-      <TypedReveal
+      <ProjectStorefront
         name={name}
-        backHref="/projects"
-        backLabel="back to projects"
-        head={
-          <div className={page.head}>
-            <h1 className={page.title}>{item.title}</h1>
-            <span className={page.entries}>
-              <span className={page.dot} aria-hidden="true" />
-              {[year, "PROJECT"].filter(Boolean).join(" · ")}
-            </span>
-          </div>
-        }
-        steps={[
-          { kind: "command", text: `cat projects/${slug}.md` },
-          {
-            kind: "reveal",
-            node: (
-              <>
-                {item.description && (
-                  <p className={page.lede} data-rise>
-                    {item.description}
-                  </p>
-                )}
-
-                {(tags.length > 0 || item.externalUrl) && (
-                  <div className={styles.shotMeta} data-rise>
-                    {tags.length > 0 && (
-                      <div className={page.chips}>
-                        {tags.map((tag: string) => (
-                          <span key={tag} className={page.chip}>
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                    {item.externalUrl && (
-                      <a
-                        href={item.externalUrl}
-                        className={styles.liveLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        live ↗
-                      </a>
-                    )}
-                  </div>
-                )}
-
-                {item.image &&
-                  (item.externalUrl ? (
-                    <a
-                      href={item.externalUrl}
-                      className={`${styles.shot} ${styles.shotLink}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={`Open ${item.title} live site`}
-                      data-rise
-                    >
-                      {shotInner}
-                    </a>
-                  ) : (
-                    <div className={styles.shot} data-rise>
-                      {shotInner}
-                    </div>
-                  ))}
-
-                {contentResult && (
-                  <div className={page.prose} data-rise>
-                    {renderMarkdoc(contentResult)}
-                  </div>
-                )}
-
-                <div className={page.foot} data-rise>
-                  &gt; eof
-                  <span className={page.cur} aria-hidden="true" />
-                </div>
-              </>
-            ),
-          },
-        ]}
-      />
-    </HoloFrame>
+        slug={slug}
+        title={item.title}
+        district={district}
+        year={yearOf(item.date ?? null)}
+        live={item.externalUrl || null}
+        image={item.image ?? null}
+        imageFocus={item.imageFocus ?? "center"}
+        blurDataURL={blurDataURL}
+        tags={tags}
+        next={next}
+        socials={socials.length ? socials : undefined}
+      >
+        {contentResult && renderMarkdoc(contentResult)}
+      </ProjectStorefront>
+    </>
   );
 }
