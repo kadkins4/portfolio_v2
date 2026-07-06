@@ -1,0 +1,440 @@
+/* Resume — "The Adkins Line": sticky transit-ticket rail + station timeline.
+   Era accent per station set inline via --era* on each row/node. */
+
+.lede {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.65;
+  color: rgba(243, 237, 226, 0.6);
+  max-width: 640px;
+  margin: 6px 0 0;
+}
+
+/* ---- two-column layout ---- */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(300px, 350px) 1fr;
+  gap: 38px;
+  align-items: start;
+  padding: 34px 0 0;
+}
+
+/* ================= LEFT RAIL — the ticket ================= */
+.railWrap {
+  position: sticky;
+  top: 82px;
+}
+.ticket {
+  position: relative;
+  border: 1px dashed rgba(170, 235, 190, 0.5);
+  border-radius: 8px;
+  background: linear-gradient(
+    165deg,
+    rgba(16, 27, 19, 0.75),
+    rgba(9, 12, 16, 0.9)
+  );
+  box-shadow: 0 0 34px rgba(110, 190, 140, 0.12);
+  padding: 24px 24px 20px;
+  animation: ncRise 0.5s ease both 0.16s;
+}
+.tkBk {
+  position: absolute;
+  width: 13px;
+  height: 13px;
+  z-index: 2;
+  animation: ncFlicker 11s infinite;
+}
+.tkTl {
+  top: -1px;
+  left: -1px;
+  border-top: 2px solid var(--green);
+  border-left: 2px solid var(--green);
+}
+.tkBr {
+  bottom: -1px;
+  right: -1px;
+  border-bottom: 2px solid var(--green);
+  border-right: 2px solid var(--green);
+  animation-delay: -6s;
+}
+/* punched perforation notches */
+.notch {
+  position: absolute;
+  top: 132px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--page);
+}
+.notchL {
+  left: -9px;
+  border-right: 1px dashed rgba(170, 235, 190, 0.5);
+}
+.notchR {
+  right: -9px;
+  border-left: 1px dashed rgba(170, 235, 190, 0.5);
+}
+
+.tkHead {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono), monospace;
+  font-size: 9px;
+  letter-spacing: 0.26em;
+  color: rgba(170, 235, 190, 0.8);
+  margin-bottom: 16px;
+}
+.tkName {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 400;
+  font-size: 30px;
+  line-height: 1.05;
+  color: var(--ink);
+  margin: 0 0 10px;
+}
+.tkName i {
+  font-family: var(--font-instrument), Georgia, serif;
+  font-style: italic;
+}
+.tkBio {
+  font-size: 13px;
+  line-height: 1.6;
+  color: rgba(243, 237, 226, 0.6);
+  margin: 0 0 18px;
+}
+
+.specRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  padding: 9px 0;
+  border-bottom: 1px dashed rgba(170, 160, 235, 0.2);
+}
+.specLabel {
+  color: rgba(243, 237, 226, 0.45);
+}
+.specVal {
+  text-align: right;
+  color: var(--ink);
+}
+.specValCyan {
+  color: oklch(0.88 0.11 190);
+}
+.specValGreen {
+  color: oklch(0.82 0.15 150);
+}
+
+/* skill groups */
+.groups {
+  margin: 20px 0 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.group {
+  /* --gh set inline: group hue */
+}
+.groupHead {
+  font-family: var(--font-mono), monospace;
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  color: var(--gh);
+  margin-bottom: 9px;
+}
+.groupChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.gchip {
+  font-family: var(--font-mono), monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.04em;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--gh-dim);
+  color: rgba(243, 237, 226, 0.78);
+}
+
+.download {
+  display: block;
+  width: 100%;
+  text-align: center;
+  font-family: var(--font-mono), monospace;
+  font-size: 12.5px;
+  letter-spacing: 0.06em;
+  color: rgba(170, 235, 190, 0.95);
+  text-shadow: 0 0 10px rgba(120, 200, 150, 0.4);
+  border: 1px solid rgba(140, 210, 160, 0.45);
+  border-radius: 4px;
+  padding: 12px 0;
+  background: rgba(16, 27, 19, 0.55);
+  box-shadow: 0 0 26px rgba(110, 190, 140, 0.18);
+  text-decoration: none;
+  transition: box-shadow 0.25s;
+}
+.download:hover {
+  box-shadow: 0 0 36px rgba(110, 190, 140, 0.35);
+}
+.barcode {
+  height: 20px;
+  margin: 14px 0 8px;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(243, 237, 226, 0.85) 0 2px,
+    transparent 2px 4px,
+    rgba(243, 237, 226, 0.85) 4px 7px,
+    transparent 7px 9px,
+    rgba(243, 237, 226, 0.85) 9px 10px,
+    transparent 10px 13px
+  );
+  opacity: 0.7;
+}
+.finePrint {
+  font-family: var(--font-mono), monospace;
+  font-size: 8.5px;
+  letter-spacing: 0.18em;
+  text-align: center;
+  color: rgba(243, 237, 226, 0.4);
+}
+
+/* ================= RIGHT — the timeline ================= */
+.timeline {
+  position: relative;
+  padding-left: 42px;
+  animation: ncRise 0.5s ease both 0.22s;
+}
+.line {
+  position: absolute;
+  left: 14px;
+  top: 10px;
+  bottom: 10px;
+  width: 6px;
+  border-radius: 3px;
+  box-shadow: 0 0 16px rgba(150, 140, 220, 0.45);
+  background: linear-gradient(
+    180deg,
+    oklch(0.84 0.13 190) 0 16%,
+    oklch(0.84 0.16 340) 32% 44%,
+    oklch(0.8 0.11 300) 58% 68%,
+    oklch(0.84 0.14 46) 80% 88%,
+    oklch(0.84 0.15 150) 98%
+  );
+}
+/* signal packet riding the line */
+.signalStrip {
+  position: absolute;
+  left: 9px;
+  top: 10px;
+  bottom: 10px;
+  width: 28px;
+  overflow: hidden;
+  pointer-events: none;
+}
+.signal {
+  position: absolute;
+  left: 5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #eaf6f4;
+  box-shadow:
+    0 0 12px #eaf6f4,
+    0 0 26px oklch(0.86 0.13 190);
+  will-change: top;
+  animation: ncSignal 15s linear infinite;
+}
+.signal::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 12px;
+  width: 6px;
+  height: 34px;
+  background: linear-gradient(180deg, oklch(0.86 0.13 190 / 0.6), transparent);
+  border-radius: 3px;
+}
+@keyframes ncSignal {
+  0% {
+    top: 100%;
+  }
+  20% {
+    top: -120px;
+  }
+  100% {
+    top: -120px;
+  }
+}
+
+.station {
+  position: relative;
+  margin-bottom: 13px;
+}
+.node {
+  position: absolute;
+  left: -35px;
+  top: 17px;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: var(--page);
+  border: 3px solid var(--era);
+  box-shadow: 0 0 13px var(--era-glow);
+}
+.card {
+  width: 100%;
+  text-align: left;
+  border: 1px solid var(--era-dim);
+  border-radius: 6px;
+  padding: 15px 20px;
+  cursor: pointer;
+  background: transparent;
+  transition:
+    border-color 0.25s,
+    background 0.25s;
+}
+.card:hover {
+  border-color: var(--era);
+}
+.cardOpen {
+  background: var(--era-bg);
+  border-color: var(--era);
+}
+.stHead {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.stDates {
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--era);
+  min-width: 92px;
+}
+.stRole {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 400;
+  font-size: 20px;
+  color: var(--ink);
+}
+.stOrg {
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: rgba(243, 237, 226, 0.55);
+}
+.originBadge {
+  font-family: var(--font-mono), monospace;
+  font-size: 8.5px;
+  letter-spacing: 0.14em;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid oklch(0.8 0.15 150 / 0.5);
+  color: oklch(0.82 0.15 150);
+}
+.chev {
+  margin-left: auto;
+  font-family: var(--font-mono), monospace;
+  font-size: 12px;
+  color: var(--era);
+}
+.stBody {
+  overflow: hidden;
+  animation: ncRise 0.3s ease both;
+  padding-top: 14px;
+}
+.detail {
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: rgba(243, 237, 226, 0.62);
+  margin: 0 0 12px;
+}
+.bullets {
+  list-style: none;
+  margin: 0 0 14px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.bullet {
+  position: relative;
+  padding-left: 20px;
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: rgba(243, 237, 226, 0.65);
+}
+.bullet::before {
+  content: "▸";
+  position: absolute;
+  left: 0;
+  color: var(--era);
+  font-size: 11px;
+}
+.transfers {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.transfersLabel {
+  font-family: var(--font-mono), monospace;
+  font-size: 8.5px;
+  letter-spacing: 0.14em;
+  color: var(--era);
+}
+.tchip {
+  font-family: var(--font-mono), monospace;
+  font-size: 9px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--era-dim);
+  color: rgba(243, 237, 226, 0.7);
+}
+.endCap {
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: rgba(243, 237, 226, 0.35);
+  padding: 10px 0 0;
+}
+
+/* ================= foot ================= */
+.contactWrap {
+  padding: 52px 0 14px;
+}
+.footer {
+  text-align: center;
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: rgba(243, 237, 226, 0.3);
+  padding: 14px 0 30px;
+}
+
+@media (max-width: 860px) {
+  .layout {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  .railWrap {
+    position: static;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .signal {
+    display: none;
+  }
+  .ticket,
+  .timeline,
+  .stBody {
+    animation: none;
+  }
+}
