@@ -3,6 +3,8 @@
 // Layout is the "v2" refresh: 4 destinations, off-center streets, the
 // diagonal Adkins Line, Terminal Park as the center + way home.
 
+import { PAGE_COPY } from "./constants";
+
 export const WORLD = { w: 2400, h: 1600 };
 export const CHAR_R = 13;
 export const MARGIN = 26;
@@ -90,7 +92,7 @@ export const DESTINATIONS: Destination[] = [
     href: "/projects",
     teaser: {
       kicker: "✦ ENGINEERING QUARTER · STOREFRONTS LIT",
-      title: "Work, Projects, & Words",
+      title: PAGE_COPY.projects.title,
       blurb: "Shipped products and the notes behind them, all on one block.",
       cta: "> enter projects",
     },

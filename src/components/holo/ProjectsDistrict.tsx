@@ -1,11 +1,18 @@
 "use client";
 
-import { useState, type CSSProperties } from "react";
+import {
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
 import Image from "next/image";
 import Link from "next/link";
 import PageShell from "./PageShell";
 import PageTitle from "./PageTitle";
 import ContactDispatch, { type SocialLink } from "./ContactDispatch";
+import { PAGE_COPY } from "@/lib/constants";
 import type { WorkItem } from "./SelectedWork";
 import {
   districtOf,
@@ -25,6 +32,22 @@ export type NoteItem = {
 import styles from "./projectsDistrict.module.css";
 
 type Filter = "all" | DistrictKey | "notes";
+
+// useLayoutEffect on the client (measure before paint, no flash), useEffect on
+// the server (avoids the SSR warning). The grid renders as a plain CSS grid
+// until this runs, so no-JS users still get a valid 3-up layout.
+const useIsoLayout =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect;
+
+const COL_GAP = 18;
+const ROW_GAP = 18;
+
+// column count by container width — mirrors the CSS grid breakpoints
+function columnsFor(width: number): number {
+  if (width < 640) return 1;
+  if (width < 900) return 2;
+  return 3;
+}
 
 function yearOf(date: string | null): string {
   if (!date) return "";
@@ -162,19 +185,68 @@ export default function ProjectsDistrict({
     { key: "notes", label: "notes" },
   ];
 
+  // ---- masonry: place each card in the shortest column so short cards let the
+  // next card shift up to fill the gap. First N cards fill the N empty columns,
+  // so the top row stays 1·2·3 (most-important first) and only later cards
+  // zig-zag. Re-runs on width change and whenever the visible set changes.
+  const containerRef = useRef<HTMLDivElement>(null);
+  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [ready, setReady] = useState(false);
+  const itemCount = grid.length;
+  const layoutKey = grid.map((g) => `${g.kind}:${g.item.slug}`).join("|");
+
+  useIsoLayout(() => {
+    const container = containerRef.current;
+    if (!container || itemCount === 0) {
+      setReady(false);
+      return;
+    }
+    let lastWidth = -1;
+
+    const layout = () => {
+      const width = container.clientWidth;
+      if (width === 0) return;
+      lastWidth = width;
+      const items = itemRefs.current
+        .slice(0, itemCount)
+        .filter((el): el is HTMLDivElement => el != null);
+      const cols = columnsFor(width);
+      const colW = (width - (cols - 1) * COL_GAP) / cols;
+      const heights = new Array<number>(cols).fill(0);
+      for (const el of items) {
+        el.style.width = `${colW}px`;
+        let c = 0;
+        for (let k = 1; k < cols; k++) if (heights[k] < heights[c]) c = k;
+        el.style.left = `${c * (colW + COL_GAP)}px`;
+        el.style.top = `${heights[c]}px`;
+        heights[c] += el.offsetHeight + ROW_GAP;
+      }
+      container.style.height = `${Math.max(...heights) - ROW_GAP}px`;
+    };
+
+    layout();
+    setReady(true);
+
+    // only relayout on width change — we mutate height ourselves, so guarding on
+    // width avoids a feedback loop with the ResizeObserver.
+    const ro = new ResizeObserver(() => {
+      if (container.clientWidth !== lastWidth) layout();
+    });
+    ro.observe(container);
+    return () => {
+      ro.disconnect();
+      container.style.height = "";
+    };
+  }, [layoutKey, itemCount]);
+
   return (
     <PageShell active="projects" name={name}>
       <PageTitle
         hue="cyan"
-        kicker="✦ ENGINEERING DISTRICT · MIXED ZONING"
+        kicker={PAGE_COPY.projects.kicker}
         door="DOOR 01 / 03"
-        title={
-          <>
-            Work <i>&amp;</i> words, <br />
-            one street.
-          </>
-        }
-        sub="kendall@city:~$ cd projects/ && ls --lit"
+        title={PAGE_COPY.projects.title}
+        sub={PAGE_COPY.projects.sub}
       />
 
       <p className={styles.lede}>
@@ -216,14 +288,27 @@ export default function ProjectsDistrict({
       </div>
 
       {total > 0 ? (
-        <div className={styles.grid}>
-          {grid.map((g) =>
-            g.kind === "project" ? (
-              <ProjectCard key={`p-${g.item.slug}`} item={g.item} />
-            ) : (
-              <NoteCard key={`n-${g.item.slug}`} item={g.item} />
-            )
-          )}
+        <div
+          ref={containerRef}
+          className={`${styles.grid} ${ready ? styles.msReady : ""}`}
+        >
+          {grid.map((g, i) => (
+            <div
+              key={
+                g.kind === "project" ? `p-${g.item.slug}` : `n-${g.item.slug}`
+              }
+              ref={(el) => {
+                itemRefs.current[i] = el;
+              }}
+              className={ready ? styles.msItem : undefined}
+            >
+              {g.kind === "project" ? (
+                <ProjectCard item={g.item} />
+              ) : (
+                <NoteCard item={g.item} />
+              )}
+            </div>
+          ))}
         </div>
       ) : (
         <p className={styles.empty}>

@@ -100,7 +100,8 @@
   animation: ncPulse 2s ease-in-out infinite;
 }
 
-/* ---- reading-order grid: 1·2·3 across, most-important first ---- */
+/* ---- grid: 1·2·3 reading order; JS upgrades it to shortest-column masonry.
+   This grid is the SSR / no-JS fallback (see .msReady/.msItem below). ---- */
 .grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -108,6 +109,18 @@
   align-items: start;
   /* top gap so a hovered first-row card lifts clear of the sticky bar */
   padding: 14px 0 20px;
+}
+
+/* once JS measures + places cards, the container drives its own height and the
+   items are absolutely positioned into the shortest column (masonry). */
+.msReady {
+  display: block;
+  position: relative;
+}
+.msItem {
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 .card,
