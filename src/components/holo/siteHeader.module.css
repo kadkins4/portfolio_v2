@@ -63,6 +63,15 @@
   cursor: pointer;
   text-decoration: none;
 }
+/* icon-only pill (home ⌂): square-ish, glyph centered */
+.pillIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 11px;
+  font-size: 14px;
+  line-height: 1;
+}
 .pillNeutral {
   color: rgba(243, 237, 226, 0.7);
   border: 1px solid rgba(243, 237, 226, 0.25);

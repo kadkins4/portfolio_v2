@@ -100,17 +100,19 @@
   animation: ncPulse 2s ease-in-out infinite;
 }
 
-/* ---- masonry grid ---- */
+/* ---- reading-order grid: 1·2·3 across, most-important first ---- */
 .grid {
-  columns: 3 320px;
-  column-gap: 18px;
-  padding-bottom: 20px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  align-items: start;
+  /* top gap so a hovered first-row card lifts clear of the sticky bar */
+  padding: 14px 0 20px;
 }
 
 .card,
 .note {
-  break-inside: avoid;
-  margin: 0 0 18px;
+  margin: 0;
   display: block;
   position: relative;
   border-radius: 6px;
@@ -305,9 +307,15 @@
   padding: 14px 0 30px;
 }
 
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 640px) {
   .grid {
-    columns: 1;
+    grid-template-columns: 1fr;
   }
   .count {
     margin-left: 0;

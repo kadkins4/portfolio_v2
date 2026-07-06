@@ -90,7 +90,7 @@ export const DESTINATIONS: Destination[] = [
     href: "/projects",
     teaser: {
       kicker: "✦ ENGINEERING QUARTER · STOREFRONTS LIT",
-      title: "Work & words, one street.",
+      title: "Work, Projects, & Words",
       blurb: "Shipped products and the notes behind them, all on one block.",
       cta: "> enter projects",
     },

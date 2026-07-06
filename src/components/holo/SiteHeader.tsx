@@ -7,7 +7,7 @@ import { NAV_ITEMS } from "@/lib/constants";
 import styles from "./siteHeader.module.css";
 
 // Shared sticky header for every content page: wordmark + projects/resume/about
-// nav (active one lit), plus the ⌂ overwatch and "> get in touch" pills.
+// nav (active one lit), plus the ⌂ home icon and "> get in touch" pills.
 // "get in touch" smooth-scrolls to the in-page contact dispatch (#contact-anchor),
 // falling back to the /contact route when there's no dispatch on the page.
 export default function SiteHeader({
@@ -64,9 +64,11 @@ export default function SiteHeader({
 
         <Link
           href="/"
-          className={`${styles.pill} ${styles.pillNeutral} ${styles.deskOnly}`}
+          aria-label="Home"
+          title="Home"
+          className={`${styles.pill} ${styles.pillNeutral} ${styles.pillIcon} ${styles.deskOnly}`}
         >
-          ⌂ overwatch
+          ⌂
         </Link>
         <a
           href="/contact"
@@ -106,7 +108,7 @@ export default function SiteHeader({
             className={styles.menuLink}
             onClick={() => setMenuOpen(false)}
           >
-            ⌂ overwatch
+            ⌂ home
           </Link>
           <a href="/contact" onClick={goContact} className={styles.menuLink}>
             &gt; get in touch
