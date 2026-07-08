@@ -92,6 +92,44 @@ const easeIO = (t: number) =>
   t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 const easeIn = (t: number) => t * t * t;
 
+// scripted avatar walk-down: 800ms pause at the top of the stairs, then a
+// smoothstep glide along the stair waypoints to the landing (757,714).
+const WALK_PTS: [number, number][] = [
+  [710, 615],
+  [722, 650],
+  [757, 676],
+  [757, 714],
+];
+function avatarWalk(wt: number): [number, number] {
+  const pause = 800;
+  const dur = 2400;
+  if (wt <= pause) return WALK_PTS[0];
+  let t = Math.min(1, (wt - pause) / dur);
+  t = t * t * (3 - 2 * t);
+  const lens: number[] = [];
+  let total = 0;
+  for (let i = 0; i < WALK_PTS.length - 1; i++) {
+    const d = Math.hypot(
+      WALK_PTS[i + 1][0] - WALK_PTS[i][0],
+      WALK_PTS[i + 1][1] - WALK_PTS[i][1]
+    );
+    lens.push(d);
+    total += d;
+  }
+  let dist = t * total;
+  for (let i = 0; i < lens.length; i++) {
+    if (dist <= lens[i]) {
+      const f = lens[i] ? dist / lens[i] : 0;
+      return [
+        WALK_PTS[i][0] + (WALK_PTS[i + 1][0] - WALK_PTS[i][0]) * f,
+        WALK_PTS[i][1] + (WALK_PTS[i + 1][1] - WALK_PTS[i][1]) * f,
+      ];
+    }
+    dist -= lens[i];
+  }
+  return WALK_PTS[WALK_PTS.length - 1];
+}
+
 export default function NeonCity({
   name = "Kendall Adkins",
 }: {
@@ -132,16 +170,32 @@ export default function NeonCity({
     sFront: number;
   }>({ mode: "in", t: 0, until: 0, sFront: 0 });
   const invuln = useRef(0);
-  const cam = useRef({ x: 0, y: 0 });
+  const cam = useRef({ tx: 0, ty: 0, s: 1 });
   const panelRef = useRef<string | null>(null);
   const dismissed = useRef<Set<string>>(new Set());
   const onPadRef = useRef<string | null>(null);
   const start = useRef(0);
+  // cinematic arrival intro
+  const intro = useRef<{ phase: "ride" | "walk" | "done"; walkT: number }>({
+    phase: "ride",
+    walkT: 0,
+  });
+  const camDone = useRef<{
+    t0: number | null;
+    fromTx: number;
+    fromTy: number;
+    fromS: number;
+  }>({ t0: null, fromTx: 0, fromTy: 0, fromS: 1 });
+  const captionRef = useRef("");
 
   // --- reactive state (HUD only) ---
   const [panel, setPanel] = useState<string | null>(null);
   const [onPad, setOnPad] = useState<string | null>(null);
   const [hits, setHits] = useState(0);
+  const [introPhase, setIntroPhase] = useState<"ride" | "walk" | "done">(
+    "ride"
+  );
+  const [caption, setCaption] = useState("THE ADKINS LINE · INBOUND");
   const [everMoved, setEverMoved] = useState(false);
   const [arrived, setArrived] = useState(true);
   const [clock, setClock] = useState({
@@ -212,10 +266,12 @@ export default function NeonCity({
       if (KEYMAP[k]) keys.current.delete(KEYMAP[k]);
     };
     const onClick = (e: MouseEvent) => {
+      // no walking during the cinematic intro
+      if (intro.current.phase !== "done") return;
       // ignore clicks that land on HUD chrome (buttons/teaser handle themselves)
       if ((e.target as HTMLElement).closest("[data-hud]")) return;
-      const wx = e.clientX + cam.current.x;
-      const wy = e.clientY + cam.current.y;
+      const wx = (e.clientX - cam.current.tx) / cam.current.s;
+      const wy = (e.clientY - cam.current.ty) / cam.current.s;
       target.current = { x: wx, y: wy };
       ftGlide.current = null;
       markMoved();
@@ -287,6 +343,20 @@ export default function NeonCity({
       };
     };
 
+    // reduced motion: skip the cinematic, drop straight to the landing
+    const reduced =
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) {
+      intro.current = { phase: "done", walkT: 9999 };
+      setIntroPhase("done");
+      pos.current.x = 757;
+      pos.current.y = 714;
+      train.current.mode = "dwell";
+      train.current.until = Number.POSITIVE_INFINITY;
+      camDone.current = { t0: -1e9, fromTx: 0, fromTy: 0, fromS: 1 };
+    }
+
     const loop = (now: number) => {
       const p = pos.current;
       const speed = 4;
@@ -302,74 +372,101 @@ export default function NeonCity({
       let vx = 0;
       let vy = 0;
       let moving = false;
-      const g = ftGlide.current;
-      if (g) {
-        // fast-travel: eased position glide over ~0.95s, ignores collision
-        if (g.t0 === null) g.t0 = now;
-        const prog = Math.min(1, (now - g.t0) / 950);
-        const e =
-          prog < 0.5 ? 2 * prog * prog : 1 - Math.pow(-2 * prog + 2, 2) / 2;
-        p.x = g.fromX + (g.toX - g.fromX) * e;
-        p.y = g.fromY + (g.toY - g.fromY) * e;
-        p.ang = (Math.atan2(g.toY - g.fromY, g.toX - g.fromX) * 180) / Math.PI;
-        moving = true;
-        if (prog >= 1) {
-          const key = g.key;
-          ftGlide.current = null;
-          dismissed.current.delete(key);
-          openPanel(key);
+      const IN = intro.current;
+      if (IN.phase === "ride") {
+        // cinematic: camera follows the train; the avatar is hidden here
+      } else if (IN.phase === "walk") {
+        // scripted walk-down from the train to the landing
+        IN.walkT += dt;
+        const [ax, ay] = avatarWalk(IN.walkT);
+        if (ax !== p.x || ay !== p.y)
+          p.ang = (Math.atan2(ay - p.y, ax - p.x) * 180) / Math.PI;
+        p.x = ax;
+        p.y = ay;
+        moving = IN.walkT > 800 && IN.walkT < 3200;
+        if (IN.walkT >= 3400) {
+          p.x = 757;
+          p.y = 714;
+          IN.phase = "done";
+          setIntroPhase("done");
+          camDone.current = {
+            t0: null,
+            fromTx: cam.current.tx,
+            fromTy: cam.current.ty,
+            fromS: cam.current.s,
+          };
         }
       } else {
-        const step = speed * f;
-        if (target.current) {
-          const tg = target.current;
-          const dx = tg.x - p.x;
-          const dy = tg.y - p.y;
-          const dist = Math.hypot(dx, dy);
-          if (dist < step + 1) {
-            p.x = tg.x;
-            p.y = tg.y;
-            target.current = null;
-          } else {
-            vx = (dx / dist) * step;
-            vy = (dy / dist) * step;
+        const g = ftGlide.current;
+        if (g) {
+          // fast-travel: eased position glide over ~0.95s, ignores collision
+          if (g.t0 === null) g.t0 = now;
+          const prog = Math.min(1, (now - g.t0) / 950);
+          const e =
+            prog < 0.5 ? 2 * prog * prog : 1 - Math.pow(-2 * prog + 2, 2) / 2;
+          p.x = g.fromX + (g.toX - g.fromX) * e;
+          p.y = g.fromY + (g.toY - g.fromY) * e;
+          p.ang =
+            (Math.atan2(g.toY - g.fromY, g.toX - g.fromX) * 180) / Math.PI;
+          moving = true;
+          if (prog >= 1) {
+            const key = g.key;
+            ftGlide.current = null;
+            dismissed.current.delete(key);
+            openPanel(key);
           }
         } else {
-          if (keys.current.has("up")) vy -= 1;
-          if (keys.current.has("down")) vy += 1;
-          if (keys.current.has("left")) vx -= 1;
-          if (keys.current.has("right")) vx += 1;
-          if (vx && vy) {
-            vx *= 0.72;
-            vy *= 0.72;
-          }
-          vx *= step;
-          vy *= step;
-        }
-        moving = vx !== 0 || vy !== 0;
-        if (moving) {
-          p.ang = (Math.atan2(vy, vx) * 180) / Math.PI;
-          // axis-separated collision
-          const nx = Math.max(MARGIN, Math.min(WORLD.w - MARGIN, p.x + vx));
-          if (!hitsSolid(nx, p.y)) p.x = nx;
-          const ny = Math.max(MARGIN, Math.min(WORLD.h - MARGIN, p.y + vy));
-          if (!hitsSolid(p.x, ny)) p.y = ny;
-        }
-        // abandon an unreachable click-target: if walking to a target but fully
-        // blocked (position didn't change) for several frames, give up so the
-        // avatar doesn't march in place with the camera frozen.
-        if (target.current) {
-          if (Math.abs(p.x - px0) < 0.01 && Math.abs(p.y - py0) < 0.01) {
-            stuck += 1;
-            if (stuck > 12) {
+          const step = speed * f;
+          if (target.current) {
+            const tg = target.current;
+            const dx = tg.x - p.x;
+            const dy = tg.y - p.y;
+            const dist = Math.hypot(dx, dy);
+            if (dist < step + 1) {
+              p.x = tg.x;
+              p.y = tg.y;
               target.current = null;
+            } else {
+              vx = (dx / dist) * step;
+              vy = (dy / dist) * step;
+            }
+          } else {
+            if (keys.current.has("up")) vy -= 1;
+            if (keys.current.has("down")) vy += 1;
+            if (keys.current.has("left")) vx -= 1;
+            if (keys.current.has("right")) vx += 1;
+            if (vx && vy) {
+              vx *= 0.72;
+              vy *= 0.72;
+            }
+            vx *= step;
+            vy *= step;
+          }
+          moving = vx !== 0 || vy !== 0;
+          if (moving) {
+            p.ang = (Math.atan2(vy, vx) * 180) / Math.PI;
+            // axis-separated collision
+            const nx = Math.max(MARGIN, Math.min(WORLD.w - MARGIN, p.x + vx));
+            if (!hitsSolid(nx, p.y)) p.x = nx;
+            const ny = Math.max(MARGIN, Math.min(WORLD.h - MARGIN, p.y + vy));
+            if (!hitsSolid(p.x, ny)) p.y = ny;
+          }
+          // abandon an unreachable click-target: if walking to a target but fully
+          // blocked (position didn't change) for several frames, give up so the
+          // avatar doesn't march in place with the camera frozen.
+          if (target.current) {
+            if (Math.abs(p.x - px0) < 0.01 && Math.abs(p.y - py0) < 0.01) {
+              stuck += 1;
+              if (stuck > 12) {
+                target.current = null;
+                stuck = 0;
+              }
+            } else {
               stuck = 0;
             }
           } else {
             stuck = 0;
           }
-        } else {
-          stuck = 0;
         }
       }
       p.moving = moving;
@@ -377,23 +474,64 @@ export default function NeonCity({
       // ---- camera ----
       const vw = window.innerWidth;
       const vh = window.innerHeight;
-      cam.current.x = Math.max(0, Math.min(WORLD.w - vw, p.x - vw / 2));
-      cam.current.y = Math.max(0, Math.min(WORLD.h - vh, p.y - vh / 2));
+      let s: number;
+      let cx: number;
+      let cy: number;
+      if (IN.phase === "ride") {
+        // follow the train, zoomed to a cinematic frame
+        s = Math.min(vw / 1400, vh / 800);
+        if (s > 1.05) s = 1.05;
+        const pt = railPtAt(train.current.sFront);
+        const hw = vw / (2 * s);
+        const hh = vh / (2 * s);
+        cx = Math.max(hw, Math.min(WORLD.w - hw, pt.x));
+        cy = Math.max(Math.min(hh, 800), Math.min(WORLD.h - hh + 90, pt.y));
+      } else if (IN.phase === "walk") {
+        // hold a framed shot of the landing while the avatar steps down
+        s = Math.min(vw / 1600, vh / 900);
+        if (s > 1.1) s = 1.1;
+        const hw = vw / (2 * s);
+        const hh = vh / (2 * s);
+        cx = Math.max(hw, Math.min(WORLD.w - hw, 890));
+        cy = Math.max(hh, Math.min(WORLD.h - hh, 770));
+      } else {
+        // gameplay: 1:1 follow-cam
+        s = 1;
+        cx = Math.max(vw / 2, Math.min(WORLD.w - vw / 2, p.x));
+        cy = Math.max(vh / 2, Math.min(WORLD.h - vh / 2, p.y));
+      }
+      let tx = vw / 2 - cx * s;
+      let ty = vh / 2 - cy * s;
+      // ease the handoff (walk framing → 1:1 follow) over ~1s
+      if (IN.phase === "done") {
+        if (camDone.current.t0 === null) camDone.current.t0 = now;
+        const k = Math.min(1, (now - camDone.current.t0) / 1000);
+        if (k < 1) {
+          const e = easeIO(k);
+          const cd = camDone.current;
+          tx = cd.fromTx + (tx - cd.fromTx) * e;
+          ty = cd.fromTy + (ty - cd.fromTy) * e;
+          s = cd.fromS + (s - cd.fromS) * e;
+        }
+      }
+      cam.current.tx = tx;
+      cam.current.ty = ty;
+      cam.current.s = s;
       if (worldRef.current)
-        worldRef.current.style.transform = `translate(${-cam.current.x}px, ${-cam.current.y}px)`;
+        worldRef.current.style.transform = `translate(${tx}px, ${ty}px) scale(${s})`;
 
       // ---- avatar ----
-      if (charRef.current)
+      if (charRef.current) {
+        charRef.current.style.opacity = IN.phase === "ride" ? "0" : "1";
         charRef.current.style.transform = `translate(${p.x - 14}px, ${
           p.y - 14
         }px)`;
-      if (avatarRef.current)
-        avatarRef.current.style.transform = `rotate(${p.ang}deg)`;
-      if (charRef.current) {
         const cls = charRef.current.classList;
         if (moving) cls.add(styles.walking);
         else cls.remove(styles.walking);
       }
+      if (avatarRef.current)
+        avatarRef.current.style.transform = `rotate(${p.ang}deg)`;
 
       // ---- traffic ----
       if (invuln.current > 0) invuln.current -= dt;
@@ -492,13 +630,37 @@ export default function NeonCity({
         tr.t += dt;
         const pr = Math.min(1, tr.t / 8000);
         tr.sFront = easeIO(pr) * railStop;
+        if (intro.current.phase === "ride") {
+          const cap =
+            pr > 0.75
+              ? "NOW ARRIVING · TERMINAL, WEST PLATFORM"
+              : pr > 0.42
+                ? "CURLING WEST OF THE PARK"
+                : pr > 0.2
+                  ? "PASSING · POST OFFICE ( CONTACT )"
+                  : "THE ADKINS LINE · INBOUND";
+          if (cap !== captionRef.current) {
+            captionRef.current = cap;
+            setCaption(cap);
+          }
+        }
         if (pr >= 1) {
-          tr.mode = "dwell";
-          tr.until = now + 3500 + Math.random() * 2500;
+          if (intro.current.phase === "ride") {
+            // hand the ride to the walk-down; hold the train at the platform
+            intro.current.phase = "walk";
+            intro.current.walkT = 0;
+            setIntroPhase("walk");
+            tr.mode = "dwell";
+            tr.until = now + 5200;
+          } else {
+            tr.mode = "dwell";
+            tr.until = now + 3500 + Math.random() * 2500;
+          }
         }
       } else if (tr.mode === "dwell") {
         tr.sFront = railStop;
-        if (now >= tr.until) {
+        // don't depart mid-intro; wait until the player has control
+        if (now >= tr.until && intro.current.phase === "done") {
           tr.mode = "out";
           tr.t = 0;
         }
@@ -608,6 +770,21 @@ export default function NeonCity({
   }, []);
 
   // fast-travel: glide to a pad then open its teaser (Home leaves the city)
+  function skipIntro() {
+    if (intro.current.phase === "done") return;
+    intro.current.phase = "done";
+    intro.current.walkT = 9999;
+    setIntroPhase("done");
+    pos.current.x = 757;
+    pos.current.y = 714;
+    pos.current.ang = 0;
+    // snap the camera straight to 1:1 (no ease from the cinematic frame)
+    camDone.current = { t0: -1e9, fromTx: 0, fromTy: 0, fromS: 1 };
+    // let the held train dwell a beat, then resume ambient service
+    train.current.mode = "dwell";
+    train.current.until = performance.now() + 1500;
+  }
+
   function fastTravel(key: string) {
     if (key === "home") {
       router.push("/");
@@ -832,8 +1009,91 @@ export default function NeonCity({
       <div className={styles.vignette} />
       <div className={styles.scan} />
 
+      {/* ---- cinematic intro: letterbox + caption + skip ---- */}
+      <div
+        style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          top: 0,
+          height: 58,
+          background: "#04030a",
+          zIndex: 22,
+          transform:
+            introPhase === "done" ? "translateY(-101%)" : "translateY(0)",
+          transition: "transform .9s ease",
+          pointerEvents: "none",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          bottom: 0,
+          height: 58,
+          background: "#04030a",
+          zIndex: 22,
+          transform:
+            introPhase === "done" ? "translateY(101%)" : "translateY(0)",
+          transition: "transform .9s ease",
+          pointerEvents: "none",
+        }}
+      />
+      {introPhase !== "done" && (
+        <>
+          <div
+            style={{
+              position: "absolute",
+              bottom: 20,
+              left: "50%",
+              transform: "translateX(-50%)",
+              zIndex: 23,
+              fontFamily: "var(--font-mono), monospace",
+              fontSize: 11,
+              letterSpacing: ".3em",
+              color: "rgba(243,237,226,.8)",
+              textShadow: "0 0 14px rgba(243,237,226,.35)",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {introPhase === "ride" ? caption : "STEPPING OFF · WELCOME"}
+          </div>
+          <button
+            type="button"
+            onClick={skipIntro}
+            data-hud
+            style={{
+              position: "absolute",
+              bottom: 14,
+              right: 22,
+              zIndex: 23,
+              fontFamily: "var(--font-mono), monospace",
+              fontSize: 10,
+              letterSpacing: ".18em",
+              color: "rgba(243,237,226,.7)",
+              background: "transparent",
+              border: "1px solid rgba(243,237,226,.3)",
+              borderRadius: 999,
+              padding: "7px 14px",
+              cursor: "pointer",
+            }}
+          >
+            SKIP ▸
+          </button>
+        </>
+      )}
+
       {/* ---- HUD ---- */}
-      <div className={styles.hud} data-hud>
+      <div
+        className={styles.hud}
+        data-hud
+        style={{
+          opacity: introPhase === "done" ? 1 : 0,
+          pointerEvents: introPhase === "done" ? undefined : "none",
+          transition: "opacity .6s ease",
+        }}
+      >
         <span className={`${styles.bk} ${styles.bkTL}`} />
         <span className={`${styles.bk} ${styles.bkTR}`} />
         <span className={`${styles.bk} ${styles.bkBL}`} />
@@ -874,7 +1134,7 @@ export default function NeonCity({
           <div>STEP ON A PAD · ENTER</div>
         </div>
 
-        {!everMoved && !panel && (
+        {!everMoved && !panel && introPhase === "done" && (
           <div className={styles.hint}>
             WALK WITH WASD · OR CLICK THE STREET
           </div>

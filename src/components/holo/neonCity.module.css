@@ -20,6 +20,7 @@
   left: 0;
   width: 2400px;
   height: 1600px;
+  transform-origin: 0 0;
   background:
     repeating-linear-gradient(
       90deg,
