@@ -56,7 +56,7 @@ export const PARK = {
   w: 660,
   h: 450,
   radius: "190px 70px 210px 90px",
-  nameplate: { x: 1090, y: 700 },
+  nameplate: { x: 1230, y: 750 },
   platform: { x: 1110, y: 874, w: 240, h: 32 },
 };
 
@@ -172,16 +172,47 @@ export type Filler = {
 // from the arrival prototype. Empty for now so nothing overlaps the new layout.
 export const FILLERS: Filler[] = [];
 
-// ---- park furniture ----
-// Retired in the Layout C cutover (old positions were laid out for the previous
-// spawn/park approach and obstruct the new walk-around). Phase 1 repopulates
-// trees/benches/lamps from the arrival prototype's arrays.
-// trees: circular collision (x,y = center, r = radius)
-export const TREES: { x: number; y: number; r: number }[] = [];
+// ---- park furniture (from the arrival prototype; positions in/around the park) ----
+// trees: circular collision (x,y = CENTER, r = radius). Prototype gives top-left +
+// diameter; converted here to center+radius so collision (hitsSolid) stays correct.
+export const TREES: { x: number; y: number; r: number }[] = [
+  { x: 945, y: 615, r: 15 },
+  { x: 1072, y: 587, r: 12 },
+  { x: 1394, y: 599, r: 14 },
+  { x: 1501, y: 636, r: 11 },
+  { x: 948, y: 788, r: 13 },
+  { x: 1318, y: 758, r: 13 },
+  { x: 1477, y: 857, r: 12 },
+  { x: 1021, y: 936, r: 11 },
+  { x: 973, y: 493, r: 13 },
+  { x: 1192, y: 482, r: 12 },
+  { x: 1413, y: 498, r: 13 },
+  { x: 433, y: 63, r: 13 },
+  { x: 134, y: 714, r: 14 },
+  { x: 71, y: 971, r: 11 },
+  { x: 872, y: 1174, r: 12 },
+  { x: 1571, y: 1196, r: 11 },
+  { x: 1633, y: 953, r: 13 },
+  { x: 712, y: 482, r: 12 },
+  { x: 1212, y: 1482, r: 12 },
+  { x: 1991, y: 251, r: 11 },
+];
 // benches: small AABB solids (x,y = top-left)
-export const BENCHES: { x: number; y: number; w: number; h: number }[] = [];
+export const BENCHES: { x: number; y: number; w: number; h: number }[] = [
+  { x: 990, y: 690, w: 46, h: 14 },
+  { x: 1400, y: 710, w: 46, h: 14 },
+  { x: 1010, y: 780, w: 14, h: 46 },
+  { x: 1500, y: 800, w: 14, h: 46 },
+  { x: 1360, y: 930, w: 46, h: 14 },
+];
 // street lamps (glow pools, brighten at night)
-export const LAMPS: { x: number; y: number }[] = [];
+export const LAMPS: { x: number; y: number }[] = [
+  { x: 1075, y: 545 },
+  { x: 770, y: 950 },
+  { x: 365, y: 1108 },
+  { x: 1900, y: 1055 },
+  { x: 620, y: 292 },
+];
 
 // district ground labels (rotated mono)
 // Faint ground labels for the Layout C districts (from the arrival prototype).

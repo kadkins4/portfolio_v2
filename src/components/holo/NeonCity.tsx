@@ -1022,30 +1022,82 @@ function ParkLayer({
         }}
       >
         <div className={styles.parkRing} />
+        {/* winding paths */}
+        <div
+          className={styles.parkPath}
+          style={{ left: 14, top: 180, width: 400, transform: "rotate(4deg)" }}
+        />
+        <div
+          className={styles.parkPath}
+          style={{
+            left: 392,
+            top: 192,
+            width: 260,
+            transform: "rotate(-7deg)",
+          }}
+        />
+        <div
+          className={styles.parkPath}
+          style={{
+            left: 428,
+            top: 6,
+            width: 26,
+            height: 200,
+            transform: "rotate(6deg)",
+          }}
+        />
+        <div
+          className={styles.parkPath}
+          style={{
+            left: 404,
+            top: 232,
+            width: 26,
+            height: 212,
+            transform: "rotate(-9deg)",
+          }}
+        />
+        {/* plaza circle */}
+        <div
+          style={{
+            position: "absolute",
+            left: 399,
+            top: 159,
+            width: 88,
+            height: 88,
+            borderRadius: "50%",
+            background: "#131120",
+            border: "1px dashed rgba(243,237,226,.18)",
+          }}
+        />
+        {/* reflecting pond */}
+        <div
+          style={{
+            position: "absolute",
+            left: 420,
+            top: 24,
+            width: 90,
+            height: 90,
+            borderRadius: "50%",
+            border: "1px dashed rgba(140,190,235,.22)",
+            background: "radial-gradient(circle at 40% 35%, #0e1a24, #0a1219)",
+            boxShadow: "inset 0 0 20px rgba(0,0,0,.5)",
+          }}
+        />
+        {/* corner label */}
+        <div
+          style={{
+            position: "absolute",
+            right: 26,
+            bottom: 16,
+            fontFamily: "var(--font-mono), monospace",
+            fontSize: 10,
+            letterSpacing: ".4em",
+            color: "rgba(140,210,160,.5)",
+          }}
+        >
+          TERMINAL&nbsp;PARK
+        </div>
       </div>
-      {/* winding paths meeting at a plaza */}
-      <div
-        className={styles.parkPath}
-        style={{
-          left: PARK.x + 60,
-          top: PARK.y + 200,
-          width: 320,
-          transform: "rotate(-6deg)",
-        }}
-      />
-      <div
-        className={styles.parkPath}
-        style={{
-          left: PARK.x + 260,
-          top: PARK.y + 120,
-          width: 300,
-          transform: "rotate(78deg)",
-        }}
-      />
-      <div
-        className={styles.plaza}
-        style={{ left: PARK.x + 330, top: PARK.y + 225 }}
-      />
       {/* trees */}
       {TREES.map((t, i) => (
         <div
@@ -1070,6 +1122,7 @@ function ParkLayer({
         <div className={styles.npName}>
           {first} {last && <i>{last}</i>}
         </div>
+        <div className={styles.npTag}>engineer by day · human by design</div>
       </div>
       {/* station platform under the rail */}
       <div
