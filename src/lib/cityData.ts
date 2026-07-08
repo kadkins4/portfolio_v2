@@ -28,12 +28,10 @@ export function hueColor(h: number, l = 0.84, c = 0.13, a?: number): string {
 export const ROAD_W = 80;
 export const ROADS_H = [360, 1040]; // y centerlines
 export const ROADS_V = [320, 1880]; // x centerlines
-export const NODES = [
-  { x: 320, y: 360 },
-  { x: 1880, y: 360 },
-  { x: 320, y: 1040 },
-  { x: 1880, y: 1040 },
-];
+// Grid nodes retired for V1 (the straight grid is gone, replaced by curved
+// streets + one arterial). Kept as an empty export so the dormant traffic-light
+// engine still compiles; V2 repopulates this when cars migrate to path-following.
+export const NODES: { x: number; y: number }[] = [];
 
 // ---- the Adkins Line (diagonal elevated rail) ----
 export const RAIL = {
@@ -186,16 +184,84 @@ export const BENCHES: { x: number; y: number; w: number; h: number }[] = [];
 export const LAMPS: { x: number; y: number }[] = [];
 
 // district ground labels (rotated mono)
+// Faint ground labels for the Layout C districts (from the arrival prototype).
 export const DISTRICT_LABELS: {
   text: string;
   x: number;
   y: number;
-  hue: number;
-  rot: number;
+  size: number;
+  col: string;
 }[] = [
-  { text: "ENGINEERING QUARTER", x: 300, y: 210, hue: 190, rot: 0 },
-  { text: "RESIDENTIAL ROW", x: 1980, y: 470, hue: 46, rot: 1.2 },
-  { text: "POSTAL DISTRICT", x: 780, y: 1500, hue: 300, rot: -1 },
+  { text: "NORTH GRID", x: 640, y: 218, size: 13, col: "rgba(150,140,220,.3)" },
+  {
+    text: "DOCKSIDE",
+    x: 2035,
+    y: 1030,
+    size: 13,
+    col: "rgba(140,190,235,.34)",
+  },
+  {
+    text: "FAIRGROUNDS",
+    x: 150,
+    y: 1240,
+    size: 13,
+    col: "rgba(220,140,220,.3)",
+  },
+  {
+    text: "THE LANDING",
+    x: 500,
+    y: 878,
+    size: 11,
+    col: "rgba(150,140,220,.32)",
+  },
+];
+
+// District ground blobs (soft color washes under the streets).
+export const BLOBS: {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  rot: number;
+  br: string;
+  bg: string;
+}[] = [
+  {
+    x: 600,
+    y: 150,
+    w: 900,
+    h: 300,
+    rot: -2,
+    br: "45% 40% 42% 46%",
+    bg: "rgba(150,140,220,.03)",
+  },
+  {
+    x: 1850,
+    y: 380,
+    w: 520,
+    h: 660,
+    rot: 3,
+    br: "42% 46% 40% 44%",
+    bg: "rgba(120,180,220,.028)",
+  },
+  {
+    x: 60,
+    y: 1150,
+    w: 700,
+    h: 420,
+    rot: -3,
+    br: "46% 42% 44% 40%",
+    bg: "rgba(220,120,200,.022)",
+  },
+  {
+    x: 240,
+    y: 480,
+    w: 520,
+    h: 520,
+    rot: 2,
+    br: "44% 46% 42% 45%",
+    bg: "rgba(150,140,220,.026)",
+  },
 ];
 
 // ---- traffic ----

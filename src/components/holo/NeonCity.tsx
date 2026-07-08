@@ -7,15 +7,12 @@ import {
   useRef,
   useState,
   type CSSProperties,
-  type ReactNode,
 } from "react";
 import {
   WORLD,
   CHAR_R,
   MARGIN,
   SPAWN,
-  ROADS_H,
-  ROADS_V,
   ROAD_W,
   NODES,
   RAIL,
@@ -24,6 +21,7 @@ import {
   DESTINATIONS,
   padRect,
   FILLERS,
+  BLOBS,
   TREES,
   BENCHES,
   LAMPS,
@@ -74,25 +72,18 @@ function hitsSolid(x: number, y: number): boolean {
   return false;
 }
 
-// initial traffic — straight lanes, right-hand offsets so opposing cars separate
+// V1 traffic: ambient cars on the single straight arterial (y=320), two lanes
+// (301 eastbound, 339 westbound). No lights/nodes/car-following needed since the
+// arterial has no intersections; the richer engine stays dormant for V2.
 function seedCars(): Car[] {
-  const cars: Car[] = [];
-  const S = 2.4;
-  // horizontal road y=360
-  cars.push({ x: 100, y: 378, dx: S, dy: 0, hue: 190 });
-  cars.push({ x: 900, y: 378, dx: S, dy: 0, hue: 46 });
-  cars.push({ x: 1600, y: 342, dx: -S, dy: 0, hue: 340 });
-  // horizontal road y=1040
-  cars.push({ x: 500, y: 1058, dx: S, dy: 0, hue: 190 });
-  cars.push({ x: 2000, y: 1022, dx: -S, dy: 0, hue: 46 });
-  // vertical road x=320
-  cars.push({ x: 302, y: 200, dx: 0, dy: S, hue: 46 });
-  cars.push({ x: 338, y: 1300, dx: 0, dy: -S, hue: 190 });
-  // vertical road x=1880
-  cars.push({ x: 1862, y: 700, dx: 0, dy: S, hue: 340 });
-  cars.push({ x: 1898, y: 1400, dx: 0, dy: -S, hue: 190 });
-  cars.push({ x: 1898, y: 500, dx: 0, dy: -S, hue: 46 });
-  return cars;
+  return [
+    { x: 120, y: 301, dx: 2.3, dy: 0, hue: 190 },
+    { x: 760, y: 301, dx: 2.05, dy: 0, hue: 46 },
+    { x: 1600, y: 301, dx: 2.5, dy: 0, hue: 340 },
+    { x: 2100, y: 339, dx: -2.2, dy: 0, hue: 300 },
+    { x: 1240, y: 339, dx: -2.45, dy: 0, hue: 190 },
+    { x: 420, y: 339, dx: -2.0, dy: 0, hue: 46 },
+  ];
 }
 
 export default function NeonCity({
@@ -565,36 +556,21 @@ export default function NeonCity({
     () => (
       <div ref={worldRef} className={styles.world}>
         {/* district ground blobs */}
-        <div
-          className={styles.blob}
-          style={{
-            left: 40,
-            top: 40,
-            width: 900,
-            height: 900,
-            background: hueColor(190, 0.5, 0.13, 0.05),
-          }}
-        />
-        <div
-          className={styles.blob}
-          style={{
-            left: 1820,
-            top: 40,
-            width: 640,
-            height: 760,
-            background: hueColor(46, 0.5, 0.14, 0.05),
-          }}
-        />
-        <div
-          className={styles.blob}
-          style={{
-            left: 700,
-            top: 1120,
-            width: 900,
-            height: 560,
-            background: hueColor(300, 0.5, 0.11, 0.05),
-          }}
-        />
+        {BLOBS.map((bl, i) => (
+          <div
+            key={`blob${i}`}
+            className={styles.blob}
+            style={{
+              left: bl.x,
+              top: bl.y,
+              width: bl.w,
+              height: bl.h,
+              background: bl.bg,
+              borderRadius: bl.br,
+              transform: `rotate(${bl.rot}deg)`,
+            }}
+          />
+        ))}
 
         {/* district ground labels */}
         {DISTRICT_LABELS.map((l) => (
@@ -604,8 +580,8 @@ export default function NeonCity({
             style={{
               left: l.x,
               top: l.y,
-              color: hueColor(l.hue, 0.85, 0.13, 0.22),
-              transform: `rotate(${l.rot}deg)`,
+              color: l.col,
+              fontSize: l.size,
             }}
           >
             {l.text}
@@ -615,45 +591,8 @@ export default function NeonCity({
         {/* rail: shadow, promenade, track, pillars */}
         <RailLayer />
 
-        {/* streets */}
-        {ROADS_H.map((y) => (
-          <div
-            key={`rh${y}`}
-            className={styles.roadH}
-            style={{
-              left: 0,
-              top: y - ROAD_W / 2,
-              width: WORLD.w,
-              height: ROAD_W,
-            }}
-          />
-        ))}
-        {ROADS_V.map((x) => (
-          <div
-            key={`rv${x}`}
-            className={styles.roadV}
-            style={{
-              left: x - ROAD_W / 2,
-              top: 0,
-              width: ROAD_W,
-              height: WORLD.h,
-            }}
-          />
-        ))}
-        <LaneLines />
-        {NODES.map((n, i) => (
-          <div
-            key={`nd${i}`}
-            className={styles.node}
-            style={{ left: n.x - 40, top: n.y - 40 }}
-          />
-        ))}
-        <Crosswalks />
-
-        {/* traffic lights (one per node, EW+NS lamps) */}
-        {NODES.map((n, i) => (
-          <TrafficLight key={`tl${i}`} x={n.x} y={n.y} />
-        ))}
+        {/* streets: curved decorative net + one straight arterial (V1 traffic) */}
+        <StreetLayer />
 
         {/* lamps (brighten at night) */}
         <div ref={lampWrapRef}>
@@ -931,92 +870,132 @@ function RailLayer() {
   );
 }
 
-function LaneLines() {
-  const segs: ReactNode[] = [];
-  // horizontal pink lanes on each H road, broken at V roads
-  for (const y of ROADS_H) {
-    const gaps = [
-      [0, 280],
-      [360, 1840],
-      [1920, WORLD.w],
-    ];
-    gaps.forEach(([a, b], i) => {
-      segs.push(
-        <div
-          key={`lh${y}-${i}`}
-          className={`${styles.lane} ${styles.laneH}`}
-          style={{ left: a, top: y - 1, width: b - a }}
-        />
-      );
-    });
-  }
-  // vertical lanes on each V road, broken at H roads
-  const vColor = (x: number) =>
-    x === 320 ? styles.laneVcyan : styles.laneVamber;
-  for (const x of ROADS_V) {
-    const gaps = [
-      [0, 320],
-      [400, 1000],
-      [1080, WORLD.h],
-    ];
-    gaps.forEach(([a, b], i) => {
-      segs.push(
-        <div
-          key={`lv${x}-${i}`}
-          className={`${styles.lane} ${vColor(x)}`}
-          style={{ left: x - 1, top: a, height: b - a }}
-        />
-      );
-    });
-  }
-  return <>{segs}</>;
-}
-
-function Crosswalks() {
-  const cw: ReactNode[] = [];
-  NODES.forEach((n, i) => {
-    // horizontal-road approaches (left + right of node) → vertical stripes
-    cw.push(
-      <div
-        key={`cwL${i}`}
-        className={`${styles.crosswalk} ${styles.cwV}`}
-        style={{ left: n.x - 40 - 26, top: n.y - 36, width: 26, height: 72 }}
-      />,
-      <div
-        key={`cwR${i}`}
-        className={`${styles.crosswalk} ${styles.cwV}`}
-        style={{ left: n.x + 40, top: n.y - 36, width: 26, height: 72 }}
-      />,
-      <div
-        key={`cwT${i}`}
-        className={`${styles.crosswalk} ${styles.cwH}`}
-        style={{ left: n.x - 36, top: n.y - 40 - 26, width: 72, height: 26 }}
-      />,
-      <div
-        key={`cwB${i}`}
-        className={`${styles.crosswalk} ${styles.cwH}`}
-        style={{ left: n.x - 36, top: n.y + 40, width: 72, height: 26 }}
-      />
-    );
-  });
-  return <>{cw}</>;
-}
-
-function TrafficLight({ x, y }: { x: number; y: number }) {
+function StreetLayer() {
+  // curved decorative streets — all connected, routed around the buildings
+  const curved = [
+    "M 250 340 C 210 560 300 660 285 830 C 270 1010 430 1090 490 1260 C 540 1400 490 1500 510 1600",
+    "M 1880 340 C 2010 420 2100 480 2085 700 C 2075 880 1990 960 1900 1050 C 1800 1150 1690 1190 1560 1270 C 1420 1360 1330 1420 1310 1600",
+    "M 412 1130 C 680 1098 950 1128 1250 1128 C 1470 1126 1700 1096 1900 1040",
+    "M 252 -40 C 262 20 292 62 320 100 C 700 240 1150 120 1500 190 C 1720 230 1850 140 2010 130 C 2080 127 2120 200 2120 282",
+  ];
+  const spur = "M 1010 340 C 1030 430 1070 490 1090 556";
   return (
     <>
-      <div className={styles.light} style={{ left: x - 52, top: y - 52 }}>
-        <span
-          className={styles.lamp2}
-          style={{ background: "oklch(0.6 0.14 25)" }}
+      <svg
+        width={WORLD.w}
+        height={WORLD.h}
+        viewBox={`0 0 ${WORLD.w} ${WORLD.h}`}
+        style={{ position: "absolute", left: 0, top: 0, pointerEvents: "none" }}
+      >
+        {/* outline pass */}
+        {curved.map((d, i) => (
+          <path
+            key={`so${i}`}
+            d={d}
+            stroke="rgba(150,140,220,.13)"
+            strokeWidth={68}
+            fill="none"
+            strokeLinecap="round"
+          />
+        ))}
+        <path
+          d={spur}
+          stroke="rgba(150,140,220,.13)"
+          strokeWidth={60}
+          fill="none"
+          strokeLinecap="round"
         />
-        <span
-          className={styles.lamp2}
-          style={{
-            background: "oklch(0.78 0.19 150)",
-            boxShadow: "0 0 8px oklch(0.78 0.19 150)",
-          }}
+        <circle
+          cx={1090}
+          cy={548}
+          r={42}
+          fill="#0d0c17"
+          stroke="rgba(150,140,220,.13)"
+          strokeWidth={2}
         />
+        {/* bed pass */}
+        {curved.map((d, i) => (
+          <path
+            key={`sb${i}`}
+            d={d}
+            stroke="#0d0c17"
+            strokeWidth={64}
+            fill="none"
+            strokeLinecap="round"
+          />
+        ))}
+        <path
+          d={spur}
+          stroke="#0d0c17"
+          strokeWidth={56}
+          fill="none"
+          strokeLinecap="round"
+        />
+        {/* dashed centerlines */}
+        {curved.map((d, i) => (
+          <path
+            key={`sc${i}`}
+            d={d}
+            stroke="rgba(243,237,226,.05)"
+            strokeWidth={2}
+            fill="none"
+            strokeDasharray="24 40"
+          />
+        ))}
+        {/* straight arterial — V1 traffic runs here */}
+        <path
+          d="M 0 320 L 2400 320"
+          stroke="#0d0c17"
+          strokeWidth={78}
+          fill="none"
+        />
+        <path
+          d="M 0 282 L 2400 282"
+          stroke="rgba(150,140,220,.14)"
+          strokeWidth={1.5}
+          fill="none"
+        />
+        <path
+          d="M 0 358 L 2400 358"
+          stroke="rgba(150,140,220,.14)"
+          strokeWidth={1.5}
+          fill="none"
+        />
+        <path
+          d="M 0 320 L 2400 320"
+          stroke="rgba(243,237,226,.08)"
+          strokeWidth={2}
+          fill="none"
+          strokeDasharray="26 36"
+        />
+      </svg>
+      {/* arterial crosswalk at the park spur */}
+      <div
+        style={{
+          position: "absolute",
+          left: 986,
+          top: 284,
+          width: 46,
+          height: 72,
+          backgroundImage:
+            "repeating-linear-gradient(0deg, rgba(243,237,226,.1) 0 8px, transparent 8px 19px)",
+          pointerEvents: "none",
+        }}
+      />
+      {/* arterial tag */}
+      <div
+        style={{
+          position: "absolute",
+          left: 60,
+          top: 270,
+          fontFamily: "var(--font-mono), monospace",
+          fontSize: 11,
+          letterSpacing: ".24em",
+          color: "rgba(150,140,220,.4)",
+          pointerEvents: "none",
+        }}
+      >
+        ARTERIAL · V1 TRAFFIC
       </div>
     </>
   );
