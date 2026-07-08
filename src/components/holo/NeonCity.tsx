@@ -20,7 +20,8 @@ import {
   PARK,
   DESTINATIONS,
   padRect,
-  FILLERS,
+  SHELLS,
+  POI_COLLIDERS,
   BLOBS,
   TREES,
   BENCHES,
@@ -50,7 +51,8 @@ const KEYMAP: Record<string, string> = {
 type Rect = { x: number; y: number; w: number; h: number };
 const SOLIDS: Rect[] = [
   ...DESTINATIONS.map((d) => ({ x: d.x, y: d.y, w: d.w, h: d.h })),
-  ...FILLERS.map((f) => ({ x: f.x, y: f.y, w: f.w, h: f.h })),
+  ...SHELLS.map((s) => ({ x: s.x, y: s.y, w: s.w, h: s.h })),
+  ...POI_COLLIDERS,
   ...BENCHES,
 ];
 
@@ -613,33 +615,62 @@ export default function NeonCity({
         {/* Terminal Park */}
         <ParkLayer name={name} first={first} last={last} />
 
-        {/* filler buildings */}
-        {FILLERS.map((f, i) => (
+        {/* plain gray shells (visual fill, not enterable) */}
+        {SHELLS.map((s, i) => (
           <div
-            key={`f${i}`}
-            className={styles.filler}
+            key={`shell${i}`}
             style={{
-              left: f.x,
-              top: f.y,
-              width: f.w,
-              height: f.h,
-              borderRadius: i % 2 ? "3px 8px 4px 10px" : "9px 3px 11px 4px",
-              transform: `rotate(${((i % 5) - 2) * 0.6}deg)`,
+              position: "absolute",
+              left: s.x,
+              top: s.y,
+              width: s.w,
+              height: s.h,
+              transform: `rotate(${s.rot}deg)`,
+              borderRadius: s.br,
+              background: "#100e1c",
+              border: "1px solid rgba(150,140,220,.11)",
+              boxShadow: "0 0 16px rgba(0,0,0,.5)",
             }}
           >
-            <div className={styles.bldgRoof} />
             <div
-              className={styles.beacon}
-              style={{ right: 8, top: 8, background: "oklch(0.72 0.19 340)" }}
+              style={{
+                position: "absolute",
+                inset: 8,
+                backgroundImage:
+                  "repeating-linear-gradient(90deg, rgba(150,140,220,.055) 0 1px, transparent 1px 18px), repeating-linear-gradient(0deg, rgba(150,140,220,.055) 0 1px, transparent 1px 18px)",
+                pointerEvents: "none",
+              }}
             />
             <div
-              className={styles.fillerSign}
-              style={{ color: hueColor(f.hue, 0.84, 0.14) }}
-            >
-              {f.sign}
-            </div>
+              style={{
+                position: "absolute",
+                top: 10,
+                left: 11,
+                width: 34,
+                height: 24,
+                background: "#0a0913",
+                border: "1px solid rgba(150,140,220,.16)",
+                backgroundImage:
+                  "repeating-linear-gradient(90deg, rgba(150,140,220,.14) 0 1px, transparent 1px 9px)",
+              }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                bottom: 12,
+                right: 13,
+                width: 11,
+                height: 11,
+                borderRadius: "50%",
+                background: "#0a0913",
+                border: "1px solid rgba(150,140,220,.2)",
+              }}
+            />
           </div>
         ))}
+
+        {/* themed POIs (flavor, not enterable) */}
+        <POILayer />
 
         {/* destination buildings */}
         {DESTINATIONS.filter((d) => d.key !== "projects").map((d) => (
@@ -1523,6 +1554,730 @@ function ProjectsPavilion({ active }: { active: boolean }) {
         }}
       >
         ENTER
+      </div>
+    </>
+  );
+}
+
+// Themed flavor POIs (not enterable). Ported from the arrival prototype.
+function POILayer() {
+  const grid =
+    "repeating-linear-gradient(90deg, rgba(150,140,220,.06) 0 1px, transparent 1px 18px), repeating-linear-gradient(0deg, rgba(150,140,220,.06) 0 1px, transparent 1px 18px)";
+  const sign = (c: string, text: string, dur: number) => (
+    <div
+      style={{
+        position: "absolute",
+        left: "50%",
+        bottom: -13,
+        transform: "translateX(-50%)",
+        fontFamily: "var(--font-mono), monospace",
+        fontSize: 10,
+        letterSpacing: ".28em",
+        whiteSpace: "nowrap",
+        color: `oklch(${c})`,
+        textShadow: `0 0 12px oklch(${c} / .8)`,
+        background: "#0a0913",
+        border: `1px solid oklch(${c} / .35)`,
+        borderRadius: 3,
+        padding: "4px 10px",
+        animation: `ncFlick ${dur}s infinite`,
+      }}
+    >
+      {text}
+    </div>
+  );
+  return (
+    <>
+      {/* MUSEUM (amber) */}
+      <div
+        style={{
+          position: "absolute",
+          left: 520,
+          top: 12,
+          width: 180,
+          height: 96,
+          transform: "rotate(-1.2deg)",
+          borderRadius: "8px 14px 6px 12px",
+          background: "#110f1e",
+          border: "1px solid oklch(0.8 0.12 46 / .3)",
+          boxShadow: "0 0 18px rgba(0,0,0,.5)",
+        }}
+      >
+        <div
+          style={{ position: "absolute", inset: 8, backgroundImage: grid }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            left: "22%",
+            right: "22%",
+            bottom: 0,
+            height: 14,
+            backgroundImage:
+              "repeating-linear-gradient(0deg, rgba(243,237,226,.14) 0 2px, transparent 2px 5px)",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            left: 0,
+            right: 0,
+            bottom: 20,
+            display: "flex",
+            justifyContent: "center",
+            gap: 14,
+          }}
+        >
+          {[0, 1, 2, 3].map((i) => (
+            <div
+              key={i}
+              style={{
+                width: 6,
+                height: 6,
+                borderRadius: "50%",
+                background: "oklch(0.8 0.12 46 / .55)",
+              }}
+            />
+          ))}
+        </div>
+        <div
+          style={{
+            position: "absolute",
+            top: 8,
+            right: 10,
+            width: 6,
+            height: 6,
+            borderRadius: "50%",
+            background: "oklch(0.8 0.12 46 / .8)",
+            boxShadow: "0 0 8px oklch(0.8 0.12 46 / .7)",
+            animation: "ncPulse 3.4s ease-in-out infinite",
+          }}
+        />
+        {sign("0.8 0.12 46", "MUSEUM", 7.2)}
+      </div>
+
+      {/* CONSTRUCTION / SITE 09 (amber) */}
+      <div
+        style={{
+          position: "absolute",
+          left: 1660,
+          top: 36,
+          width: 170,
+          height: 100,
+          transform: "rotate(1.4deg)",
+          borderRadius: 6,
+          background: "#0e0c19",
+          border: "1px dashed oklch(0.8 0.12 46 / .45)",
+          boxShadow: "0 0 16px rgba(0,0,0,.5)",
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            left: 0,
+            right: 0,
+            top: 0,
+            height: 8,
+            borderRadius: "6px 6px 0 0",
+            background:
+              "repeating-linear-gradient(45deg, oklch(0.8 0.12 46 / .4) 0 8px, #0e0c19 8px 16px)",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            left: 34,
+            top: 18,
+            width: 4,
+            height: 70,
+            background: "oklch(0.8 0.12 46 / .5)",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            left: 34,
+            top: 18,
+            width: 78,
+            height: 4,
+            background: "oklch(0.8 0.12 46 / .5)",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            left: 104,
+            top: 22,
+            width: 1,
+            height: 26,
+            background: "oklch(0.8 0.12 46 / .5)",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            left: 100,
+            top: 48,
+            width: 9,
+            height: 7,
+            background: "oklch(0.8 0.12 46 / .6)",
+            animation: "ncPulse 2.8s ease-in-out infinite",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            right: 14,
+            bottom: 12,
+            width: 30,
+            height: 18,
+            background: "#0a0913",
+            border: "1px solid rgba(150,140,220,.2)",
+          }}
+        />
+        {sign("0.8 0.12 46", "SITE 09", 8.4)}
+      </div>
+
+      {/* OBSERVATORY (purple) */}
+      <div
+        style={{
+          position: "absolute",
+          left: 2140,
+          top: 30,
+          width: 150,
+          height: 150,
+          borderRadius: "24px 10px 20px 12px",
+          background: "#110f1e",
+          border: "1px solid oklch(0.75 0.13 300 / .3)",
+          boxShadow: "0 0 18px rgba(0,0,0,.5)",
+        }}
+      >
+        <div
+          style={{ position: "absolute", inset: 8, backgroundImage: grid }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            left: 30,
+            top: 22,
+            width: 90,
+            height: 90,
+            borderRadius: "50%",
+            background: "radial-gradient(circle at 42% 36%, #1a1730, #0d0b18)",
+            border: "1px solid oklch(0.75 0.13 300 / .5)",
+            boxShadow: "inset 0 0 16px rgba(0,0,0,.6)",
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              left: "50%",
+              top: -2,
+              width: 8,
+              height: "50%",
+              transform: "translateX(-50%) rotate(18deg)",
+              transformOrigin: "50% 100%",
+              background: "#0a0913",
+              border: "1px solid oklch(0.75 0.13 300 / .45)",
+              borderBottom: "none",
+            }}
+          />
+        </div>
+        <div
+          style={{
+            position: "absolute",
+            bottom: 12,
+            right: 14,
+            width: 7,
+            height: 7,
+            borderRadius: "50%",
+            background: "oklch(0.75 0.13 300 / .85)",
+            boxShadow: "0 0 10px oklch(0.75 0.13 300 / .7)",
+            animation: "ncPulse 3s ease-in-out infinite",
+          }}
+        />
+        {sign("0.75 0.13 300", "OBSERVATORY", 9.1)}
+      </div>
+
+      {/* ARCADE (cyan) */}
+      <div
+        style={{
+          position: "absolute",
+          left: 40,
+          top: 410,
+          width: 140,
+          height: 115,
+          transform: "rotate(-1.8deg)",
+          borderRadius: "6px 20px 8px 14px",
+          background: "#110f1e",
+          border: "1px solid oklch(0.85 0.13 190 / .3)",
+          boxShadow: "0 0 18px rgba(0,0,0,.5)",
+        }}
+      >
+        <div
+          style={{ position: "absolute", inset: 8, backgroundImage: grid }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            left: 14,
+            top: 16,
+            display: "flex",
+            gap: 8,
+          }}
+        >
+          <div
+            style={{
+              width: 14,
+              height: 18,
+              background: "#0a0913",
+              border: "1px solid oklch(0.85 0.13 190 / .5)",
+            }}
+          />
+          <div
+            style={{
+              width: 14,
+              height: 18,
+              background: "#0a0913",
+              border: "1px solid oklch(0.75 0.16 340 / .5)",
+            }}
+          />
+          <div
+            style={{
+              width: 14,
+              height: 18,
+              background: "#0a0913",
+              border: "1px solid oklch(0.85 0.13 190 / .5)",
+            }}
+          />
+          <div
+            style={{
+              width: 14,
+              height: 18,
+              background: "#0a0913",
+              border: "1px solid oklch(0.8 0.12 46 / .5)",
+            }}
+          />
+        </div>
+        <div
+          style={{
+            position: "absolute",
+            bottom: 14,
+            left: 14,
+            width: 26,
+            height: 26,
+            borderRadius: 3,
+            background: "#0d0b18",
+            border: "1px solid rgba(150,140,220,.22)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <div
+            style={{
+              width: 16,
+              height: 16,
+              borderRadius: "50%",
+              border: "1px solid rgba(150,140,220,.3)",
+              background:
+                "conic-gradient(rgba(150,140,220,.28) 0 25%, transparent 25% 50%, rgba(150,140,220,.28) 50% 75%, transparent 75% 100%)",
+              animation: "ncFan 3s linear infinite",
+            }}
+          />
+        </div>
+        <div
+          style={{
+            position: "absolute",
+            top: 8,
+            right: 10,
+            width: 6,
+            height: 6,
+            borderRadius: "50%",
+            background: "oklch(0.85 0.13 190 / .8)",
+            boxShadow: "0 0 8px oklch(0.85 0.13 190 / .7)",
+            animation: "ncPulse 2.4s ease-in-out infinite",
+          }}
+        />
+        {sign("0.85 0.13 190", "ARCADE", 6.5)}
+      </div>
+
+      {/* BROADCAST TOWER / KNDL FM (cyan) */}
+      <div
+        style={{
+          position: "absolute",
+          left: 2050,
+          top: 1150,
+          width: 130,
+          height: 130,
+          borderRadius: "50%",
+          background: "#110f1e",
+          border: "1px solid oklch(0.85 0.13 190 / .3)",
+          boxShadow: "0 0 18px rgba(0,0,0,.5)",
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            inset: 16,
+            borderRadius: "50%",
+            border: "1px dashed rgba(150,140,220,.2)",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            inset: 34,
+            borderRadius: "50%",
+            border: "1px dashed rgba(150,140,220,.14)",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            left: "50%",
+            top: "50%",
+            width: 44,
+            height: 44,
+            margin: "-22px 0 0 -22px",
+            borderRadius: "50%",
+            border: "1px solid oklch(0.85 0.13 190 / .5)",
+            animation: "ncRing 2.6s ease-out infinite",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            left: "50%",
+            top: "50%",
+            width: 10,
+            height: 10,
+            margin: "-5px 0 0 -5px",
+            borderRadius: "50%",
+            background: "#0a0913",
+            border: "1px solid oklch(0.85 0.13 190 / .7)",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            left: "50%",
+            top: "50%",
+            width: 4,
+            height: 4,
+            margin: "-2px 0 0 -2px",
+            borderRadius: "50%",
+            background: "oklch(0.72 0.19 25)",
+            boxShadow: "0 0 8px oklch(0.72 0.2 25 / .8)",
+            animation: "ncBlink 1.5s step-end infinite",
+          }}
+        />
+        {sign("0.85 0.13 190", "KNDL FM", 7.8)}
+      </div>
+
+      {/* RAMEN (amber) */}
+      <div
+        style={{
+          position: "absolute",
+          left: 590,
+          top: 1345,
+          width: 140,
+          height: 95,
+          transform: "rotate(1.6deg)",
+          borderRadius: "16px 7px 20px 9px",
+          background: "#110f1e",
+          border: "1px solid oklch(0.8 0.12 46 / .3)",
+          boxShadow: "0 0 18px rgba(0,0,0,.5)",
+        }}
+      >
+        <div
+          style={{ position: "absolute", inset: 8, backgroundImage: grid }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            left: 20,
+            top: 18,
+            width: 22,
+            height: 22,
+            borderRadius: 3,
+            background: "#0a0913",
+            border: "1px solid rgba(150,140,220,.25)",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            left: 26,
+            top: 6,
+            width: 4,
+            height: 4,
+            borderRadius: "50%",
+            background: "rgba(243,237,226,.5)",
+            animation: "ncSteam 2.4s ease-out infinite",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            left: 33,
+            top: 8,
+            width: 3,
+            height: 3,
+            borderRadius: "50%",
+            background: "rgba(243,237,226,.4)",
+            animation: "ncSteam 2.4s ease-out infinite",
+            animationDelay: ".8s",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            left: 29,
+            top: 4,
+            width: 3,
+            height: 3,
+            borderRadius: "50%",
+            background: "rgba(243,237,226,.45)",
+            animation: "ncSteam 2.4s ease-out infinite",
+            animationDelay: "1.5s",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            right: 14,
+            top: 16,
+            width: 34,
+            height: 14,
+            background: "oklch(0.8 0.12 46 / .12)",
+            border: "1px solid oklch(0.8 0.12 46 / .4)",
+            borderRadius: 2,
+          }}
+        />
+        {sign("0.8 0.12 46", "RAMEN", 6.9)}
+      </div>
+
+      {/* NIGHT MARKET (magenta) */}
+      <div
+        style={{
+          position: "absolute",
+          left: 1450,
+          top: 1380,
+          width: 200,
+          height: 120,
+          transform: "rotate(-1.1deg)",
+        }}
+      >
+        {[0, 70, 140].map((lx) => (
+          <div
+            key={lx}
+            style={{
+              position: "absolute",
+              left: lx,
+              top: 22,
+              width: 58,
+              height: 88,
+              borderRadius: 6,
+              background:
+                "repeating-linear-gradient(90deg, oklch(0.75 0.16 340 / .22) 0 9px, #131120 9px 18px)",
+              border: "1px solid oklch(0.75 0.16 340 / .35)",
+              boxShadow: "0 0 14px rgba(0,0,0,.5)",
+            }}
+          />
+        ))}
+        <div
+          style={{
+            position: "absolute",
+            left: 6,
+            right: 6,
+            top: 8,
+            height: 3,
+            backgroundImage:
+              "repeating-linear-gradient(90deg, rgba(243,237,226,.7) 0 3px, transparent 3px 16px)",
+            animation: "ncFlicker 8s infinite",
+          }}
+        />
+        {sign("0.75 0.16 340", "NIGHT MARKET", 7.4)}
+      </div>
+
+      {/* PIXEL PIER gate (magenta landmark) */}
+      <div
+        style={{
+          position: "absolute",
+          left: 70,
+          top: 1210,
+          width: 340,
+          height: 340,
+          borderRadius: "44% 38% 46% 40%",
+          border: "1px dashed oklch(0.75 0.16 340 / .18)",
+          pointerEvents: "none",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          left: 100,
+          top: 1300,
+          width: 280,
+          height: 170,
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            left: 270,
+            top: -58,
+            width: 76,
+            height: 76,
+            borderRadius: "50%",
+            border: "1px solid oklch(0.75 0.16 340 / .45)",
+            background:
+              "conic-gradient(oklch(0.75 0.16 340 / .18) 0 12%, transparent 12% 25%, oklch(0.75 0.16 340 / .18) 25% 37%, transparent 37% 50%, oklch(0.75 0.16 340 / .18) 50% 62%, transparent 62% 75%, oklch(0.75 0.16 340 / .18) 75% 87%, transparent 87% 100%)",
+            animation: "ncFan 22s linear infinite",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            left: 20,
+            top: 100,
+            width: 240,
+            height: 60,
+            border: "1px dashed oklch(0.75 0.16 340 / .3)",
+            borderBottom: "none",
+            borderRadius: "120px 120px 0 0",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            left: 46,
+            top: 60,
+            width: 16,
+            height: 88,
+            background: "#131120",
+            border: "1px solid oklch(0.75 0.16 340 / .5)",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            left: 216,
+            top: 60,
+            width: 16,
+            height: 88,
+            background: "#131120",
+            border: "1px solid oklch(0.75 0.16 340 / .5)",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            left: 30,
+            top: 26,
+            width: 220,
+            height: 40,
+            borderRadius: 5,
+            background: "#0d0b18",
+            border: "1px solid oklch(0.75 0.16 340 / .55)",
+            boxShadow: "0 0 24px oklch(0.75 0.16 340 / .25)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontFamily: "var(--font-mono), monospace",
+            fontSize: 14,
+            letterSpacing: ".34em",
+            color: "oklch(0.75 0.16 340)",
+            textShadow: "0 0 16px oklch(0.75 0.16 340 / .9)",
+            animation: "ncFlicker 7s infinite",
+          }}
+        >
+          PIXEL&nbsp;PIER
+        </div>
+        <div
+          style={{
+            position: "absolute",
+            left: 112,
+            top: 150,
+            width: 56,
+            height: 16,
+            borderRadius: 4,
+            background: "oklch(0.75 0.16 340 / .16)",
+            border: "1px solid oklch(0.75 0.16 340 / .7)",
+            animation: "ncPulse 2s ease-in-out infinite",
+          }}
+        />
+      </div>
+
+      {/* MARINA / DOCKSIDE (cyan) */}
+      <div
+        style={{
+          position: "absolute",
+          left: 2308,
+          top: 570,
+          width: 92,
+          height: 560,
+          borderRadius: "80px 0 0 90px",
+          background:
+            "radial-gradient(140% 100% at 100% 40%, #0e1a24, #0a1219 75%)",
+          borderLeft: "1px dashed rgba(140,190,235,.25)",
+          boxShadow: "inset 0 0 24px rgba(0,0,0,.5)",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          left: 2255,
+          top: 700,
+          width: 64,
+          height: 12,
+          background: "#131120",
+          border: "1px solid rgba(150,140,220,.28)",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          left: 2250,
+          top: 930,
+          width: 70,
+          height: 12,
+          background: "#131120",
+          border: "1px solid rgba(150,140,220,.28)",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          left: 2348,
+          top: 800,
+          width: 11,
+          height: 20,
+          borderRadius: 5,
+          background: "#131120",
+          border: "1px solid oklch(0.85 0.13 190 / .5)",
+          animation: "ncPulse 4s ease-in-out infinite",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          left: 2242,
+          top: 1046,
+          fontFamily: "var(--font-mono), monospace",
+          fontSize: 10,
+          letterSpacing: ".28em",
+          color: "oklch(0.85 0.13 190 / .8)",
+          textShadow: "0 0 12px oklch(0.85 0.13 190 / .6)",
+          background: "#0a0913",
+          border: "1px solid oklch(0.85 0.13 190 / .3)",
+          borderRadius: 3,
+          padding: "4px 10px",
+          animation: "ncFlick 8.8s infinite",
+        }}
+      >
+        MARINA
       </div>
     </>
   );

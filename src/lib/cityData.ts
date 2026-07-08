@@ -173,10 +173,44 @@ export type Filler = {
   sign: string;
   hue: number;
 };
-// Retired in the Layout C cutover. Phase 1 repopulates the outer city with the
-// themed POIs (arcade, museum, ramen, night market, marina, ...) and gray shells
-// from the arrival prototype. Empty for now so nothing overlaps the new layout.
+// Retired in the Layout C cutover; replaced by SHELLS + POIs below.
 export const FILLERS: Filler[] = [];
+
+// Plain gray shells: pure visual fill (not enterable), collidable.
+export const SHELLS: {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  rot: number;
+  br: string;
+}[] = [
+  { x: 110, y: 60, w: 120, h: 110, rot: -2, br: "14px 6px 18px 8px" },
+  { x: 900, y: 40, w: 150, h: 105, rot: 1.5, br: "8px 16px 6px 18px" },
+  { x: 1050, y: 202, w: 120, h: 76, rot: -1, br: "16px 7px 12px 6px" },
+  { x: 1360, y: 205, w: 130, h: 78, rot: 1.2, br: "7px 14px 9px 16px" },
+  { x: 2250, y: 195, w: 120, h: 85, rot: 2, br: "12px 6px 16px 8px" },
+  { x: 60, y: 185, w: 140, h: 90, rot: 1.8, br: "10px 18px 8px 14px" },
+  { x: 1250, y: 420, w: 150, h: 110, rot: -1.4, br: "18px 8px 14px 6px" },
+  { x: 1600, y: 390, w: 130, h: 100, rot: 1.1, br: "6px 15px 8px 12px" },
+  { x: 120, y: 1080, w: 130, h: 95, rot: -1.6, br: "15px 7px 19px 9px" },
+  { x: 2190, y: 1120, w: 120, h: 80, rot: 1.4, br: "8px 13px 6px 17px" },
+  { x: 2000, y: 1380, w: 150, h: 105, rot: -1.2, br: "17px 8px 13px 7px" },
+  { x: 1750, y: 1300, w: 120, h: 90, rot: 2.1, br: "9px 16px 7px 13px" },
+  { x: 900, y: 1475, w: 160, h: 95, rot: -0.8, br: "13px 6px 18px 9px" },
+];
+
+// Bounding boxes for the solid themed POIs, so the player can't walk through them.
+// (Pixel Pier gate and the Marina are intentionally omitted — arch/edge water.)
+export const POI_COLLIDERS: { x: number; y: number; w: number; h: number }[] = [
+  { x: 520, y: 12, w: 180, h: 96 }, // museum
+  { x: 1660, y: 36, w: 170, h: 100 }, // construction
+  { x: 2140, y: 30, w: 150, h: 150 }, // observatory
+  { x: 40, y: 410, w: 140, h: 115 }, // arcade
+  { x: 2050, y: 1150, w: 130, h: 130 }, // broadcast tower
+  { x: 590, y: 1345, w: 140, h: 95 }, // ramen
+  { x: 1450, y: 1402, w: 200, h: 88 }, // night market tents
+];
 
 // ---- park furniture (from the arrival prototype; positions in/around the park) ----
 // trees: circular collision (x,y = CENTER, r = radius). Prototype gives top-left +
