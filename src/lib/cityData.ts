@@ -33,21 +33,12 @@ export const ROADS_V = [320, 1880]; // x centerlines
 // engine still compiles; V2 repopulates this when cars migrate to path-following.
 export const NODES: { x: number; y: number }[] = [];
 
-// ---- the Adkins Line (diagonal elevated rail) ----
-export const RAIL = {
-  x0: -140,
-  y0: 1560,
-  ux: 0.8985,
-  uy: -0.4393,
-  length: 3005,
-  angleDeg: -26.06,
-  stationScalar: 1560,
-  wrapMax: 3300,
-  wrapMin: -320,
-};
-export function railPoint(s: number): { x: number; y: number } {
-  return { x: RAIL.x0 + s * RAIL.ux, y: RAIL.y0 + s * RAIL.uy };
-}
+// ---- the Adkins Line (curved elevated rail) ----
+// SVG path in world space; the train path-follows it via getPointAtLength.
+// It enters from the south edge, curls around the WEST of the park, and pulls
+// into the vertical platform beside the park (x ~= 680).
+export const RAIL_PATH =
+  "M 720 1660 C 750 1480 800 1420 770 1300 C 745 1195 600 1170 590 1030 C 583 930 680 905 680 810 L 680 480 C 680 330 640 260 560 200 C 470 130 380 80 320 -40";
 
 // ---- Terminal Park (hero + home anchor) ----
 export const PARK = {

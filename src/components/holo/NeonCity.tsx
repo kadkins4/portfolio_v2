@@ -15,8 +15,7 @@ import {
   SPAWN,
   ROAD_W,
   NODES,
-  RAIL,
-  railPoint,
+  RAIL_PATH,
   PARK,
   DESTINATIONS,
   padRect,
@@ -88,6 +87,11 @@ function seedCars(): Car[] {
   ];
 }
 
+// easing for the train ride (in) and departure (out)
+const easeIO = (t: number) =>
+  t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const easeIn = (t: number) => t * t * t;
+
 export default function NeonCity({
   name = "Kendall Adkins",
 }: {
@@ -121,7 +125,12 @@ export default function NeonCity({
     t0: number | null;
   } | null>(null);
   const cars = useRef<Car[]>(seedCars());
-  const train = useRef({ s: 400, dwell: 0, dwelled: false });
+  const train = useRef<{
+    mode: "in" | "dwell" | "out" | "away";
+    t: number;
+    until: number;
+    sFront: number;
+  }>({ mode: "in", t: 0, until: 0, sFront: 0 });
   const invuln = useRef(0);
   const cam = useRef({ x: 0, y: 0 });
   const panelRef = useRef<string | null>(null);
@@ -220,6 +229,63 @@ export default function NeonCity({
     let lastNow = performance.now();
     let stuck = 0;
     let raf = 0;
+
+    // rail geometry: an off-screen path for getPointAtLength sampling
+    const svgNS = "http://www.w3.org/2000/svg";
+    const measSvg = document.createElementNS(svgNS, "svg");
+    measSvg.setAttribute("width", "0");
+    measSvg.setAttribute("height", "0");
+    measSvg.style.position = "absolute";
+    measSvg.style.left = "-9999px";
+    const railPath = document.createElementNS(svgNS, "path");
+    railPath.setAttribute("d", RAIL_PATH);
+    measSvg.appendChild(railPath);
+    document.body.appendChild(measSvg);
+    const railLen = railPath.getTotalLength();
+    // stop point: first sample on the vertical approach (x≈680) at the platform
+    let railStop = railLen;
+    for (let s = 0; s < railLen; s += 4) {
+      const pt = railPath.getPointAtLength(s);
+      if (Math.abs(pt.x - 680) < 3 && pt.y <= 602) {
+        railStop = s;
+        break;
+      }
+    }
+    const railPtAt = (s: number): { x: number; y: number; a: number } => {
+      const L = railLen;
+      if (s < 0) {
+        const p1 = railPath.getPointAtLength(0);
+        const p2 = railPath.getPointAtLength(3);
+        const dx = p2.x - p1.x,
+          dy = p2.y - p1.y,
+          d = Math.hypot(dx, dy) || 1;
+        return {
+          x: p1.x + (dx / d) * s,
+          y: p1.y + (dy / d) * s,
+          a: (Math.atan2(dy, dx) * 180) / Math.PI,
+        };
+      }
+      if (s > L) {
+        const p1 = railPath.getPointAtLength(L - 3);
+        const p2 = railPath.getPointAtLength(L);
+        const dx = p2.x - p1.x,
+          dy = p2.y - p1.y,
+          d = Math.hypot(dx, dy) || 1;
+        return {
+          x: p2.x + (dx / d) * (s - L),
+          y: p2.y + (dy / d) * (s - L),
+          a: (Math.atan2(dy, dx) * 180) / Math.PI,
+        };
+      }
+      const pt = railPath.getPointAtLength(s);
+      const p1 = railPath.getPointAtLength(Math.max(0, s - 3));
+      const p2 = railPath.getPointAtLength(Math.min(L, s + 3));
+      return {
+        x: pt.x,
+        y: pt.y,
+        a: (Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180) / Math.PI,
+      };
+    };
 
     const loop = (now: number) => {
       const p = pos.current;
@@ -420,37 +486,49 @@ export default function NeonCity({
           }px)`;
       }
 
-      // ---- train ---- (dwell is time-based ms so it holds ~2.4s at any fps)
+      // ---- train: path-follows the curved Adkins Line (in → dwell → out → away) ----
       const tr = train.current;
-      if (tr.dwell > 0) {
-        tr.dwell -= dt;
-      } else {
-        const dist = Math.abs(tr.s - RAIL.stationScalar);
-        let sp = 3.4;
-        if (dist < 300) sp = 3.4 * (0.16 + 0.84 * (dist / 300));
-        const prev = tr.s;
-        tr.s += sp * f;
-        if (
-          !tr.dwelled &&
-          prev < RAIL.stationScalar &&
-          tr.s >= RAIL.stationScalar
-        ) {
-          tr.dwell = 2400;
-          tr.dwelled = true;
+      if (tr.mode === "in") {
+        tr.t += dt;
+        const pr = Math.min(1, tr.t / 8000);
+        tr.sFront = easeIO(pr) * railStop;
+        if (pr >= 1) {
+          tr.mode = "dwell";
+          tr.until = now + 3500 + Math.random() * 2500;
+        }
+      } else if (tr.mode === "dwell") {
+        tr.sFront = railStop;
+        if (now >= tr.until) {
+          tr.mode = "out";
+          tr.t = 0;
+        }
+      } else if (tr.mode === "out") {
+        tr.t += dt;
+        const q = Math.min(1, tr.t / 3800);
+        tr.sFront = railStop + easeIn(q) * (railLen + 280 - railStop);
+        if (q >= 1) {
+          tr.mode = "away";
+          tr.until = now + 9000 + Math.random() * 14000;
+        }
+      } else if (tr.mode === "away") {
+        if (now >= tr.until) {
+          tr.mode = "in";
+          tr.t = 0;
+          tr.sFront = 0;
         }
       }
-      if (tr.s > RAIL.wrapMax) {
-        tr.s = RAIL.wrapMin;
-        tr.dwelled = false;
-      }
       for (let i = 0; i < 3; i++) {
-        const sc = tr.s - i * 76;
-        const pt = railPoint(sc);
         const el = trainEls.current[i];
-        if (el)
-          el.style.transform = `translate(${pt.x - 34}px, ${
-            pt.y - 10
-          }px) rotate(${RAIL.angleDeg}deg)`;
+        if (!el) continue;
+        if (tr.mode === "away") {
+          el.style.opacity = "0";
+          continue;
+        }
+        el.style.opacity = "1";
+        const pt = railPtAt(tr.sFront - 27 - i * 62);
+        el.style.transform = `translate(${pt.x - 13}px, ${pt.y - 27}px) rotate(${
+          pt.a + 90
+        }deg)`;
       }
 
       // ---- pad detection ----
@@ -524,6 +602,7 @@ export default function NeonCity({
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("keyup", onKeyUp);
       stageRef.current?.removeEventListener("click", onClick);
+      measSvg.remove();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -871,34 +950,50 @@ export default function NeonCity({
 /* ---------- static sub-layers ---------- */
 
 function RailLayer() {
-  const cx = RAIL.x0 + (RAIL.length / 2) * RAIL.ux;
-  const cy = RAIL.y0 + (RAIL.length / 2) * RAIL.uy;
-  const common: CSSProperties = {
-    left: cx - RAIL.length / 2,
-    width: RAIL.length,
-    transform: `rotate(${RAIL.angleDeg}deg)`,
-  };
-  const pillars = [];
-  for (let s = 100; s < RAIL.length; s += 210) {
-    const pt = railPoint(s);
-    pillars.push(
-      <div
-        key={`pil${s}`}
-        className={styles.pillar}
-        style={{ left: pt.x, top: pt.y + 6 }}
-      />
-    );
-  }
+  // curved Adkins Line, drawn as layered strokes (shadow, glow, core, dark, ties)
   return (
-    <>
-      <div
-        className={styles.railShadow}
-        style={{ ...common, top: cy - 10 + 29 }}
+    <svg
+      width={WORLD.w}
+      height={WORLD.h}
+      viewBox={`0 0 ${WORLD.w} ${WORLD.h}`}
+      style={{
+        position: "absolute",
+        left: 0,
+        top: 0,
+        pointerEvents: "none",
+        zIndex: 11,
+        overflow: "visible",
+      }}
+    >
+      <path
+        d="M 734 1682 C 764 1502 814 1442 784 1322 C 759 1217 614 1192 604 1052 C 597 952 694 927 694 832 L 694 480 C 694 350 654 280 574 220 C 484 150 394 100 334 -20"
+        stroke="rgba(0,0,0,.35)"
+        strokeWidth={12}
+        fill="none"
+        filter="blur(4px)"
+        opacity={0.7}
       />
-      <div className={styles.promenade} style={{ ...common, top: cy - 26 }} />
-      {pillars}
-      <div className={styles.rail} style={{ ...common, top: cy - 7 }} />
-    </>
+      <path
+        d={RAIL_PATH}
+        stroke="rgba(120,110,210,.14)"
+        strokeWidth={22}
+        fill="none"
+      />
+      <path
+        d={RAIL_PATH}
+        stroke="rgba(150,140,220,.45)"
+        strokeWidth={13}
+        fill="none"
+      />
+      <path d={RAIL_PATH} stroke="#0d0b18" strokeWidth={7} fill="none" />
+      <path
+        d={RAIL_PATH}
+        stroke="rgba(150,140,220,.3)"
+        strokeWidth={13}
+        fill="none"
+        strokeDasharray="3 15"
+      />
+    </svg>
   );
 }
 
@@ -1156,18 +1251,34 @@ function ParkLayer({
         </div>
         <div className={styles.npTag}>engineer by day · human by design</div>
       </div>
-      {/* station platform under the rail */}
+      {/* vertical platform beside the park (west) */}
       <div
-        className={styles.platform}
         style={{
-          left: PARK.platform.x - PARK.platform.w / 2,
-          top: PARK.platform.y - PARK.platform.h / 2,
-          width: PARK.platform.w,
-          height: PARK.platform.h,
-          transform: `rotate(${RAIL.angleDeg}deg)`,
+          position: "absolute",
+          left: 696,
+          top: 560,
+          width: 36,
+          height: 250,
+          background: "#131120",
+          border: "1px solid rgba(150,140,220,.35)",
+          borderRadius: 4,
+          zIndex: 12,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
-        <span className={styles.platformLabel}>TERMINAL · ADKINS LINE</span>
+        <span
+          style={{
+            fontFamily: "var(--font-mono), monospace",
+            fontSize: 8,
+            letterSpacing: ".3em",
+            color: "oklch(0.85 0.13 190 / .75)",
+            writingMode: "vertical-rl",
+          }}
+        >
+          TERMINAL · ADKINS LINE
+        </span>
       </div>
     </>
   );
