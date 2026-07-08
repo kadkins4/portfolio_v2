@@ -8,7 +8,9 @@ import { PAGE_COPY } from "./constants";
 export const WORLD = { w: 2400, h: 1600 };
 export const CHAR_R = 13;
 export const MARGIN = 26;
-export const SPAWN = { x: 1230, y: 940 };
+// Layout C: the arrival landing, just west of the Projects pavilion. The player
+// steps off the train here, then walks around to the pavilion's right-side pad.
+export const SPAWN = { x: 757, y: 714 };
 
 // hue → oklch accent
 export const HUES: Record<number, string> = {
@@ -82,13 +84,13 @@ export const DESTINATIONS: Destination[] = [
   {
     key: "projects",
     sign: "PROJECTS",
-    sub: "( the district )",
+    sub: "( the pavilion )",
     hue: 190,
-    x: 500,
-    y: 90,
-    w: 380,
-    h: 230,
-    pad: { x: 660, y: 344 },
+    x: 780,
+    y: 640,
+    w: 150,
+    h: 260,
+    pad: { x: 960, y: 822 },
     href: "/projects",
     teaser: {
       kicker: "✦ ENGINEERING QUARTER · STOREFRONTS LIT",
@@ -102,11 +104,11 @@ export const DESTINATIONS: Destination[] = [
     sign: "ADKINS LINE",
     sub: "( resume )",
     hue: 190,
-    x: 460,
-    y: 610,
-    w: 320,
-    h: 270,
-    pad: { x: 806, y: 710 },
+    x: 340,
+    y: 430,
+    w: 300,
+    h: 230,
+    pad: { x: 490, y: 690 },
     href: "/resume",
     teaser: {
       kicker: "✦ NEON CITY TRANSIT · CAREER SERVICE",
@@ -120,11 +122,11 @@ export const DESTINATIONS: Destination[] = [
     sign: "UNIT 4B",
     sub: "( about )",
     hue: 46,
-    x: 2040,
-    y: 90,
-    w: 240,
-    h: 240,
-    pad: { x: 2014, y: 175 },
+    x: 1640,
+    y: 600,
+    w: 270,
+    h: 300,
+    pad: { x: 1606, y: 735 },
     href: "/about",
     teaser: {
       kicker: "✦ NEON CITY HOUSING · RESIDENT 4B",
@@ -138,11 +140,11 @@ export const DESTINATIONS: Destination[] = [
     sign: "POST OFFICE",
     sub: "( contact )",
     hue: 300,
-    x: 1100,
-    y: 1200,
+    x: 820,
+    y: 1250,
     w: 300,
-    h: 210,
-    pad: { x: 1220, y: 1176 },
+    h: 180,
+    pad: { x: 970, y: 1220 },
     href: "/contact",
     teaser: {
       kicker: "✦ NEON CITY POST OFFICE · DISPATCH DESK",
@@ -167,65 +169,21 @@ export type Filler = {
   sign: string;
   hue: number;
 };
-export const FILLERS: Filler[] = [
-  { x: 40, y: 90, w: 150, h: 150, sign: "FOUNDRY", hue: 190 },
-  { x: 50, y: 470, w: 160, h: 150, sign: "DATAWORKS", hue: 190 },
-  { x: 60, y: 760, w: 150, h: 140, sign: "ARCADE", hue: 190 },
-  { x: 60, y: 1160, w: 150, h: 150, sign: "DEPOT", hue: 300 },
-  { x: 980, y: 70, w: 150, h: 120, sign: "RAMEN", hue: 46 },
-  { x: 1200, y: 60, w: 160, h: 130, sign: "BATHS", hue: 190 },
-  { x: 1440, y: 80, w: 150, h: 120, sign: "PAWN", hue: 340 },
-  { x: 1660, y: 70, w: 150, h: 140, sign: "KIOSK", hue: 300 },
-  { x: 1600, y: 600, w: 160, h: 140, sign: "TEA HOUSE", hue: 46 },
-  { x: 1610, y: 820, w: 150, h: 120, sign: "RECORDS", hue: 340 },
-  { x: 420, y: 1150, w: 180, h: 140, sign: "NOODLE BAR", hue: 46 },
-  { x: 660, y: 1160, w: 160, h: 140, sign: "DOJO", hue: 340 },
-  { x: 880, y: 1420, w: 170, h: 120, sign: "SORTING", hue: 300 },
-  { x: 1520, y: 1150, w: 150, h: 140, sign: "KATANA", hue: 340 },
-  { x: 1610, y: 1400, w: 180, h: 120, sign: "CINEMA", hue: 46 },
-  { x: 1980, y: 470, w: 170, h: 150, sign: "BODEGA", hue: 46 },
-  { x: 2190, y: 660, w: 160, h: 150, sign: "24H MART", hue: 46 },
-  { x: 1980, y: 900, w: 170, h: 140, sign: "BAZAAR", hue: 340 },
-  { x: 2190, y: 1150, w: 170, h: 150, sign: "POST HUB", hue: 300 },
-];
+// Retired in the Layout C cutover. Phase 1 repopulates the outer city with the
+// themed POIs (arcade, museum, ramen, night market, marina, ...) and gray shells
+// from the arrival prototype. Empty for now so nothing overlaps the new layout.
+export const FILLERS: Filler[] = [];
 
 // ---- park furniture ----
+// Retired in the Layout C cutover (old positions were laid out for the previous
+// spawn/park approach and obstruct the new walk-around). Phase 1 repopulates
+// trees/benches/lamps from the arrival prototype's arrays.
 // trees: circular collision (x,y = center, r = radius)
-export const TREES: { x: number; y: number; r: number }[] = [
-  { x: 960, y: 610, r: 30 },
-  { x: 1060, y: 590, r: 22 },
-  { x: 1470, y: 620, r: 28 },
-  { x: 980, y: 950, r: 26 },
-  { x: 1450, y: 940, r: 30 },
-  { x: 1520, y: 780, r: 22 },
-  { x: 930, y: 780, r: 24 },
-  { x: 1360, y: 980, r: 24 },
-  { x: 1180, y: 600, r: 26 },
-  { x: 1040, y: 860, r: 20 },
-];
+export const TREES: { x: number; y: number; r: number }[] = [];
 // benches: small AABB solids (x,y = top-left)
-export const BENCHES: { x: number; y: number; w: number; h: number }[] = [
-  { x: 1000, y: 720, w: 46, h: 14 },
-  { x: 1300, y: 720, w: 46, h: 14 },
-  { x: 1120, y: 840, w: 14, h: 46 },
-  { x: 1400, y: 640, w: 14, h: 46 },
-  { x: 980, y: 660, w: 46, h: 14 },
-];
+export const BENCHES: { x: number; y: number; w: number; h: number }[] = [];
 // street lamps (glow pools, brighten at night)
-export const LAMPS: { x: number; y: number }[] = [
-  { x: 280, y: 320 },
-  { x: 360, y: 400 },
-  { x: 1840, y: 320 },
-  { x: 1920, y: 400 },
-  { x: 280, y: 1000 },
-  { x: 360, y: 1080 },
-  { x: 1840, y: 1000 },
-  { x: 1920, y: 1080 },
-  { x: 1100, y: 360 },
-  { x: 900, y: 1040 },
-  { x: 1400, y: 1040 },
-  { x: 320, y: 700 },
-];
+export const LAMPS: { x: number; y: number }[] = [];
 
 // district ground labels (rotated mono)
 export const DISTRICT_LABELS: {
