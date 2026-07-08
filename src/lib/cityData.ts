@@ -71,6 +71,8 @@ export type Destination = {
   w: number;
   h: number;
   pad: { x: number; y: number };
+  // lit accent entrance strip, offsets relative to the building's top-left
+  door: { x: number; y: number; w: number; h: number };
   href: string;
   teaser: { kicker: string; title: string; blurb: string; cta: string };
 };
@@ -89,6 +91,7 @@ export const DESTINATIONS: Destination[] = [
     w: 150,
     h: 260,
     pad: { x: 960, y: 822 },
+    door: { x: 144, y: 140, w: 6, h: 38 },
     href: "/projects",
     teaser: {
       kicker: "✦ ENGINEERING QUARTER · STOREFRONTS LIT",
@@ -107,6 +110,7 @@ export const DESTINATIONS: Destination[] = [
     w: 300,
     h: 230,
     pad: { x: 490, y: 690 },
+    door: { x: 131, y: 224, w: 38, h: 6 },
     href: "/resume",
     teaser: {
       kicker: "✦ NEON CITY TRANSIT · CAREER SERVICE",
@@ -125,6 +129,7 @@ export const DESTINATIONS: Destination[] = [
     w: 270,
     h: 300,
     pad: { x: 1606, y: 735 },
+    door: { x: 1, y: 131, w: 6, h: 38 },
     href: "/about",
     teaser: {
       kicker: "✦ NEON CITY HOUSING · RESIDENT 4B",
@@ -143,6 +148,7 @@ export const DESTINATIONS: Destination[] = [
     w: 300,
     h: 180,
     pad: { x: 970, y: 1220 },
+    door: { x: 131, y: 1, w: 38, h: 6 },
     href: "/contact",
     teaser: {
       kicker: "✦ NEON CITY POST OFFICE · DISPATCH DESK",

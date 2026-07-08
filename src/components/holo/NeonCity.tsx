@@ -642,9 +642,10 @@ export default function NeonCity({
         ))}
 
         {/* destination buildings */}
-        {DESTINATIONS.map((d) => (
+        {DESTINATIONS.filter((d) => d.key !== "projects").map((d) => (
           <DestinationBldg key={d.key} d={d} active={onPad === d.key} />
         ))}
+        <ProjectsPavilion active={onPad === "projects"} />
 
         {/* cars */}
         {cars.current.map((c, i) => {
@@ -1141,51 +1142,388 @@ function ParkLayer({
   );
 }
 
+// per-destination organic corner radii (from the prototype's spotData)
+const SPOT_BR: Record<string, string> = {
+  resume: "20px 7px 16px 9px",
+  about: "9px 17px 7px 23px",
+  contact: "18px 8px 24px 6px",
+};
+const GRID_BG =
+  "repeating-linear-gradient(90deg, rgba(150,140,220,.06) 0 1px, transparent 1px 20px), repeating-linear-gradient(0deg, rgba(150,140,220,.06) 0 1px, transparent 1px 20px)";
+
 function DestinationBldg({ d, active }: { d: Destination; active: boolean }) {
-  const acc = hueColor(d.hue, 0.85, 0.13);
-  const dim = hueColor(d.hue, 0.7, 0.12, 0.45);
-  const glow = hueColor(d.hue, 0.7, 0.13, 0.18);
+  const accent = `oklch(0.85 0.13 ${d.hue})`;
+  const dim = `oklch(0.85 0.13 ${d.hue} / .35)`;
+  const glow = `oklch(0.85 0.13 ${d.hue} / .16)`;
   const pr = padRect(d);
   return (
     <>
       <div
-        className={styles.bldg}
         style={{
+          position: "absolute",
           left: d.x,
           top: d.y,
           width: d.w,
           height: d.h,
+          borderRadius: SPOT_BR[d.key],
+          background: "#110f1e",
           border: `1px solid ${dim}`,
-          borderRadius: "10px 4px 12px 5px",
           boxShadow: `0 0 26px ${glow}, inset 0 0 34px rgba(0,0,0,.55)`,
         }}
       >
-        <div className={styles.bldgRoof} />
-        {/* roof furniture */}
-        <div className={styles.antenna} style={{ right: 24, top: -20 }} />
-        <div className={styles.beacon} style={{ right: 21, top: -22 }} />
-        <div className={styles.fan} style={{ left: 20, top: 18 }} />
         <div
-          className={styles.bldgLabel}
-          style={{ color: acc, textShadow: `0 0 12px ${acc}` }}
+          style={{
+            position: "absolute",
+            inset: 9,
+            backgroundImage: GRID_BG,
+            pointerEvents: "none",
+          }}
+        />
+        {/* windows */}
+        <div
+          style={{
+            position: "absolute",
+            top: 14,
+            left: 14,
+            width: 20,
+            height: 20,
+            background: "#0a0913",
+            border: "1px solid rgba(150,140,220,.2)",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            top: 14,
+            left: 44,
+            width: 20,
+            height: 20,
+            background: "#0a0913",
+            border: "1px solid rgba(150,140,220,.2)",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            bottom: 16,
+            right: 16,
+            width: 34,
+            height: 18,
+            background: "#0a0913",
+            border: "1px solid rgba(150,140,220,.2)",
+          }}
+        />
+        {/* rooftop fan */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: 16,
+            left: 16,
+            width: 30,
+            height: 30,
+            borderRadius: 3,
+            background: "#0d0b18",
+            border: "1px solid rgba(150,140,220,.22)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
         >
-          <span className={styles.bldgSign}>{d.sign}</span>
-          <span className={styles.bldgSub}>{d.sub}</span>
+          <div
+            style={{
+              width: 18,
+              height: 18,
+              borderRadius: "50%",
+              border: "1px solid rgba(150,140,220,.3)",
+              background:
+                "conic-gradient(rgba(150,140,220,.28) 0 25%, transparent 25% 50%, rgba(150,140,220,.28) 50% 75%, transparent 75% 100%)",
+              animation: "ncFan 3.4s linear infinite",
+            }}
+          />
+        </div>
+        {/* antenna + blinking beacon */}
+        <div
+          style={{
+            position: "absolute",
+            top: -16,
+            left: 26,
+            width: 2,
+            height: 16,
+            background: "rgba(150,140,220,.35)",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            top: -21,
+            left: 24,
+            width: 6,
+            height: 6,
+            borderRadius: "50%",
+            background: "oklch(0.72 0.19 25)",
+            boxShadow: "0 0 8px oklch(0.72 0.2 25 / .8)",
+            animation: "ncBlink 1.5s step-end infinite",
+          }}
+        />
+        {/* lit accent door strip */}
+        <div
+          style={{
+            position: "absolute",
+            left: d.door.x,
+            top: d.door.y,
+            width: d.door.w,
+            height: d.door.h,
+            background: accent,
+            boxShadow: `0 0 14px ${accent}`,
+            opacity: 0.9,
+          }}
+        />
+        {/* corner pulse light */}
+        <div
+          style={{
+            position: "absolute",
+            top: 10,
+            right: 12,
+            width: 7,
+            height: 7,
+            borderRadius: "50%",
+            background: accent,
+            boxShadow: `0 0 10px ${accent}`,
+            animation: "ncPulse 2.6s ease-in-out infinite",
+          }}
+        />
+        {/* sign plate */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            display: "flex",
+            flexDirection: "column",
+            gap: 6,
+            alignItems: "center",
+            justifyContent: "center",
+            animation: "ncFlick 7.5s infinite",
+          }}
+        >
+          <div
+            style={{
+              fontFamily: "var(--font-mono), monospace",
+              fontSize: 15,
+              letterSpacing: ".34em",
+              color: accent,
+              textShadow: `0 0 16px ${accent}`,
+            }}
+          >
+            {d.sign}
+          </div>
+          <div
+            style={{
+              fontFamily: "var(--font-mono), monospace",
+              fontSize: 10,
+              letterSpacing: ".26em",
+              color: dim,
+            }}
+          >
+            {d.sub}
+          </div>
         </div>
       </div>
       {/* entry pad */}
       <div
-        className={styles.pad}
         style={{
+          position: "absolute",
           left: pr.x,
           top: pr.y,
           width: pr.w,
           height: pr.h,
-          border: `1px solid ${acc}`,
-          background: hueColor(d.hue, 0.7, 0.13, active ? 0.28 : 0.14),
+          background: `oklch(0.85 0.13 ${d.hue} / ${active ? 0.28 : 0.16})`,
+          border: `1px solid ${accent}`,
+          borderRadius: 4,
+          animation: "ncPulse 2s ease-in-out infinite",
           boxShadow: active ? `0 0 26px ${glow}` : "none",
+          zIndex: 2,
         }}
       />
+    </>
+  );
+}
+
+// Projects — the bespoke park pavilion (land on the LEFT stairs, enter on the RIGHT pad)
+function ProjectsPavilion({ active }: { active: boolean }) {
+  const d = DESTINATIONS.find((x) => x.key === "projects")!;
+  const accent = "oklch(0.85 0.13 190)";
+  const dot = (style: CSSProperties) => (
+    <div
+      style={{
+        position: "absolute",
+        width: 7,
+        height: 7,
+        background: "oklch(0.85 0.13 190 / .5)",
+        ...style,
+      }}
+    />
+  );
+  return (
+    <>
+      <div
+        style={{
+          position: "absolute",
+          left: d.x,
+          top: d.y,
+          width: d.w,
+          height: d.h,
+          borderRadius: "12px 18px 10px 16px",
+          background: "rgba(17,15,30,.94)",
+          border: "1px solid oklch(0.85 0.13 190 / .4)",
+          boxShadow:
+            "0 0 26px oklch(0.85 0.13 190 / .16), inset 0 0 30px rgba(0,0,0,.55)",
+          zIndex: 3,
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            inset: 9,
+            backgroundImage: GRID_BG,
+            pointerEvents: "none",
+          }}
+        />
+        {/* corner + mid-edge dots */}
+        {dot({ left: 10, top: 10 })}
+        {dot({ right: 10, top: 10 })}
+        {dot({ left: 10, bottom: 10 })}
+        {dot({ right: 10, bottom: 10 })}
+        {dot({
+          left: 10,
+          top: "50%",
+          marginTop: -4,
+          background: "oklch(0.85 0.13 190 / .35)",
+        })}
+        {dot({
+          right: 10,
+          top: "50%",
+          marginTop: -4,
+          background: "oklch(0.85 0.13 190 / .35)",
+        })}
+        {/* antenna + beacon */}
+        <div
+          style={{
+            position: "absolute",
+            top: -16,
+            left: 22,
+            width: 2,
+            height: 16,
+            background: "rgba(150,140,220,.35)",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            top: -21,
+            left: 20,
+            width: 6,
+            height: 6,
+            borderRadius: "50%",
+            background: "oklch(0.72 0.19 25)",
+            boxShadow: "0 0 8px oklch(0.72 0.2 25 / .8)",
+            animation: "ncBlink 1.5s step-end infinite",
+          }}
+        />
+        {/* right-side entrance door strip */}
+        <div
+          style={{
+            position: "absolute",
+            left: d.door.x,
+            top: d.door.y,
+            width: d.door.w,
+            height: d.door.h,
+            background: accent,
+            boxShadow: `0 0 14px ${accent}`,
+            opacity: 0.9,
+          }}
+        />
+        {/* sign plate */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            display: "flex",
+            flexDirection: "column",
+            gap: 6,
+            alignItems: "center",
+            justifyContent: "center",
+            animation: "ncFlick 7.5s infinite",
+          }}
+        >
+          <div
+            style={{
+              fontFamily: "var(--font-mono), monospace",
+              fontSize: 14,
+              letterSpacing: ".3em",
+              color: accent,
+              textShadow: `0 0 16px ${accent}`,
+            }}
+          >
+            PROJECTS
+          </div>
+          <div
+            style={{
+              fontFamily: "var(--font-mono), monospace",
+              fontSize: 9,
+              letterSpacing: ".22em",
+              color: "oklch(0.85 0.13 190 / .4)",
+            }}
+          >
+            ( the pavilion )
+          </div>
+        </div>
+      </div>
+      {/* stairs on the LEFT */}
+      <div
+        style={{
+          position: "absolute",
+          left: 736,
+          top: 655,
+          width: 44,
+          height: 64,
+          background: "#131120",
+          border: "1px solid rgba(150,140,220,.3)",
+          backgroundImage:
+            "repeating-linear-gradient(90deg, rgba(243,237,226,.22) 0 2px, transparent 2px 9px)",
+          zIndex: 5,
+        }}
+      />
+      {/* entrance pad on the RIGHT (trigger center 960,822) */}
+      <div
+        style={{
+          position: "absolute",
+          left: 938,
+          top: 790,
+          width: 44,
+          height: 64,
+          background: `oklch(0.85 0.13 190 / ${active ? 0.3 : 0.16})`,
+          border: `1px solid ${accent}`,
+          borderRadius: 4,
+          animation: "ncPulse 2s ease-in-out infinite",
+          boxShadow: active ? "0 0 26px oklch(0.85 0.13 190 / .3)" : "none",
+          zIndex: 3,
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          left: 994,
+          top: 812,
+          fontFamily: "var(--font-mono), monospace",
+          fontSize: 9,
+          letterSpacing: ".2em",
+          color: "oklch(0.85 0.13 190 / .6)",
+          zIndex: 3,
+          pointerEvents: "none",
+        }}
+      >
+        ENTER
+      </div>
     </>
   );
 }
