@@ -1,7 +1,7 @@
 // Static geometry + content for the walkable Neon City (/city).
 // World is a fixed 2400×1600 canvas; all coords are world-space.
-// Layout is the "v2" refresh: 4 destinations, off-center streets, the
-// diagonal Adkins Line, Terminal Park as the center + way home.
+// Layout C: destinations clustered around Terminal Park, curved streets, the
+// curved Adkins Line rail with a west-side landing, themed POIs + gray shells.
 
 import { PAGE_COPY } from "./constants";
 
@@ -61,15 +61,13 @@ export type Destination = {
   y: number;
   w: number;
   h: number;
-  pad: { x: number; y: number };
+  // entry pad: center (x,y) + size (w,h), matching the prototype's per-spot pads
+  pad: { x: number; y: number; w: number; h: number };
   // lit accent entrance strip, offsets relative to the building's top-left
   door: { x: number; y: number; w: number; h: number };
   href: string;
   teaser: { kicker: string; title: string; blurb: string; cta: string };
 };
-
-const PAD_W = 66;
-const PAD_H = 46;
 
 export const DESTINATIONS: Destination[] = [
   {
@@ -81,7 +79,7 @@ export const DESTINATIONS: Destination[] = [
     y: 640,
     w: 150,
     h: 260,
-    pad: { x: 960, y: 822 },
+    pad: { x: 960, y: 822, w: 44, h: 64 },
     door: { x: 144, y: 140, w: 6, h: 38 },
     href: "/projects",
     teaser: {
@@ -100,7 +98,7 @@ export const DESTINATIONS: Destination[] = [
     y: 430,
     w: 300,
     h: 230,
-    pad: { x: 490, y: 690 },
+    pad: { x: 490, y: 690, w: 70, h: 44 },
     door: { x: 131, y: 224, w: 38, h: 6 },
     href: "/resume",
     teaser: {
@@ -119,7 +117,7 @@ export const DESTINATIONS: Destination[] = [
     y: 600,
     w: 270,
     h: 300,
-    pad: { x: 1606, y: 735 },
+    pad: { x: 1606, y: 735, w: 44, h: 70 },
     door: { x: 1, y: 131, w: 6, h: 38 },
     href: "/about",
     teaser: {
@@ -138,7 +136,7 @@ export const DESTINATIONS: Destination[] = [
     y: 1250,
     w: 300,
     h: 180,
-    pad: { x: 970, y: 1220 },
+    pad: { x: 970, y: 1220, w: 70, h: 44 },
     door: { x: 131, y: 1, w: 38, h: 6 },
     href: "/contact",
     teaser: {
@@ -152,7 +150,12 @@ export const DESTINATIONS: Destination[] = [
 ];
 
 export function padRect(d: Destination) {
-  return { x: d.pad.x - PAD_W / 2, y: d.pad.y - PAD_H / 2, w: PAD_W, h: PAD_H };
+  return {
+    x: d.pad.x - d.pad.w / 2,
+    y: d.pad.y - d.pad.h / 2,
+    w: d.pad.w,
+    h: d.pad.h,
+  };
 }
 
 // ---- filler buildings (atmosphere, collidable, non-interactive) ----
