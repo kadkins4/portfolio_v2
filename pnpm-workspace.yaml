@@ -1,0 +1,8 @@
+# pnpm 11 blocks dependency build/install scripts by default. sharp needs its
+# install step to place the native libvips binary; esbuild and unrs-resolver ship
+# prebuilt binaries the same way. Without this allowlist the Vercel build fails
+# loading sharp on /projects/[slug] (plaiceholder blur placeholders).
+allowBuilds:
+  esbuild: true
+  sharp: true
+  unrs-resolver: true
