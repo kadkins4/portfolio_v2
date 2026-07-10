@@ -31,6 +31,8 @@ import {
   type Destination,
   type Car,
 } from "@/lib/cityData";
+import { useIsTouch } from "@/hooks/useIsTouch";
+import TouchJoystick from "./TouchJoystick";
 import styles from "./neonCity.module.css";
 
 const BONK_WORDS = ["BONK!", "OOF!", "HEY!", "WATCH IT!"];
@@ -136,6 +138,7 @@ export default function NeonCity({
   name?: string;
 }) {
   const router = useRouter();
+  const isTouch = useIsTouch();
   const [first, ...rest] = name.split(" ");
   const last = rest.join(" ");
 
@@ -151,6 +154,11 @@ export default function NeonCity({
 
   const pos = useRef({ x: SPAWN.x, y: SPAWN.y, ang: 0, moving: false });
   const keys = useRef<Set<string>>(new Set());
+  const joy = useRef<{ x: number; y: number; mag: number }>({
+    x: 0,
+    y: 0,
+    mag: 0,
+  });
   const target = useRef<{ x: number; y: number } | null>(null);
   const bonkIdx = useRef(0);
   const everMovedRef = useRef(false);
@@ -431,13 +439,20 @@ export default function NeonCity({
               vy = (dy / dist) * step;
             }
           } else {
-            if (keys.current.has("up")) vy -= 1;
-            if (keys.current.has("down")) vy += 1;
-            if (keys.current.has("left")) vx -= 1;
-            if (keys.current.has("right")) vx += 1;
-            if (vx && vy) {
-              vx *= 0.72;
-              vy *= 0.72;
+            const j = joy.current;
+            if (j.mag > 0.02) {
+              // analog stick: magnitude already in [0,1], no diagonal normalization needed
+              vx = j.x;
+              vy = j.y;
+            } else {
+              if (keys.current.has("up")) vy -= 1;
+              if (keys.current.has("down")) vy += 1;
+              if (keys.current.has("left")) vx -= 1;
+              if (keys.current.has("right")) vx += 1;
+              if (vx && vy) {
+                vx *= 0.72;
+                vy *= 0.72;
+              }
             }
             vx *= step;
             vy *= step;
@@ -1171,6 +1186,19 @@ export default function NeonCity({
             </a>
             <div className={styles.teaserHint}>↵ ENTER · ESC WALK AWAY</div>
           </div>
+        )}
+
+        {isTouch && introPhase === "done" && (
+          <TouchJoystick
+            onStart={() => {
+              target.current = null;
+              ftGlide.current = null;
+              if (!everMoved) setEverMoved(true);
+            }}
+            onVector={(v) => {
+              joy.current = v;
+            }}
+          />
         )}
 
         {/* fast-travel bar */}
