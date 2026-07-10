@@ -716,3 +716,10 @@
     animation: none !important;
   }
 }
+
+@media (pointer: coarse) {
+  .fastbar,
+  .controls {
+    display: none;
+  }
+}

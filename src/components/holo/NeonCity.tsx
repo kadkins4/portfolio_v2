@@ -33,6 +33,7 @@ import {
 } from "@/lib/cityData";
 import { useIsTouch } from "@/hooks/useIsTouch";
 import TouchJoystick from "./TouchJoystick";
+import FastTravelDrawer from "./FastTravelDrawer";
 import styles from "./neonCity.module.css";
 
 const BONK_WORDS = ["BONK!", "OOF!", "HEY!", "WATCH IT!"];
@@ -1202,34 +1203,38 @@ export default function NeonCity({
         )}
 
         {/* fast-travel bar */}
-        <div className={styles.fastbar}>
-          <button
-            type="button"
-            className={`${styles.ftBtn} ${styles.ftHome}`}
-            onClick={() => fastTravel("home")}
-          >
-            ~/overwatch
-          </button>
-          {DESTINATIONS.map((d) => (
+        {isTouch ? (
+          <FastTravelDrawer activeKey={panel} onTravel={fastTravel} />
+        ) : (
+          <div className={styles.fastbar}>
             <button
-              key={d.key}
               type="button"
-              className={`${styles.ftBtn} ${
-                panel === d.key ? styles.ftActive : ""
-              }`}
-              onClick={() => fastTravel(d.key)}
+              className={`${styles.ftBtn} ${styles.ftHome}`}
+              onClick={() => fastTravel("home")}
             >
-              <span
-                className={styles.ftDot}
-                style={{
-                  background: HUES[d.hue],
-                  boxShadow: `0 0 6px ${HUES[d.hue]}`,
-                }}
-              />
-              {d.key}
+              ~/overwatch
             </button>
-          ))}
-        </div>
+            {DESTINATIONS.map((d) => (
+              <button
+                key={d.key}
+                type="button"
+                className={`${styles.ftBtn} ${
+                  panel === d.key ? styles.ftActive : ""
+                }`}
+                onClick={() => fastTravel(d.key)}
+              >
+                <span
+                  className={styles.ftDot}
+                  style={{
+                    background: HUES[d.hue],
+                    boxShadow: `0 0 6px ${HUES[d.hue]}`,
+                  }}
+                />
+                {d.key}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
