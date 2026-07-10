@@ -1145,14 +1145,26 @@ export default function NeonCity({
         </div>
 
         <div className={styles.controls}>
-          <div>WASD / ARROWS · WALK</div>
-          <div>CLICK THE STREET · WALK THERE</div>
-          <div>STEP ON A PAD · ENTER</div>
+          {isTouch ? (
+            <>
+              <div>DRAG THE STICK · WALK</div>
+              <div>TAP THE STREET · WALK THERE</div>
+              <div>STEP ON A PAD · TAP IT</div>
+            </>
+          ) : (
+            <>
+              <div>WASD / ARROWS · WALK</div>
+              <div>CLICK THE STREET · WALK THERE</div>
+              <div>STEP ON A PAD · ENTER</div>
+            </>
+          )}
         </div>
 
         {!everMoved && !panel && introPhase === "done" && (
           <div className={styles.hint}>
-            WALK WITH WASD · OR CLICK THE STREET
+            {isTouch
+              ? "DRAG THE STICK · OR TAP THE STREET"
+              : "WALK WITH WASD · OR CLICK THE STREET"}
           </div>
         )}
 
