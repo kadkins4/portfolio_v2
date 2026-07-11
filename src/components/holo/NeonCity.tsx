@@ -1043,7 +1043,10 @@ export default function NeonCity({
   );
 
   return (
-    <div ref={stageRef} className={styles.stage}>
+    <div
+      ref={stageRef}
+      className={`${styles.stage}${introPhase !== "done" ? ` ${styles.introFreeze}` : ""}`}
+    >
       {world}
 
       {/* ---- overlays ---- */}

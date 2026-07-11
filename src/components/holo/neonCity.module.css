@@ -1,6 +1,19 @@
 /* Neon City — walkable top-down overworld. Fixed 2400×1600 world under a
    camera; HUD chrome fixed to the viewport. Desktop-first. */
 
+/* Pause the ~47 decorative city animations during the cinematic intro so the
+   fly-in stays smooth on phone-class hardware; they resume at gameplay. The
+   avatar keeps its own walk cycle (its motion is part of the scripted intro). */
+.introFreeze *,
+.introFreeze *::before,
+.introFreeze *::after {
+  animation-play-state: paused !important;
+}
+.introFreeze .char,
+.introFreeze .char * {
+  animation-play-state: running !important;
+}
+
 .stage {
   position: fixed;
   inset: 0;
