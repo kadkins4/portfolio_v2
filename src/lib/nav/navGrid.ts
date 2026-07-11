@@ -81,6 +81,41 @@ const NEIGHBORS: [number, number, number][] = [
   [-1, -1, Math.SQRT2],
 ];
 
+// Binary min-heap of (f, key) pairs for the A* open set. Replaces a linear
+// scan for the min-f node, which made findPath O(n^2) over the grid. Stale
+// entries (a node re-pushed with a lower f) are skipped via the closed set.
+type HeapItem = { f: number; k: number };
+function heapPush(heap: HeapItem[], item: HeapItem) {
+  heap.push(item);
+  let i = heap.length - 1;
+  while (i > 0) {
+    const p = (i - 1) >> 1;
+    if (heap[p].f <= heap[i].f) break;
+    [heap[p], heap[i]] = [heap[i], heap[p]];
+    i = p;
+  }
+}
+function heapPop(heap: HeapItem[]): HeapItem | undefined {
+  const top = heap[0];
+  const last = heap.pop()!;
+  if (heap.length > 0) {
+    heap[0] = last;
+    let i = 0;
+    const n = heap.length;
+    for (;;) {
+      const l = 2 * i + 1;
+      const r = 2 * i + 2;
+      let m = i;
+      if (l < n && heap[l].f < heap[m].f) m = l;
+      if (r < n && heap[r].f < heap[m].f) m = r;
+      if (m === i) break;
+      [heap[m], heap[i]] = [heap[i], heap[m]];
+      i = m;
+    }
+  }
+  return top;
+}
+
 /** Line-of-sight between two world points: sample every ~half-cell. */
 function lineClear(g: NavGrid, a: Pt, b: Pt): boolean {
   const dist = Math.hypot(b.x - a.x, b.y - a.y);
@@ -109,28 +144,21 @@ export function findPath(g: NavGrid, start: Pt, goal: Pt): Pt[] {
 
   const gScore = new Map<number, number>([[startK, 0]]);
   const came = new Map<number, number>();
-  // simple binary-less open set: array scanned for min f (grid is small)
-  const open = new Set<number>([startK]);
+  const closed = new Set<number>();
   const h = (c: number, r: number) => {
     const dc = Math.abs(c - go.c);
     const dr = Math.abs(r - go.r);
     return dc + dr + (Math.SQRT2 - 2) * Math.min(dc, dr); // octile
   };
 
-  while (open.size) {
-    let cur = -1;
-    let best = Infinity;
-    for (const k of open) {
-      const c = k % g.cols;
-      const r = Math.floor(k / g.cols);
-      const f = (gScore.get(k) ?? Infinity) + h(c, r);
-      if (f < best) {
-        best = f;
-        cur = k;
-      }
-    }
+  const heap: HeapItem[] = [];
+  heapPush(heap, { f: h(startCell.c, startCell.r), k: startK });
+
+  while (heap.length) {
+    const cur = heapPop(heap)!.k;
     if (cur === goalK) break;
-    open.delete(cur);
+    if (closed.has(cur)) continue; // stale entry, already expanded
+    closed.add(cur);
     const cc = cur % g.cols;
     const cr = Math.floor(cur / g.cols);
     for (const [dc, dr, cost] of NEIGHBORS) {
@@ -143,11 +171,12 @@ export function findPath(g: NavGrid, start: Pt, goal: Pt): Pt[] {
           continue;
       }
       const nk = idx(nc, nr);
+      if (closed.has(nk)) continue;
       const tentative = (gScore.get(cur) ?? Infinity) + cost;
       if (tentative < (gScore.get(nk) ?? Infinity)) {
         came.set(nk, cur);
         gScore.set(nk, tentative);
-        open.add(nk);
+        heapPush(heap, { f: tentative + h(nc, nr), k: nk });
       }
     }
   }

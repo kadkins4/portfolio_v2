@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { DESTINATIONS, HUES } from "@/lib/cityData";
+import { FAST_TRAVEL_ITEMS } from "@/lib/cityFastTravel";
+import HueDot from "./HueDot";
 import styles from "./fastTravelDrawer.module.css";
 
 export default function FastTravelDrawer({
@@ -25,34 +26,20 @@ export default function FastTravelDrawer({
       </button>
       {open && (
         <div className={styles.sheet}>
-          <button
-            type="button"
-            className={styles.item}
-            onClick={() => {
-              setOpen(false);
-              onTravel("home");
-            }}
-          >
-            ~/overwatch
-          </button>
-          {DESTINATIONS.map((d) => (
+          {FAST_TRAVEL_ITEMS.map((it) => (
             <button
-              key={d.key}
+              key={it.key}
               type="button"
-              className={`${styles.item} ${activeKey === d.key ? styles.active : ""}`}
+              className={`${styles.item} ${it.key !== "home" && activeKey === it.key ? styles.active : ""}`}
               onClick={() => {
                 setOpen(false);
-                onTravel(d.key);
+                onTravel(it.key);
               }}
             >
-              <span
-                className={styles.dot}
-                style={{
-                  background: HUES[d.hue],
-                  boxShadow: `0 0 6px ${HUES[d.hue]}`,
-                }}
-              />
-              {d.key}
+              {it.hue !== null && (
+                <HueDot hue={it.hue} className={styles.dot} />
+              )}
+              {it.label}
             </button>
           ))}
         </div>

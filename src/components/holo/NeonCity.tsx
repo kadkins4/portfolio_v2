@@ -32,9 +32,11 @@ import {
 } from "@/lib/cityData";
 import { hitsSolid } from "@/lib/cityCollision";
 import { pathTo } from "@/lib/nav/cityNav";
+import { FAST_TRAVEL_ITEMS } from "@/lib/cityFastTravel";
 import { useIsTouch } from "@/hooks/useIsTouch";
 import TouchJoystick from "./TouchJoystick";
 import FastTravelDrawer from "./FastTravelDrawer";
+import HueDot from "./HueDot";
 import styles from "./neonCity.module.css";
 
 const BONK_WORDS = ["BONK!", "OOF!", "HEY!", "WATCH IT!"];
@@ -1045,6 +1047,8 @@ export default function NeonCity({
   return (
     <div
       ref={stageRef}
+      role="main"
+      aria-label="Neon City — walkable portfolio overworld"
       className={`${styles.stage}${introPhase !== "done" ? ` ${styles.introFreeze}` : ""}`}
     >
       {world}
@@ -1249,30 +1253,23 @@ export default function NeonCity({
           <FastTravelDrawer activeKey={panel} onTravel={fastTravel} />
         ) : (
           <div className={styles.fastbar}>
-            <button
-              type="button"
-              className={`${styles.ftBtn} ${styles.ftHome}`}
-              onClick={() => fastTravel("home")}
-            >
-              ~/overwatch
-            </button>
-            {DESTINATIONS.map((d) => (
+            {FAST_TRAVEL_ITEMS.map((it) => (
               <button
-                key={d.key}
+                key={it.key}
                 type="button"
                 className={`${styles.ftBtn} ${
-                  panel === d.key ? styles.ftActive : ""
+                  it.key === "home"
+                    ? styles.ftHome
+                    : panel === it.key
+                      ? styles.ftActive
+                      : ""
                 }`}
-                onClick={() => fastTravel(d.key)}
+                onClick={() => fastTravel(it.key)}
               >
-                <span
-                  className={styles.ftDot}
-                  style={{
-                    background: HUES[d.hue],
-                    boxShadow: `0 0 6px ${HUES[d.hue]}`,
-                  }}
-                />
-                {d.key}
+                {it.hue !== null && (
+                  <HueDot hue={it.hue} className={styles.ftDot} />
+                )}
+                {it.label}
               </button>
             ))}
           </div>
