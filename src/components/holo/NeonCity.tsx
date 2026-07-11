@@ -491,6 +491,7 @@ export default function NeonCity({
               stuck += 1;
               if (stuck > 12) {
                 target.current = null;
+                path.current = [];
                 stuck = 0;
               }
             } else {
@@ -644,6 +645,7 @@ export default function NeonCity({
             if (!hitsSolid(kx, p.y)) p.x = kx;
             if (!hitsSolid(p.x, ky)) p.y = ky;
             target.current = null;
+            path.current = [];
             setHits((h) => h + 1);
             // screen shake
             const st = stageRef.current;
@@ -833,6 +835,7 @@ export default function NeonCity({
     if (!d) return;
     // eased camera+character glide straight to the pad, then auto-open teaser
     target.current = null;
+    path.current = [];
     ftGlide.current = {
       key,
       fromX: pos.current.x,
