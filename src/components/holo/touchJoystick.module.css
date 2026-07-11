@@ -9,7 +9,7 @@
   background: rgba(20, 24, 48, 0.28);
   backdrop-filter: blur(6px);
   touch-action: none;
-  z-index: 40;
+  z-index: 55;
   display: grid;
   place-items: center;
 }

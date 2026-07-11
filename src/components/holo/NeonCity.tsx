@@ -223,6 +223,25 @@ export default function NeonCity({
     return () => window.clearTimeout(t);
   }, []);
 
+  // lock page scroll while the city is mounted (desktop + mobile). The stage is
+  // a fixed full-viewport surface; any document scroll or iOS rubber-band would
+  // steal touch drags from the joystick and shift the world under the camera.
+  useEffect(() => {
+    const html = document.documentElement;
+    const body = document.body;
+    const prevHtml = html.style.overflow;
+    const prevBody = body.style.overflow;
+    const prevOverscroll = body.style.overscrollBehavior;
+    html.style.overflow = "hidden";
+    body.style.overflow = "hidden";
+    body.style.overscrollBehavior = "none";
+    return () => {
+      html.style.overflow = prevHtml;
+      body.style.overflow = prevBody;
+      body.style.overscrollBehavior = prevOverscroll;
+    };
+  }, []);
+
   useEffect(() => {
     const reduce = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
@@ -351,6 +370,13 @@ export default function NeonCity({
         a: (Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180) / Math.PI,
       };
     };
+
+    // touch/coarse-pointer devices get a tighter cinematic framing (the
+    // desktop width-fit scale collapses to ~0.28 on a phone). Captured once at
+    // mount; touch-ness does not change within a session.
+    const coarse =
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(pointer: coarse)").matches;
 
     // reduced motion: skip the cinematic, drop straight to the landing
     const reduced =
@@ -494,8 +520,12 @@ export default function NeonCity({
       let cx: number;
       let cy: number;
       if (IN.phase === "ride") {
-        // follow the train, zoomed to a cinematic frame
-        s = Math.min(vw / 1400, vh / 800);
+        // follow the train, zoomed to a cinematic frame. Mobile frames tighter
+        // (~560px of world) so you ride on top of the train, seeing around it,
+        // instead of the desktop width-fit that shrinks it to a speck.
+        s = coarse
+          ? Math.min(vw / 560, vh / 760)
+          : Math.min(vw / 1400, vh / 800);
         if (s > 1.05) s = 1.05;
         const pt = railPtAt(train.current.sFront);
         const hw = vw / (2 * s);
@@ -503,8 +533,11 @@ export default function NeonCity({
         cx = Math.max(hw, Math.min(WORLD.w - hw, pt.x));
         cy = Math.max(Math.min(hh, 800), Math.min(WORLD.h - hh + 90, pt.y));
       } else if (IN.phase === "walk") {
-        // hold a framed shot of the landing while the avatar steps down
-        s = Math.min(vw / 1600, vh / 900);
+        // hold a framed shot of the landing while the avatar steps down.
+        // Mobile keeps the tighter framing so the avatar stays large on a phone.
+        s = coarse
+          ? Math.min(vw / 560, vh / 820)
+          : Math.min(vw / 1600, vh / 900);
         if (s > 1.1) s = 1.1;
         const hw = vw / (2 * s);
         const hh = vh / (2 * s);

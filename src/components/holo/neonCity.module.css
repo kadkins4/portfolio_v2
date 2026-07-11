@@ -9,6 +9,9 @@
   font-family: var(--font-sans), system-ui, sans-serif;
   cursor: crosshair;
   user-select: none;
+  /* touch drags drive the joystick / walk, never a browser scroll or zoom */
+  touch-action: none;
+  overscroll-behavior: none;
 }
 .shake {
   animation: ncShake 0.5s ease;
