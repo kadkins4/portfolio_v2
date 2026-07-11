@@ -1048,7 +1048,7 @@ export default function NeonCity({
     <div
       ref={stageRef}
       role="main"
-      aria-label="Neon City — walkable portfolio overworld"
+      aria-label="Neon City, a walkable portfolio overworld"
       className={`${styles.stage}${introPhase !== "done" ? ` ${styles.introFreeze}` : ""}`}
     >
       {world}
