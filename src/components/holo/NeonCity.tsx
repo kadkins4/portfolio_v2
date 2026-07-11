@@ -31,6 +31,7 @@ import {
   type Car,
 } from "@/lib/cityData";
 import { hitsSolid } from "@/lib/cityCollision";
+import { pathTo } from "@/lib/nav/cityNav";
 import { useIsTouch } from "@/hooks/useIsTouch";
 import TouchJoystick from "./TouchJoystick";
 import FastTravelDrawer from "./FastTravelDrawer";
@@ -134,6 +135,7 @@ export default function NeonCity({
     mag: 0,
   });
   const target = useRef<{ x: number; y: number } | null>(null);
+  const path = useRef<{ x: number; y: number }[]>([]);
   const bonkIdx = useRef(0);
   const everMovedRef = useRef(false);
   const ftGlide = useRef<{
@@ -258,6 +260,7 @@ export default function NeonCity({
       if (KEYMAP[k]) {
         keys.current.add(KEYMAP[k]);
         target.current = null;
+        path.current = [];
         ftGlide.current = null;
         markMoved();
       }
@@ -273,7 +276,17 @@ export default function NeonCity({
       if ((e.target as HTMLElement).closest("[data-hud]")) return;
       const wx = (e.clientX - cam.current.tx) / cam.current.s;
       const wy = (e.clientY - cam.current.ty) / cam.current.s;
-      target.current = { x: wx, y: wy };
+      const wps = pathTo(
+        { x: pos.current.x, y: pos.current.y },
+        { x: wx, y: wy }
+      );
+      if (wps.length) {
+        path.current = wps.slice(1);
+        target.current = wps[0];
+      } else {
+        path.current = [];
+        target.current = { x: wx, y: wy };
+      }
       ftGlide.current = null;
       markMoved();
     };
@@ -433,7 +446,11 @@ export default function NeonCity({
             if (dist < step + 1) {
               p.x = tg.x;
               p.y = tg.y;
-              target.current = null;
+              if (path.current.length) {
+                target.current = path.current.shift()!;
+              } else {
+                target.current = null;
+              }
             } else {
               vx = (dx / dist) * step;
               vy = (dy / dist) * step;
@@ -1211,6 +1228,7 @@ export default function NeonCity({
           <TouchJoystick
             onStart={() => {
               target.current = null;
+              path.current = [];
               ftGlide.current = null;
               if (!everMoved) setEverMoved(true);
             }}
