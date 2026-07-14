@@ -1,0 +1,85 @@
+---
+title: "Audit Your AI Interactions"
+summary: "I had Claude read every prompt I'd typed across a month of sessions and grade me. The verdict stung: my wording was fine, the waste was structural. Here's what the audit caught, and how to run your own."
+tags:
+  - AI
+date: 2026-07-13
+featured: true
+order: 4
+side: craft
+sourcePath: "Work/Career/Writing/Audit Your AI Interactions.md"
+---
+![ai-audit-terminal](/images/notes/audit-your-ai-interactions/ai-audit-terminal.png)
+*The actual output. I pointed C at my own prompts and this is what came back.*
+
+I believe most bad AI output isn't an intelligence problem, it's a **guidance** problem. The model didn't fail you, your direction did.
+
+Easy thing to say when you're the one giving the direction. So I decided to check my own homework.
+
+I had C (that's what I call Claude) read my half of every conversation we'd had. Not its answers. Mine. Close to two thousand messages across my last thirty-ish sessions, every prompt I'd typed, and one question: what am I doing wrong?
+
+Here's the uncomfortable part. My prompts weren't badly written. When I bothered to explain something, I over-explained it, in a good way: file paths, constraints, the reasoning behind a decision, all up front. The wording was fine.
+
+The waste was structural. Boring, mechanical, and completely invisible to me, because **I never read my own half of the conversation.** Nobody does. You read what the AI said and you react. You never scroll back up and look at the shape of what *you* said. When I finally did, the same few leaks showed up in session after session.
+
+They're easy to fix once you can see them. So here they are, worst first, and then go find yours.
+
+## Leak 1: I drip the rules in instead of front-loading them
+
+The most expensive habit by a mile. I'd get ten messages into a session and *then* mention the rule that governed all ten. "Oh, and keep your responses terse." "Don't commit anything until I tell you to." "Actually, always give me the recommendation last."
+
+Every one of those was a standing preference. It applied to message one. I just didn't say it until message ten, after C had already guessed wrong and I'd already spent the round-trips correcting it.
+
+The fix costs nothing: a five-line preamble as your *first* message. What you're building, what "done" looks like, the output format you want, and the guardrails ("stay on this branch, don't push, ask before deleting"). Paste it once and you stop paying the correction tax for the rest of the session.
+
+## Leak 2: dictation garbles the one word that matters
+
+I talk to C more than I type to it. Voice-to-text is fast, but it fumbles the load-bearing noun and I don't always catch it.
+
+Two real ones from my own logs:
+
+- "Against **Maine**, what is the first attempt?" (Maine = main, the branch.)
+- "Let's merge **and to mean** and push." (mean = main.)
+
+A homophone in casual chat is harmless. A homophone in a *merge and push* instruction is the single most expensive typo you can make, because the machine will cheerfully do exactly what you said. Now I glance at branch names, file paths, and anything git-shaped before I hit enter. One second of proofreading on the dangerous verbs.
+
+## Leak 3: "nothing's the same" tells the model nothing
+
+This one stung, because I know better. When a UI came back wrong, I'd fire off the vague negative: *"this isn't what the page looked like, nothing's the same."*
+
+Which forces C to diff the whole screen by guesswork, get it half right, and send us into a three-message loop. Compare it to a correction I got right in the very same session: *"why did the color change to brown? it should be the blue we were using before."* Named the exact attribute. One round-trip, fixed.
+
+The rule I gave myself: when something's wrong, name the delta. "The dots are filled, they should be hollow. The title font is serif, it should be mono." Don't make the AI play hot-and-cold.
+
+## Leak 4: death by "one more thing"
+
+Watching my own transcripts back was painful here. I found a stretch of five messages in a row, each one adding a single tweak. Remove the cursor. Make the description full-width. Only blink when selected. Sorry, one last thing...
+
+Every one of those was visible in the *same* screenshot. I could have written the whole punch-list in one message. Instead I paid for five round-trips, each of which re-loaded the context I was already sitting in. Now, when I review a rendered mockup, I write the entire list at once and send it as one.
+
+## Leak 5: I keep rebuilding the same context
+
+A shocking number of my messages were pure "where were we." *"What's next?" "What's the status?" "Remind me what we were working on."* Especially right after a `/compact`.
+
+> **ELI5: what "/compact" means**
+> `/compact` is a "summarize and clear the desk" button. The AI can only hold so much of a conversation in its head at once, so `/compact` boils the long thread down to a short summary and keeps going. Handy, but the summary is lossy, so anything it drops, you end up re-explaining.
+
+The fix is a thirty-second habit: end a work session by having the AI append a five-line status to a running project note. Open the next session by pointing it at that note. It's cheaper than reconstructing state from a lossy summary, and it survives the compaction that was quietly eating my threads.
+
+## The part I got right (so this isn't all self-flagellation)
+
+The audit also told me what to keep doing, which is just as useful.
+
+**Clean hand-offs for unattended work.** My best prompts read like: *"do the rest, keep it on main, break the work into subagents and use the cheapest model that fits each step, and when you need me leave a step-by-step test checklist. I'm stepping away."* Scope, guardrails, a named deliverable, permission to run. That's the whole recipe for walking away and trusting what you come back to.
+
+**Explaining the *why* behind a constraint.** In one session I told C, about a practice exercise, "don't fill this part in, that's the point, it should force me to pay attention." Giving the reason instead of just the rule means the AI can generalize it instead of following it off a cliff. That one habit does more than any clever prompt phrasing.
+
+## Go read your half
+
+Here's the meta-joke I can't get past: the tool audited its own user, handed me a tidy list of my bad habits, and I'm publishing its notes. We spend all our energy fact-checking the machine. This was the machine checking the human, and it was right.
+
+That's the actual takeaway, and it costs you one prompt. Point your AI at your own recent sessions and ask it what you keep doing wrong. Not what *it* did wrong, what *you* did. You'll get a list. Mine was mostly plumbing: rules that arrived late, a garbled word on a dangerous command, "it's wrong" with no detail, and state I kept rebuilding from scratch.
+
+Your judgment is still the safeguard. But you can only exercise judgment on something you're willing to look at, and the one transcript you never read is your own.
+
+Go read it.
