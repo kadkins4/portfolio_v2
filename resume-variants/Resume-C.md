@@ -8,30 +8,27 @@ https://www.linkedin.com/in/adkinskendall/
 
 **Summary**
 
-Senior Front-End Engineer with 8+ years building high-traffic React and TypeScript applications, including real-money, regulated betting interfaces at theScore Bet and ESPN BET where accuracy and uptime were non-negotiable. I specialize in rendering complex, real-time data clearly and reliably at scale, owning features end-to-end with a focus on performance and accessibility.
+Senior Full-Stack Engineer with 8+ years building high-traffic React and TypeScript applications, including real-money, regulated betting interfaces at theScore Bet and ESPN BET where accuracy and uptime were non-negotiable. I specialize in rendering complex, real-time data clearly and reliably at scale.
 
 **Skills**
 
-* **Core**: React, TypeScript, JavaScript (ES6+), Next.js, Vue, HTML5, CSS3
-* **State & Testing**: Zustand, Redux, Jest, React Testing Library, Vitest
+* **Core**: React, TypeScript, JavaScript (ES6+), Next.js, Vue, HTML5, CSS3, Node, Angular
+* **State & Testing**: Zustand, Redux, Jest, React Testing Library
 * **Quality & Perf**: Web Vitals, performance optimization, accessibility (WCAG), responsive design
-* **AI & Tooling**: Claude Code, AI-assisted development, Git, CI/CD, Vite, LaunchDarkly, Datadog
-* **Also familiar**: Node, REST, GraphQL, Java, Angular, Svelte
+* **AI & Tooling**: Claude Code, AI-assisted development, CI/CD, Vite, LaunchDarkly
 
 **Experience**
 
 **Penn Entertainment — Senior Software Engineer** | Mar 2022 – May 2026  
 *theScore, theScore Bet, Barstool Sportsbook, and ESPN BET*
 
-* Rebuilt theScore website from legacy tech to React, revamping sport score pages and UX.
+* Revamped theScore website, migrating from legacy technology to React and reworking sport score pages for a cleaner UX.
 * Built Barstool Sportsbook's in-page video players in Vue (my primary stack for ~18 months), letting podcast hosts post clips for fans to follow or fade their bets.
-* Led Claude Code skill development and adoption practices for theScore Media web team.
+* Led Claude Code skill development and adoption across theScore Media web team.
 * Led front-end architecture and rollout for Search; 70% of searches led to clickthrough.
-* Redesigned MyBets: reworked information hierarchy, cut clutter, improved clarity.
+* Redesigned MyBets: reworked information hierarchy and cut clutter for clarity.
 * Shipped Live Streaming MVP and V2 with third-party video partners.
-* Delivered Golf Event Center, Parlay Lounge, and Featured Bets from MVP to GA via A/B tests.
-* Built the bet-sharing flow from concept to ship.
-* Ran web on-call, mentored interns through mid-levels, interviewed candidates, backup scrum master.
+* Ran web on-call, mentored interns through mid-level engineers, interviewed candidates, backup scrum master.
 * *Tech:* React, Vue, TypeScript, Zustand, Jest, Datadog, LaunchDarkly
 
 **Fidelis Cybersecurity — Fullstack Software Engineer II** | Dec 2018 – Mar 2022  
@@ -44,19 +41,16 @@ Senior Front-End Engineer with 8+ years building high-traffic React and TypeScri
 **American Bankers Association — Junior Web Developer** | Nov 2017 – Oct 2018  
 *Member-facing web and internal tools*
 
-* Shipped and maintained member-facing pages and internal tools; improved release hygiene and version control practices.
+* Shipped and maintained member-facing pages and internal tools.
 * *Tech:* C#, Angular
 
 **Earlier Experience**  
-US2020 / Citizen Schools — Operations Manager | Oct 2015 – Jun 2017 • Led training and onboarding, conference talks, and policy meetings with Congress; managed 40+ people.  
-Target — Sales Floor Executive Team Leader | Aug 2013 – Oct 2015 • Owned the entire salesfloor, managed 60+ team members, led remodels.  
+US2020 / Citizen Schools — Operations Manager | Oct 2015 – Jun 2017 • Led training and onboarding and policy meetings with Congress; managed 40+ people.  
 
 **Projects**
 
-* On The Clock: Fantasy football draft assistant (React 19, TypeScript, Vite). Live product with multi-source ADP data blending; built and shipped solo end-to-end. https://kendalladkins.dev/projects/on-the-clock
-* Loresmith: Local-first D&D session-notes app; validated demand with real users before building, documented the architecture decisions and a product pivot. https://kendalladkins.dev/projects/loresmith
-* Valorant Vantage: Next.js app with rank tracking and a "Fight Map" performance heatmap; shipped end-to-end. https://kendalladkins.dev/projects/vantage
-* Writing: "How I Actually Work With AI": An essay on AI-assisted engineering as a collaborator, not a crutch. https://kendalladkins.dev/notes/how-i-actually-work-with-ai
+* On The Clock: Fantasy football draft assistant. Live product with multi-source ADP data blending; built and shipped solo. https://kendalladkins.dev/projects/on-the-clock
+* Valorant Vantage: Next.js app with rank tracking and a "Fight Map" performance heatmap. https://kendalladkins.dev/projects/vantage
 
 **Education**  
 Elon University — B.S. Accounting, 2012

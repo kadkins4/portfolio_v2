@@ -6,13 +6,11 @@
 
 # Single inclusive summary shown on the portfolio site.
 siteSummary: >-
-  Senior Front-End Engineer with 8+ years building high-traffic React and
-  TypeScript applications used by millions, including real-money betting
-  interfaces at theScore and ESPN BET, alongside products I have shipped solo
-  end-to-end. Earlier, at Fidelis CyberSecurity, I worked full-stack across
-  Angular, Node, and Java. I own features start to finish with a focus on
-  performance, accessibility, and UX, and I work AI-natively, having led Claude
-  Code adoption on my team.
+  Senior Full-Stack Engineer with 8+ years building high-traffic React and
+  TypeScript interfaces at theScore and ESPN BET, including real-money betting,
+  plus products shipped solo end-to-end. Earlier at Fidelis CyberSecurity I
+  worked full-stack across Angular, Node, and Java; today I lead Claude Code
+  adoption on my team.
 
 resumePdf: /kendall-adkins-resume.pdf
 
@@ -25,7 +23,7 @@ siteStatus: OPEN TO WORK
 
 # Short bio shown on the site resume "ticket" (distinct from the full summary).
 siteBio: >-
-  Senior frontend engineer, 8+ years. Builds fast, accessible interfaces for
+  Senior full-stack engineer, 8+ years. Builds fast, accessible interfaces for
   real-money products, and ships side projects solo end to end.
 
 # Curated skill groups for the site resume ticket. accent = neon color
@@ -36,33 +34,29 @@ siteSkillGroups:
     items: [react, vue, typescript, next.js, css/anim, a11y]
   - label: Backend
     accent: pink
-    items: [node, rails, java, graphql, sql]
+    items: [node, java, graphql, sql]
   - label: Practice
     accent: lavender
-    items: [testing, playwright, ai-native, mentoring]
+    items: [testing, ai-native, mentoring]
 
 # Application-resume summaries, swapped per variant by the generator.
 summaries:
   A: >-
-    Senior Front-End Engineer who pairs 8+ years of React and TypeScript
+    Senior Full-Stack Engineer who pairs 8+ years of React and TypeScript
     expertise with team-level AI-assisted engineering leadership, having led
     Claude Code adoption at theScore. I ship high-traffic, high-reliability
-    interfaces and own features from concept to production, using an AI-native
-    workflow to move faster without trading away performance, accessibility, or
-    code quality.
+    interfaces and own features end-to-end with an AI-native workflow.
   B: >-
-    Product-focused Senior Front-End Engineer with 8+ years building high-traffic
-    consumer web applications in React and TypeScript, used by millions at
-    theScore and ESPN BET. I own features end-to-end with a strong emphasis on
-    UX, A/B experimentation, and performance, partnering closely with design and
-    product to ship interfaces that move both customer and business metrics.
+    Product-focused Senior Full-Stack Engineer with 8+ years building
+    high-traffic consumer web applications in React and TypeScript, used by
+    millions at theScore and ESPN BET. I own features end-to-end with a strong
+    emphasis on UX, A/B experimentation, and performance.
   C: >-
-    Senior Front-End Engineer with 8+ years building high-traffic React and
+    Senior Full-Stack Engineer with 8+ years building high-traffic React and
     TypeScript applications, including real-money, regulated betting interfaces
     at theScore Bet and ESPN BET where accuracy and uptime were non-negotiable.
     I specialize in rendering complex, real-time data clearly and reliably at
-    scale, owning features end-to-end with a focus on performance and
-    accessibility.
+    scale.
 
 # Variant-page labels (used in the markdown header + filename meta).
 variantMeta:
@@ -79,9 +73,20 @@ variantMeta:
 # Tiered skills (markdown variants only; the site does not render skills today).
 skills:
   - label: Core
-    items: [React, TypeScript, JavaScript (ES6+), Next.js, Vue, HTML5, CSS3]
+    items:
+      [
+        React,
+        TypeScript,
+        JavaScript (ES6+),
+        Next.js,
+        Vue,
+        HTML5,
+        CSS3,
+        Node,
+        Angular,
+      ]
   - label: State & Testing
-    items: [Zustand, Redux, Jest, React Testing Library, Vitest]
+    items: [Zustand, Redux, Jest, React Testing Library]
   - label: Quality & Perf
     items:
       [
@@ -91,18 +96,7 @@ skills:
         responsive design,
       ]
   - label: AI & Tooling
-    items:
-      [
-        Claude Code,
-        AI-assisted development,
-        Git,
-        CI/CD,
-        Vite,
-        LaunchDarkly,
-        Datadog,
-      ]
-  - label: Also familiar
-    items: [Node, REST, GraphQL, Java, Angular, Svelte]
+    items: [Claude Code, AI-assisted development, CI/CD, Vite, LaunchDarkly]
 
 experience:
   - org: Penn Entertainment
@@ -110,15 +104,13 @@ experience:
     period: Mar 2022 – May 2026
     detail: theScore, theScore Bet, Barstool Sportsbook, and ESPN BET
     highlights:
-      - Rebuilt theScore website from legacy tech to React, revamping sport score pages and UX.
+      - Revamped theScore website, migrating from legacy technology to React and reworking sport score pages for a cleaner UX.
       - Built Barstool Sportsbook's in-page video players in Vue (my primary stack for ~18 months), letting podcast hosts post clips for fans to follow or fade their bets.
-      - Led Claude Code skill development and adoption practices for theScore Media web team.
+      - Led Claude Code skill development and adoption across theScore Media web team.
       - Led front-end architecture and rollout for Search; 70% of searches led to clickthrough.
-      - "Redesigned MyBets: reworked information hierarchy, cut clutter, improved clarity."
+      - "Redesigned MyBets: reworked information hierarchy and cut clutter for clarity."
       - Shipped Live Streaming MVP and V2 with third-party video partners.
-      - Delivered Golf Event Center, Parlay Lounge, and Featured Bets from MVP to GA via A/B tests.
-      - Built the bet-sharing flow from concept to ship.
-      - Ran web on-call, mentored interns through mid-levels, interviewed candidates, backup scrum master.
+      - Ran web on-call, mentored interns through mid-level engineers, interviewed candidates, backup scrum master.
     tech: [React, Vue, TypeScript, Zustand, Jest, Datadog, LaunchDarkly]
   - org: Fidelis Cybersecurity
     role: Fullstack Software Engineer II
@@ -133,32 +125,22 @@ experience:
     period: Nov 2017 – Oct 2018
     detail: Member-facing web and internal tools
     highlights:
-      - Shipped and maintained member-facing pages and internal tools; improved release hygiene and version control practices.
+      - Shipped and maintained member-facing pages and internal tools.
     tech: [C#, Angular]
 
 earlier:
   - org: US2020 / Citizen Schools
     role: Operations Manager
     period: Oct 2015 – Jun 2017
-    detail: Led training and onboarding, conference talks, and policy meetings with Congress; managed 40+ people.
-  - org: Target
-    role: Sales Floor Executive Team Leader
-    period: Aug 2013 – Oct 2015
-    detail: Owned the entire salesfloor, managed 60+ team members, led remodels.
+    detail: Led training and onboarding and policy meetings with Congress; managed 40+ people.
 
 projects:
   - name: On The Clock
-    detail: Fantasy football draft assistant (React 19, TypeScript, Vite). Live product with multi-source ADP data blending; built and shipped solo end-to-end.
+    detail: Fantasy football draft assistant. Live product with multi-source ADP data blending; built and shipped solo.
     url: https://kendalladkins.dev/projects/on-the-clock
-  - name: Loresmith
-    detail: Local-first D&D session-notes app; validated demand with real users before building, documented the architecture decisions and a product pivot.
-    url: https://kendalladkins.dev/projects/loresmith
   - name: Valorant Vantage
-    detail: Next.js app with rank tracking and a "Fight Map" performance heatmap; shipped end-to-end.
+    detail: Next.js app with rank tracking and a "Fight Map" performance heatmap.
     url: https://kendalladkins.dev/projects/vantage
-  - name: 'Writing: "How I Actually Work With AI"'
-    detail: An essay on AI-assisted engineering as a collaborator, not a crutch.
-    url: https://kendalladkins.dev/notes/how-i-actually-work-with-ai
 
 education:
   - school: Elon University

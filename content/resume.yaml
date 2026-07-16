@@ -1,5 +1,5 @@
-summary: Senior Front-End Engineer with 8+ years building high-traffic React and TypeScript applications used by millions, including real-money betting interfaces at theScore and ESPN BET, alongside products I have shipped solo end-to-end. Earlier, at Fidelis CyberSecurity, I worked full-stack across Angular, Node, and Java. I own features start to finish with a focus on performance, accessibility, and UX, and I work AI-natively, having led Claude Code adoption on my team.
-bio: Senior frontend engineer, 8+ years. Builds fast, accessible interfaces for real-money products, and ships side projects solo end to end.
+summary: Senior Full-Stack Engineer with 8+ years building high-traffic React and TypeScript interfaces at theScore and ESPN BET, including real-money betting, plus products shipped solo end-to-end. Earlier at Fidelis CyberSecurity I worked full-stack across Angular, Node, and Java; today I lead Claude Code adoption on my team.
+bio: Senior full-stack engineer, 8+ years. Builds fast, accessible interfaces for real-money products, and ships side projects solo end to end.
 resumePdf: /kendall-adkins-resume.pdf
 careerStart: 2017-11
 status: OPEN TO WORK
@@ -18,7 +18,6 @@ skillGroups:
     accent: pink
     items:
       - node
-      - rails
       - java
       - graphql
       - sql
@@ -26,7 +25,6 @@ skillGroups:
     accent: lavender
     items:
       - testing
-      - playwright
       - ai-native
       - mentoring
 experience:
@@ -35,15 +33,13 @@ experience:
     period: Mar 2022 – May 2026
     detail: theScore, theScore Bet, Barstool Sportsbook, and ESPN BET
     highlights:
-      - Rebuilt theScore website from legacy tech to React, revamping sport score pages and UX.
+      - Revamped theScore website, migrating from legacy technology to React and reworking sport score pages for a cleaner UX.
       - Built Barstool Sportsbook's in-page video players in Vue (my primary stack for ~18 months), letting podcast hosts post clips for fans to follow or fade their bets.
-      - Led Claude Code skill development and adoption practices for theScore Media web team.
+      - Led Claude Code skill development and adoption across theScore Media web team.
       - Led front-end architecture and rollout for Search; 70% of searches led to clickthrough.
-      - 'Redesigned MyBets: reworked information hierarchy, cut clutter, improved clarity.'
+      - 'Redesigned MyBets: reworked information hierarchy and cut clutter for clarity.'
       - Shipped Live Streaming MVP and V2 with third-party video partners.
-      - Delivered Golf Event Center, Parlay Lounge, and Featured Bets from MVP to GA via A/B tests.
-      - Built the bet-sharing flow from concept to ship.
-      - Ran web on-call, mentored interns through mid-levels, interviewed candidates, backup scrum master.
+      - Ran web on-call, mentored interns through mid-level engineers, interviewed candidates, backup scrum master.
     tech:
       - React
       - Vue
@@ -70,7 +66,7 @@ experience:
     period: Nov 2017 – Oct 2018
     detail: Member-facing web and internal tools
     highlights:
-      - Shipped and maintained member-facing pages and internal tools; improved release hygiene and version control practices.
+      - Shipped and maintained member-facing pages and internal tools.
     tech:
       - C#
       - Angular
@@ -78,11 +74,7 @@ earlier:
   - org: US2020 / Citizen Schools
     role: Operations Manager
     period: Oct 2015 – Jun 2017
-    detail: Led training and onboarding, conference talks, and policy meetings with Congress; managed 40+ people.
-  - org: Target
-    role: Sales Floor Executive Team Leader
-    period: Aug 2013 – Oct 2015
-    detail: Owned the entire salesfloor, managed 60+ team members, led remodels.
+    detail: Led training and onboarding and policy meetings with Congress; managed 40+ people.
 education:
   - school: Elon University
     credential: B.S. Accounting
