@@ -33,7 +33,7 @@ siteBio: >-
 siteSkillGroups:
   - label: Frontend
     accent: cyan
-    items: [react, typescript, next.js, css/anim, a11y]
+    items: [react, vue, typescript, next.js, css/anim, a11y]
   - label: Backend
     accent: pink
     items: [node, rails, java, graphql, sql]
@@ -108,9 +108,10 @@ experience:
   - org: Penn Entertainment
     role: Senior Software Engineer
     period: Mar 2022 – May 2026
-    detail: theScore, theScore Bet, and ESPN BET
+    detail: theScore, theScore Bet, Barstool Sportsbook, and ESPN BET
     highlights:
       - Rebuilt theScore website from legacy tech to React, revamping sport score pages and UX.
+      - Built Barstool Sportsbook's in-page video players in Vue (my primary stack for ~18 months), letting podcast hosts post clips for fans to follow or fade their bets.
       - Led Claude Code skill development and adoption practices for theScore Media web team.
       - Led front-end architecture and rollout for Search; 70% of searches led to clickthrough.
       - "Redesigned MyBets: reworked information hierarchy, cut clutter, improved clarity."
@@ -118,7 +119,7 @@ experience:
       - Delivered Golf Event Center, Parlay Lounge, and Featured Bets from MVP to GA via A/B tests.
       - Built the bet-sharing flow from concept to ship.
       - Ran web on-call, mentored interns through mid-levels, interviewed candidates, backup scrum master.
-    tech: [React, TypeScript, Zustand, Jest, Datadog, LaunchDarkly]
+    tech: [React, Vue, TypeScript, Zustand, Jest, Datadog, LaunchDarkly]
   - org: Fidelis Cybersecurity
     role: Fullstack Software Engineer II
     period: Dec 2018 – Mar 2022

@@ -9,6 +9,7 @@ skillGroups:
     accent: cyan
     items:
       - react
+      - vue
       - typescript
       - next.js
       - css/anim
@@ -32,9 +33,10 @@ experience:
   - org: Penn Entertainment
     role: Senior Software Engineer
     period: Mar 2022 – May 2026
-    detail: theScore, theScore Bet, and ESPN BET
+    detail: theScore, theScore Bet, Barstool Sportsbook, and ESPN BET
     highlights:
       - Rebuilt theScore website from legacy tech to React, revamping sport score pages and UX.
+      - Built Barstool Sportsbook's in-page video players in Vue (my primary stack for ~18 months), letting podcast hosts post clips for fans to follow or fade their bets.
       - Led Claude Code skill development and adoption practices for theScore Media web team.
       - Led front-end architecture and rollout for Search; 70% of searches led to clickthrough.
       - 'Redesigned MyBets: reworked information hierarchy, cut clutter, improved clarity.'
@@ -44,6 +46,7 @@ experience:
       - Ran web on-call, mentored interns through mid-levels, interviewed candidates, backup scrum master.
     tech:
       - React
+      - Vue
       - TypeScript
       - Zustand
       - Jest

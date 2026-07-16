@@ -21,9 +21,10 @@ Senior Front-End Engineer with 8+ years building high-traffic React and TypeScri
 **Experience**
 
 **Penn Entertainment — Senior Software Engineer** | Mar 2022 – May 2026  
-*theScore, theScore Bet, and ESPN BET*
+*theScore, theScore Bet, Barstool Sportsbook, and ESPN BET*
 
 * Rebuilt theScore website from legacy tech to React, revamping sport score pages and UX.
+* Built Barstool Sportsbook's in-page video players in Vue (my primary stack for ~18 months), letting podcast hosts post clips for fans to follow or fade their bets.
 * Led Claude Code skill development and adoption practices for theScore Media web team.
 * Led front-end architecture and rollout for Search; 70% of searches led to clickthrough.
 * Redesigned MyBets: reworked information hierarchy, cut clutter, improved clarity.
@@ -31,7 +32,7 @@ Senior Front-End Engineer with 8+ years building high-traffic React and TypeScri
 * Delivered Golf Event Center, Parlay Lounge, and Featured Bets from MVP to GA via A/B tests.
 * Built the bet-sharing flow from concept to ship.
 * Ran web on-call, mentored interns through mid-levels, interviewed candidates, backup scrum master.
-* *Tech:* React, TypeScript, Zustand, Jest, Datadog, LaunchDarkly
+* *Tech:* React, Vue, TypeScript, Zustand, Jest, Datadog, LaunchDarkly
 
 **Fidelis Cybersecurity — Fullstack Software Engineer II** | Dec 2018 – Mar 2022  
 *Threat-analysis platform for security analysts*
