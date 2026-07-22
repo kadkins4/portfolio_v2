@@ -132,6 +132,7 @@ export default async function ProjectDetailPage({ params }: Props) {
         year={yearOf(item.date ?? null)}
         live={item.externalUrl || null}
         image={item.image ?? null}
+        video={item.heroVideo ?? null}
         imageFocus={item.imageFocus ?? "center"}
         blurDataURL={blurDataURL}
         tags={tags}

@@ -131,6 +131,14 @@
 .heroImg {
   object-fit: cover;
 }
+/* <video> heroes don't get next/image's fill positioning — supply it here */
+.heroVideo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 .bk {
   position: absolute;
   width: 15px;

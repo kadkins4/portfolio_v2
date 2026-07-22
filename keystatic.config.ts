@@ -225,6 +225,12 @@ export default config({
           ],
           defaultValue: "center",
         }),
+        heroVideo: fields.file({
+          label:
+            "Hero Video (optional, short muted mp4 loop; image becomes the poster)",
+          directory: "public/videos/projects",
+          publicPath: "/videos/projects",
+        }),
         externalUrl: fields.url({ label: "External URL (optional)" }),
         date: fields.date({ label: "Date" }),
         featured: fields.checkbox({

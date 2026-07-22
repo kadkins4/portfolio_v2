@@ -22,6 +22,7 @@ export default function ProjectStorefront({
   year,
   live,
   image,
+  video = null,
   imageFocus = "center",
   blurDataURL,
   tags,
@@ -36,6 +37,7 @@ export default function ProjectStorefront({
   year: string;
   live: string | null;
   image: string | null;
+  video?: string | null;
   imageFocus?: string;
   blurDataURL?: string;
   tags: string[];
@@ -109,7 +111,7 @@ export default function ProjectStorefront({
         </div>
 
         {/* hero */}
-        {image && (
+        {(video || image) && (
           <div className={styles.hero}>
             <div className={styles.heroFrame}>
               <span
@@ -129,28 +131,43 @@ export default function ProjectStorefront({
                 aria-hidden="true"
               />
               <div className={styles.heroImgBox}>
-                <Image
-                  src={image}
-                  alt={`${title} — hero`}
-                  fill
-                  sizes="(min-width: 1200px) 1100px, 100vw"
-                  placeholder={blurDataURL ? "blur" : "empty"}
-                  blurDataURL={blurDataURL}
-                  style={{ objectPosition: imageFocus }}
-                  className={styles.heroImg}
-                  priority
-                />
+                {video ? (
+                  <video
+                    src={video}
+                    poster={image ?? undefined}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    className={styles.heroVideo}
+                    aria-label={`${title} — demo`}
+                  />
+                ) : (
+                  <Image
+                    src={image!}
+                    alt={`${title} — hero`}
+                    fill
+                    sizes="(min-width: 1200px) 1100px, 100vw"
+                    placeholder={blurDataURL ? "blur" : "empty"}
+                    blurDataURL={blurDataURL}
+                    style={{ objectPosition: imageFocus }}
+                    className={styles.heroImg}
+                    priority
+                  />
+                )}
               </div>
             </div>
             <div className={styles.caption}>
               <span>FIG. 01 · {title.toUpperCase()}</span>
-              <button
-                type="button"
-                className={styles.enlarge}
-                onClick={() => setZoom(true)}
-              >
-                ⛶ enlarge
-              </button>
+              {!video && (
+                <button
+                  type="button"
+                  className={styles.enlarge}
+                  onClick={() => setZoom(true)}
+                >
+                  ⛶ enlarge
+                </button>
+              )}
             </div>
           </div>
         )}
