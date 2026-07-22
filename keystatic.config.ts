@@ -1,4 +1,18 @@
 import { config, collection, singleton, fields } from "@keystatic/core";
+import { block } from "@keystatic/core/content-components";
+
+// {% video src="/videos/projects/…" /%} inside project write-ups —
+// rendered by the "tag" case in src/lib/renderMarkdoc.tsx
+const videoBlock = block({
+  label: "Video",
+  schema: {
+    src: fields.file({
+      label: "Video file (short mp4, renders with controls)",
+      directory: "public/videos/projects",
+      publicPath: "/videos/projects",
+    }),
+  },
+});
 
 export default config({
   storage: { kind: "local" },
@@ -256,7 +270,10 @@ export default config({
           ],
           defaultValue: "auto",
         }),
-        content: fields.markdoc({ label: "Content" }),
+        content: fields.markdoc({
+          label: "Content",
+          components: { video: videoBlock },
+        }),
       },
     }),
 

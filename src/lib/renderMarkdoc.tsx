@@ -2,6 +2,7 @@ import React from "react";
 
 interface MarkdocNode {
   type: string;
+  tag?: string;
   attributes?: Record<string, unknown>;
   children?: MarkdocNode[];
 }
@@ -98,6 +99,17 @@ function renderNode(node: MarkdocNode, key: number | string): React.ReactNode {
       return <img key={key} src={src} alt={alt} loading="lazy" />;
     }
 
+    case "tag": {
+      if (node.tag === "video") {
+        const src = String(node.attributes?.src ?? "");
+        return (
+          // eslint-disable-next-line jsx-a11y/media-has-caption
+          <video key={key} src={src} controls playsInline preload="metadata" />
+        );
+      }
+      // unknown tags fall through to the default warning
+    }
+    // eslint-disable-next-line no-fallthrough
     default:
       if (process.env.NODE_ENV === "development") {
         console.warn(`[renderMarkdoc] Unknown node type: "${node.type}"`);
