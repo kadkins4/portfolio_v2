@@ -128,8 +128,10 @@ export type Destination = {
   h: number;
   // entry pad: center (x,y) + size (w,h), matching the prototype's per-spot pads
   pad: { x: number; y: number; w: number; h: number };
-  // lit accent entrance strip, offsets relative to the building's top-left
-  door: { x: number; y: number; w: number; h: number };
+  // lit accent entrance strip, offsets relative to the building's top-left.
+  // Omitted by walk-in buildings, which draw their doorway from their own
+  // wall gap instead (see APARTMENT) — a door here would drive nothing.
+  door?: { x: number; y: number; w: number; h: number };
   // optional world-space stoop drawn beside the building (the pavilion's stairs)
   stairs?: { x: number; y: number; w: number; h: number };
   href: string;
@@ -189,13 +191,12 @@ export const DESTINATIONS: Destination[] = [
     // the mat lives INSIDE, sitting flush on the desk's north edge beside the
     // chair — you walk in and step up to the computer to open the About page
     pad: { x: 1728, y: 838, w: 48, h: 30 },
-    door: { x: 1, y: 131, w: 6, h: 38 },
     href: "/about",
     teaser: {
-      kicker: "✦ NEON CITY HOUSING · RESIDENT 4B",
-      title: "Come on in.",
-      blurb: "The human one: how I got here, and life outside the code.",
-      cta: "> knock on 4B",
+      kicker: "✦ NEON CITY STUDIO · RESIDENT 4B",
+      title: "Boot Up The PC",
+      blurb: "How I got here. Life outside code.",
+      cta: "> Power On",
     },
   },
   {
@@ -249,13 +250,14 @@ export const APARTMENT = (() => {
     furniture: [
       // bed runs north-south along the east wall, headboard end at the top
       { id: "bed", x: ox + w - wall - 68, y: oy + 18, w: 64, h: 92 },
-      { id: "couch", x: ox + 18, y: oy + 18, w: 76, h: 30 },
+      { id: "couch", x: ox + 48, y: oy + 18, w: 76, h: 30 },
       // kitchenette runs flush along the east wall
       { id: "counter", x: ox + w - wall - 92, y: oy + 248, w: 88, h: 34 },
       { id: "desk", x: ox + 18, y: oy + 256, w: 98, h: 26 },
       // plant in the gap between the couch and the bed
-      { id: "plant-1", x: ox + 158, y: oy + 18, w: 26, h: 26 },
-      { id: "plant-2", x: ox + 128, y: oy + 18, w: 26, h: 26 },
+      { id: "plant-1", x: ox + 128, y: oy + 18, w: 26, h: 26 },
+      { id: "plant-2", x: ox + 18, y: oy + 18, w: 26, h: 26 },
+      { id: "plant-3", x: ox + 158, y: oy + 18, w: 26, h: 26 },
     ],
     // scenery — drawn, but you walk over/past it. The chair has to stay
     // walk-through or it would fence you off from the mat at the desk.

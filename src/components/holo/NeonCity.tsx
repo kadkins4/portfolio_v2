@@ -1936,20 +1936,22 @@ function DestinationBldg({ d, active }: { d: Destination; active: boolean }) {
             animation: "ncBlink 1.5s step-end infinite",
           }}
         />
-        {/* lit accent door strip */}
-        <div
-          id={`nc-door-${d.key}`}
-          style={{
-            position: "absolute",
-            left: d.door.x,
-            top: d.door.y,
-            width: d.door.w,
-            height: d.door.h,
-            background: accent,
-            boxShadow: `0 0 14px ${accent}`,
-            opacity: 0.9,
-          }}
-        />
+        {/* lit accent door strip (walk-in buildings draw their own doorway) */}
+        {d.door && (
+          <div
+            id={`nc-door-${d.key}`}
+            style={{
+              position: "absolute",
+              left: d.door.x,
+              top: d.door.y,
+              width: d.door.w,
+              height: d.door.h,
+              background: accent,
+              boxShadow: `0 0 14px ${accent}`,
+              opacity: 0.9,
+            }}
+          />
+        )}
         {/* corner pulse light */}
         <div
           style={{
@@ -2105,19 +2107,21 @@ function ProjectsPavilion({ active }: { active: boolean }) {
           }}
         />
         {/* right-side entrance door strip */}
-        <div
-          id="nc-door-projects"
-          style={{
-            position: "absolute",
-            left: d.door.x,
-            top: d.door.y,
-            width: d.door.w,
-            height: d.door.h,
-            background: accent,
-            boxShadow: `0 0 14px ${accent}`,
-            opacity: 0.9,
-          }}
-        />
+        {d.door && (
+          <div
+            id="nc-door-projects"
+            style={{
+              position: "absolute",
+              left: d.door.x,
+              top: d.door.y,
+              width: d.door.w,
+              height: d.door.h,
+              background: accent,
+              boxShadow: `0 0 14px ${accent}`,
+              opacity: 0.9,
+            }}
+          />
+        )}
         {/* sign plate */}
         <div
           style={{
