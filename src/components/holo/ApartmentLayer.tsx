@@ -87,7 +87,7 @@ export default function ApartmentLayer({
         id="nc-apartment-doorway"
         style={{
           position: "absolute",
-          left: A.x,
+          left: A.x - 5,
           top: A.gap.top,
           width: 5,
           height: A.gap.bot - A.gap.top,
@@ -223,6 +223,7 @@ export default function ApartmentLayer({
           top: A.chair.y,
           width: A.chair.w,
           height: A.chair.h,
+          transform: `rotate(${A.chair.rot}deg)`,
           borderRadius: "50% 50% 4px 4px",
           background: "radial-gradient(circle at 40% 34%, #1d3324, #0d1712)",
           border: "1px solid rgba(110,190,140,.3)",
@@ -241,6 +242,62 @@ export default function ApartmentLayer({
           }}
         />
       </div>
+      {/* plant, in the gap between the couch and the bed */}
+      <div
+        id="nc-apartment-plant"
+        style={{
+          position: "absolute",
+          left: FURN.plant.x,
+          top: FURN.plant.y,
+          width: FURN.plant.w,
+          height: FURN.plant.h,
+        }}
+      >
+        <div
+          id="nc-apartment-plant-pot"
+          style={{
+            position: "absolute",
+            inset: 5,
+            borderRadius: "3px 3px 50% 50%",
+            background: "#241a15",
+            border: "1px solid rgba(214,178,120,.35)",
+          }}
+        />
+        {/* fronds, seen from above */}
+        {[0, 60, 120, 180, 240, 300].map((deg) => (
+          <div
+            key={deg}
+            style={{
+              position: "absolute",
+              left: "50%",
+              top: "50%",
+              width: 11,
+              height: 5,
+              marginTop: -2.5,
+              borderRadius: 3,
+              transformOrigin: "0 50%",
+              transform: `rotate(${deg}deg)`,
+              background: "rgba(110,190,140,.5)",
+            }}
+          />
+        ))}
+        <div
+          id="nc-apartment-plant-crown"
+          style={{
+            position: "absolute",
+            left: "50%",
+            top: "50%",
+            width: 9,
+            height: 9,
+            marginLeft: -4.5,
+            marginTop: -4.5,
+            borderRadius: "50%",
+            background: "radial-gradient(circle at 40% 34%, #2a4a32, #12211a)",
+            border: "1px solid rgba(110,190,140,.45)",
+          }}
+        />
+      </div>
+
       {/* desk + the computer that is the reason you came in */}
       <div
         id="nc-apartment-desk"

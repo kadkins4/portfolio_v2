@@ -186,9 +186,9 @@ export const DESTINATIONS: Destination[] = [
     y: 600,
     w: 270,
     h: 300,
-    // the mat lives INSIDE, on the floor at the desk — you walk in to reach it,
-    // standing behind the chair and facing the computer
-    pad: { x: 1748, y: 800, w: 48, h: 30 },
+    // the mat lives INSIDE, sitting flush on the desk's north edge beside the
+    // chair — you walk in and step up to the computer to open the About page
+    pad: { x: 1728, y: 838, w: 48, h: 30 },
     door: { x: 1, y: 131, w: 6, h: 38 },
     href: "/about",
     teaser: {
@@ -248,16 +248,20 @@ export const APARTMENT = (() => {
     // furnishings you bump into, laid out around a clear walking lane
     furniture: [
       // bed runs north-south along the east wall, headboard end at the top
-      { id: "bed", x: ox + w - wall - 64, y: oy + 24, w: 64, h: 92 },
-      { id: "couch", x: ox + 24, y: oy + 24, w: 76, h: 30 },
+      { id: "bed", x: ox + w - wall - 68, y: oy + 18, w: 64, h: 92 },
+      { id: "couch", x: ox + 18, y: oy + 18, w: 76, h: 30 },
       // kitchenette runs flush along the east wall
-      { id: "counter", x: ox + w - wall - 88, y: oy + 212, w: 88, h: 34 },
-      { id: "desk", x: ox + 60, y: oy + 246, w: 96, h: 26 },
+      { id: "counter", x: ox + w - wall - 92, y: oy + 248, w: 88, h: 34 },
+      { id: "desk", x: ox + 18, y: oy + 256, w: 98, h: 26 },
+      // plant in the gap between the couch and the bed
+      { id: "plant", x: ox + 130, y: oy + 18, w: 26, h: 26 },
     ],
     // scenery — drawn, but you walk over/past it. The chair has to stay
     // walk-through or it would fence you off from the mat at the desk.
-    rug: { x: ox + 40, y: oy + 62, w: 110, h: 84 },
-    chair: { x: ox + 96, y: oy + 222, w: 24, h: 24 },
+    rug: { x: ox + 36, y: oy + 62, w: 200, h: 104 },
+    // pushed left and turned on the diagonal, clearing the desk's right half
+    // for the mat — you step up beside the chair to use the computer
+    chair: { x: ox + 30, y: oy + 232, w: 24, h: 24, rot: -30 },
     open: {
       inside: {
         x0: ox + wall,

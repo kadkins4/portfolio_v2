@@ -11,6 +11,7 @@ import {
   BENCHES,
   POND,
   FOUNTAIN_R,
+  centerRect,
 } from "./cityData";
 
 describe("hitsSolid", () => {
@@ -170,6 +171,32 @@ describe("Unit 4B apartment", () => {
         ).toBe(false);
       }
     }
+  });
+
+  it("keeps the mat parked against the desk", () => {
+    // the mat is meant to read as "standing at the computer". Move the desk
+    // without moving the mat and this fails — which is exactly what happened
+    // once already.
+    const desk = A.furniture.find((f) => f.id === "desk")!;
+    const mat = centerRect(about.pad);
+    // sits on the desk's north edge — a few px of hand-tuned breathing room is
+    // fine, being nowhere near it (or on top of it) is not
+    const gap = desk.y - (mat.y + mat.h);
+    expect(gap).toBeGreaterThanOrEqual(0);
+    expect(gap).toBeLessThanOrEqual(12);
+    expect(mat.x).toBeGreaterThanOrEqual(desk.x);
+    expect(mat.x + mat.w).toBeLessThanOrEqual(desk.x + desk.w);
+  });
+
+  it("leaves standing room on the mat", () => {
+    // flush is good, unreachable is not: the player's body must fit somewhere
+    // inside the mat without clipping the desk
+    const mat = centerRect(about.pad);
+    const spots = [];
+    for (let y = mat.y; y <= mat.y + mat.h; y += 2) {
+      if (!hitsSolid(about.pad.x, y)) spots.push(y);
+    }
+    expect(spots.length, "walkable rows inside the mat").toBeGreaterThan(4);
   });
 
   it("no longer treats the whole footprint as solid", () => {
