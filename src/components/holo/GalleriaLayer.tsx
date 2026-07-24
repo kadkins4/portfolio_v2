@@ -1,17 +1,22 @@
 import type { Ref } from "react";
-import { GALLERIA, type RoofAnim } from "@/lib/cityData";
+import { GALLERIA, hueColor, centerRect, type RoofAnim } from "@/lib/cityData";
+import type { GalleriaUnit } from "@/lib/galleriaUnits";
 import css from "./galleria.module.css";
 
 // The projects mall. Renders in world-space at GALLERIA's origin. The roof is a
 // separate element whose `data-open` the RAF loop toggles per frame; this
-// component only owns the static shell, the roof surface, and its detail.
-// Units (the storefronts inside) arrive in T5.
+// component owns the static shell, the roof surface + detail, and the
+// storefront units (occupancy derived from the project list upstream).
 export default function GalleriaLayer({
   anim,
   roofRef,
+  units,
+  onPad,
 }: {
   anim: RoofAnim;
   roofRef: Ref<HTMLDivElement>;
+  units: GalleriaUnit[];
+  onPad: string | null;
 }) {
   const { x, y, w, h, wall, gap, walls, kiosk, label } = GALLERIA;
 
@@ -142,6 +147,11 @@ export default function GalleriaLayer({
         {label.text}
       </div>
 
+      {/* storefront units (sit on the interior floor, hidden under the roof) */}
+      {units.map((u) => (
+        <Unit key={u.id} u={u} lit={onPad === u.id} />
+      ))}
+
       {/* roof — the RAF loop toggles data-open; data-anim comes from the panel */}
       <div
         ref={roofRef}
@@ -189,6 +199,136 @@ export default function GalleriaLayer({
           />
         </div>
       </div>
+    </>
+  );
+}
+
+// One storefront. Rendered by state: a lit unit routes to its project, an
+// in-progress unit shows a hoarding + permit board (still routes, since the
+// detail page stays reachable), a vacant unit shows FOR LEASE and has no pad.
+function Unit({ u, lit }: { u: GalleriaUnit; lit: boolean }) {
+  const { rect, hue, state, anchor } = u;
+  const accent = hueColor(hue, 0.82, 0.13);
+  const vacant = state === "vacant";
+  const building = state === "in-progress";
+  const pad = u.pad ? centerRect(u.pad) : null;
+
+  return (
+    <>
+      {/* the storefront box */}
+      <div
+        style={{
+          position: "absolute",
+          left: rect.x,
+          top: rect.y,
+          width: rect.w,
+          height: rect.h,
+          zIndex: 4,
+          borderRadius: 4,
+          background: vacant
+            ? "linear-gradient(180deg, #131120, #0d0b16)"
+            : "linear-gradient(180deg, #1a1730, #110f1e)",
+          border: `1px solid ${vacant ? "rgba(150,140,220,.14)" : hueColor(hue, 0.7, 0.1, 0.5)}`,
+          boxShadow: vacant
+            ? "inset 0 0 18px rgba(0,0,0,.5)"
+            : `inset 0 0 18px rgba(0,0,0,.45), 0 0 ${anchor ? 22 : 14}px ${hueColor(hue, 0.7, 0.12, anchor ? 0.28 : 0.18)}`,
+          display: "grid",
+          placeItems: "center",
+        }}
+      >
+        {vacant ? (
+          <div
+            style={{
+              font: "700 9px/1.3 ui-monospace, monospace",
+              letterSpacing: "0.18em",
+              textAlign: "center",
+              color: "rgba(170,180,225,.5)",
+            }}
+          >
+            FOR
+            <br />
+            LEASE
+          </div>
+        ) : building ? (
+          <>
+            {/* hoarding stripes */}
+            <div
+              style={{
+                position: "absolute",
+                inset: 5,
+                borderRadius: 3,
+                backgroundImage:
+                  "repeating-linear-gradient(45deg, rgba(240,200,90,.16) 0 10px, rgba(20,18,10,.5) 10px 20px)",
+                border: "1px solid rgba(240,200,90,.3)",
+              }}
+            />
+            {/* permit board */}
+            <div
+              style={{
+                position: "relative",
+                padding: "3px 6px",
+                font: "700 8px/1.3 ui-monospace, monospace",
+                letterSpacing: "0.12em",
+                color: "rgba(245,220,150,.95)",
+                background: "#0c0b16",
+                border: "1px solid rgba(240,200,90,.4)",
+                textAlign: "center",
+              }}
+            >
+              BUILDING
+              <br />
+              PERMIT
+            </div>
+          </>
+        ) : (
+          <>
+            {/* lit sign strip */}
+            <div
+              style={{
+                position: "absolute",
+                left: 6,
+                right: 6,
+                top: 6,
+                height: 10,
+                borderRadius: 2,
+                background: hueColor(hue, 0.55, 0.12, 0.22),
+                border: `1px solid ${hueColor(hue, 0.75, 0.13, 0.6)}`,
+                boxShadow: `0 0 10px ${hueColor(hue, 0.7, 0.13, 0.4)}`,
+              }}
+            />
+            {/* windows */}
+            <div
+              style={{
+                position: "absolute",
+                inset: "24px 8px 8px 8px",
+                backgroundImage:
+                  "repeating-linear-gradient(90deg, rgba(150,140,220,.1) 0 1px, transparent 1px 16px)",
+              }}
+            />
+          </>
+        )}
+      </div>
+
+      {/* entrance pad — glows brighter when the player is standing on it */}
+      {pad && (
+        <div
+          style={{
+            position: "absolute",
+            left: pad.x,
+            top: pad.y,
+            width: pad.w,
+            height: pad.h,
+            zIndex: 4,
+            borderRadius: 6,
+            background: hueColor(hue, 0.7, 0.13, lit ? 0.3 : 0.12),
+            border: `1px solid ${hueColor(hue, 0.75, 0.13, lit ? 0.9 : 0.4)}`,
+            boxShadow: lit
+              ? `0 0 16px ${hueColor(hue, 0.7, 0.13, 0.5)}`
+              : "none",
+            transition: "background .15s, box-shadow .15s",
+          }}
+        />
+      )}
     </>
   );
 }

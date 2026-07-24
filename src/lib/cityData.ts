@@ -197,13 +197,13 @@ export const DESTINATIONS: Destination[] = [
   },
 ];
 
+// center-based pad ({x,y} = center) → top-left rect, for collision/detection
+export function centerRect(p: { x: number; y: number; w: number; h: number }) {
+  return { x: p.x - p.w / 2, y: p.y - p.h / 2, w: p.w, h: p.h };
+}
+
 export function padRect(d: Destination) {
-  return {
-    x: d.pad.x - d.pad.w / 2,
-    y: d.pad.y - d.pad.h / 2,
-    w: d.pad.w,
-    h: d.pad.h,
-  };
+  return centerRect(d.pad);
 }
 
 // ---- filler buildings (atmosphere, collidable, non-interactive) ----

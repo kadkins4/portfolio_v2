@@ -19,6 +19,7 @@ import {
   PARK,
   DESTINATIONS,
   padRect,
+  centerRect,
   SHELLS,
   BLOBS,
   TREES,
@@ -32,6 +33,11 @@ import {
   type Car,
   type RoofAnim,
 } from "@/lib/cityData";
+import {
+  buildGalleriaUnits,
+  type CityProject,
+  type GalleriaUnit,
+} from "@/lib/galleriaUnits";
 import { hitsSolid } from "@/lib/cityCollision";
 import { pathTo } from "@/lib/nav/cityNav";
 import { FAST_TRAVEL_ITEMS } from "@/lib/cityFastTravel";
@@ -115,8 +121,10 @@ function avatarWalk(wt: number): [number, number] {
 
 export default function NeonCity({
   name = "Kendall Adkins",
+  projects = [],
 }: {
   name?: string;
+  projects?: CityProject[];
 }) {
   const router = useRouter();
   const isTouch = useIsTouch();
@@ -218,6 +226,23 @@ export default function NeonCity({
     []
   );
 
+  // Galleria storefronts, derived from the project list. Occupied units carry a
+  // pad + teaser and route to /projects/[slug]; vacant ones render FOR LEASE.
+  const units = useMemo(() => buildGalleriaUnits(projects), [projects]);
+  const unitTargets = useMemo(
+    () =>
+      Object.fromEntries(
+        units.filter((u) => u.pad).map((u) => [u.id, u])
+      ) as Record<string, GalleriaUnit>,
+    [units]
+  );
+  // the RAF loop + key handlers close over initial values, so reach the current
+  // targets through a ref
+  const unitTargetsRef = useRef(unitTargets);
+  useEffect(() => {
+    unitTargetsRef.current = unitTargets;
+  }, [unitTargets]);
+
   // arrival beat fades after ~4.6s
   useEffect(() => {
     const t = window.setTimeout(() => setArrived(false), 4600);
@@ -262,8 +287,8 @@ export default function NeonCity({
     }
 
     function enterDest(key: string) {
-      const d = dest[key];
-      if (!d) return;
+      const d = dest[key] ?? unitTargetsRef.current[key];
+      if (!d?.href) return;
       router.push(d.href);
     }
 
@@ -770,6 +795,15 @@ export default function NeonCity({
           break;
         }
       }
+      if (!padKey) {
+        for (const u of Object.values(unitTargetsRef.current)) {
+          const r = centerRect(u.pad!);
+          if (p.x > r.x && p.x < r.x + r.w && p.y > r.y && p.y < r.y + r.h) {
+            padKey = u.id;
+            break;
+          }
+        }
+      }
       if (padKey !== onPadRef.current) {
         onPadRef.current = padKey;
         setOnPad(padKey);
@@ -890,7 +924,7 @@ export default function NeonCity({
     if (!everMoved) setEverMoved(true);
   }
 
-  const activePanel = panel ? dest[panel] : null;
+  const activePanel = panel ? (dest[panel] ?? unitTargets[panel]) : null;
 
   // The static world (~300 nodes) only depends on `onPad` for the pad glow;
   // memoizing it keeps the 1Hz clock tick and teaser state from reconciling
@@ -1014,7 +1048,12 @@ export default function NeonCity({
         <POILayer />
 
         {/* the projects mall (walk in, roof lifts) */}
-        <GalleriaLayer anim={roofAnim} roofRef={roofRef} />
+        <GalleriaLayer
+          anim={roofAnim}
+          roofRef={roofRef}
+          units={units}
+          onPad={onPad}
+        />
 
         {/* destination buildings */}
         {DESTINATIONS.filter((d) => d.key !== "projects").map((d) => (
@@ -1084,9 +1123,9 @@ export default function NeonCity({
       </div>
     ),
     // refs/cars/name are stable; onPad drives the pad glow, roofAnim swaps the
-    // roof-lift variant (dev only, rare)
+    // roof-lift variant (dev only, rare), units come from the project list
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [onPad, name, roofAnim]
+    [onPad, name, roofAnim, units]
   );
 
   return (
@@ -1248,7 +1287,7 @@ export default function NeonCity({
         )}
 
         {/* teaser popover */}
-        {activePanel && (
+        {activePanel?.teaser && (
           <div
             className={styles.teaser}
             style={{ "--tc": HUES[activePanel.hue] } as CSSProperties}

@@ -203,6 +203,12 @@ export default config({
           label: "Description",
           multiline: true,
         }),
+        cityBlurb: fields.text({
+          label: "City blurb (optional)",
+          description:
+            "Short teaser shown on this project's Galleria storefront. Falls back to the description when empty.",
+          multiline: true,
+        }),
         tags: fields.array(fields.text({ label: "Tag" }), {
           label: "Tags",
           description: "Category tags (e.g., Game, Work, Tool, Mobile)",
