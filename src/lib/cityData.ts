@@ -247,15 +247,16 @@ export const APARTMENT = (() => {
     ] as { x: number; y: number; w: number; h: number }[],
     // furnishings you bump into, laid out around a clear walking lane
     furniture: [
-      { id: "bed", x: ox + 160, y: oy + 24, w: 88, h: 64 },
-      { id: "daybed", x: ox + 24, y: oy + 24, w: 76, h: 44 },
+      // bed runs north-south along the east wall, headboard end at the top
+      { id: "bed", x: ox + w - wall - 64, y: oy + 24, w: 64, h: 92 },
+      { id: "couch", x: ox + 24, y: oy + 24, w: 76, h: 30 },
       // kitchenette runs flush along the east wall
       { id: "counter", x: ox + w - wall - 88, y: oy + 212, w: 88, h: 34 },
       { id: "desk", x: ox + 60, y: oy + 246, w: 96, h: 26 },
     ],
     // scenery — drawn, but you walk over/past it. The chair has to stay
     // walk-through or it would fence you off from the mat at the desk.
-    rug: { x: ox + 40, y: oy + 76, w: 110, h: 84 },
+    rug: { x: ox + 40, y: oy + 62, w: 110, h: 84 },
     chair: { x: ox + 96, y: oy + 222, w: 24, h: 24 },
     open: {
       inside: {

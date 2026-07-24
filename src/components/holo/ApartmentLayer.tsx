@@ -126,60 +126,52 @@ export default function ApartmentLayer({
             )}, rgba(20,16,32,.9))`,
           }}
         />
+        {[8, 34].map((left, i) => (
+          <div
+            key={left}
+            id={`nc-apartment-bed-pillow-${i}`}
+            style={{
+              position: "absolute",
+              left,
+              top: 9,
+              width: 22,
+              height: 15,
+              borderRadius: 3,
+              background: "rgba(236,232,246,.5)",
+              border: "1px solid rgba(236,232,246,.25)",
+            }}
+          />
+        ))}
+        {/* turned-down sheet line under the pillows */}
         <div
-          id="nc-apartment-bed-pillow"
+          id="nc-apartment-bed-sheet"
           style={{
             position: "absolute",
-            left: 10,
-            top: 10,
-            width: 22,
-            height: 16,
-            borderRadius: 3,
-            background: "rgba(236,232,246,.5)",
+            left: 6,
+            right: 6,
+            top: 30,
+            height: 3,
+            borderRadius: 2,
+            background: "rgba(236,232,246,.3)",
           }}
         />
       </div>
-      {/* day bed — the couch, made up as a bed */}
+      {/* couch */}
       <div
-        id="nc-apartment-daybed"
+        id="nc-apartment-couch"
         style={{
           position: "absolute",
-          left: FURN.daybed.x,
-          top: FURN.daybed.y,
-          width: FURN.daybed.w,
-          height: FURN.daybed.h,
-          borderRadius: 4,
-          background: "#191428",
+          left: FURN.couch.x,
+          top: FURN.couch.y,
+          width: FURN.couch.w,
+          height: FURN.couch.h,
+          borderRadius: "4px 4px 8px 8px",
+          background: "#1c1730",
           border: "1px solid rgba(150,140,220,.28)",
+          backgroundImage:
+            "repeating-linear-gradient(90deg, rgba(150,140,220,.14) 0 1px, transparent 1px 24px)",
         }}
-      >
-        <div
-          id="nc-apartment-daybed-mattress"
-          style={{
-            position: "absolute",
-            inset: 5,
-            borderRadius: 3,
-            background: `linear-gradient(160deg, ${hueColor(
-              HUE,
-              0.5,
-              0.08,
-              0.3
-            )}, rgba(20,16,32,.9))`,
-          }}
-        />
-        <div
-          id="nc-apartment-daybed-pillow"
-          style={{
-            position: "absolute",
-            left: 9,
-            top: 9,
-            width: 20,
-            height: 14,
-            borderRadius: 3,
-            background: "rgba(236,232,246,.45)",
-          }}
-        />
-      </div>
+      />
       {/* kitchenette counter + burners */}
       <div
         id="nc-apartment-counter"
