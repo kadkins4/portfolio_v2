@@ -139,7 +139,7 @@ export type Destination = {
 export const DESTINATIONS: Destination[] = [
   {
     key: "projects",
-    sign: "Pavilion",
+    sign: "PAVILION",
     sub: "( projects )",
     hue: 190,
     x: 780,

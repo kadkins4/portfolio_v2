@@ -8,9 +8,13 @@ const ROOFS: RoofAnim[] = ["split", "iris", "fade"];
 export default function CityDevPanel({
   roofAnim,
   onRoofAnim,
+  colliders,
+  onColliders,
 }: {
   roofAnim: RoofAnim;
   onRoofAnim: (a: RoofAnim) => void;
+  colliders: boolean;
+  onColliders: (on: boolean) => void;
 }) {
   return (
     <div
@@ -59,6 +63,36 @@ export default function CityDevPanel({
       </div>
       <div style={{ opacity: 0.5, marginTop: 8, fontSize: 10 }}>
         walk into the Galleria to preview
+      </div>
+      <div
+        style={{
+          opacity: 0.6,
+          margin: "12px 0 8px",
+          paddingTop: 10,
+          borderTop: "1px solid rgba(150,140,220,.2)",
+        }}
+      >
+        ◈ DEV · COLLIDERS
+      </div>
+      <button
+        type="button"
+        onClick={() => onColliders(!colliders)}
+        style={{
+          width: "100%",
+          padding: "6px 0",
+          cursor: "pointer",
+          textTransform: "uppercase",
+          color: colliders ? "#0b0a14" : "rgba(200,205,240,.8)",
+          background: colliders ? "rgba(255,120,145,.9)" : "transparent",
+          border: "1px solid rgba(255,120,145,.45)",
+          borderRadius: 5,
+          font: "inherit",
+        }}
+      >
+        {colliders ? "shown" : "hidden"}
+      </button>
+      <div style={{ opacity: 0.5, marginTop: 8, fontSize: 10 }}>
+        solid = collider · dashed = stop line
       </div>
     </div>
   );

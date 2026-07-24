@@ -46,6 +46,7 @@ import TouchJoystick from "./TouchJoystick";
 import FastTravelDrawer from "./FastTravelDrawer";
 import GalleriaLayer from "./GalleriaLayer";
 import CityDevPanel from "./CityDevPanel";
+import CollisionDebugLayer from "./CollisionDebugLayer";
 import HueDot from "./HueDot";
 import styles from "./neonCity.module.css";
 
@@ -205,6 +206,7 @@ export default function NeonCity({
   // pick. Kept off the default render path when the query param is absent.
   const [dev, setDev] = useState(false);
   const [roofAnim, setRoofAnim] = useState<RoofAnim>("split");
+  const [colliders, setColliders] = useState(false);
   useEffect(() => {
     const isDev =
       new URLSearchParams(window.location.search).get("dev") === "1";
@@ -214,11 +216,16 @@ export default function NeonCity({
       if (saved === "split" || saved === "iris" || saved === "fade") {
         setRoofAnim(saved);
       }
+      setColliders(localStorage.getItem("neoncity.colliders") === "1");
     }
   }, []);
   function pickRoofAnim(a: RoofAnim) {
     setRoofAnim(a);
     localStorage.setItem("neoncity.roofAnim", a);
+  }
+  function pickColliders(on: boolean) {
+    setColliders(on);
+    localStorage.setItem("neoncity.colliders", on ? "1" : "0");
   }
 
   const dest = useMemo(
@@ -1099,11 +1106,15 @@ export default function NeonCity({
             ref={(el) => {
               trainEls.current[i] = el;
             }}
+            style={{ zIndex: 51 }}
             className={styles.trainCar}
           >
             <div className={styles.trainWin} />
           </div>
         ))}
+
+        {/* ?dev=1 collider overlay — draws SOLIDS/CIRCLES over the art */}
+        {colliders && <CollisionDebugLayer />}
 
         {/* character — the mock-up "person" (28×28 box centered on position) */}
         <div
@@ -1131,7 +1142,7 @@ export default function NeonCity({
     // refs/cars/name are stable; onPad drives the pad glow, roofAnim swaps the
     // roof-lift variant (dev only, rare), units come from the project list
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [onPad, name, roofAnim, units]
+    [onPad, name, roofAnim, units, colliders]
   );
 
   return (
@@ -1141,7 +1152,14 @@ export default function NeonCity({
       aria-label="Neon City, a walkable portfolio overworld"
       className={`${styles.stage}${introPhase !== "done" ? ` ${styles.introFreeze}` : ""}`}
     >
-      {dev && <CityDevPanel roofAnim={roofAnim} onRoofAnim={pickRoofAnim} />}
+      {dev && (
+        <CityDevPanel
+          roofAnim={roofAnim}
+          onRoofAnim={pickRoofAnim}
+          colliders={colliders}
+          onColliders={pickColliders}
+        />
+      )}
       {world}
 
       {/* ---- overlays ---- */}

@@ -6,6 +6,7 @@ import {
   GALLERIA,
   CHAR_R,
   TREES,
+  BENCHES,
   POND,
   FOUNTAIN_R,
 } from "./cityData";
@@ -56,6 +57,35 @@ describe("park greenery", () => {
   it("leaves ground just beyond a tree walkable", () => {
     const t = TREES[0];
     expect(hitsSolid(t.x + t.r + CHAR_R + 4, t.y)).toBe(false);
+  });
+
+  it("makes every bench solid across its whole span", () => {
+    // benches are thin; sample the middle and both ends so a mis-sized rect
+    // (w/h swapped on a new one) can't slip through
+    for (const [i, b] of BENCHES.entries()) {
+      expect(hitsSolid(b.x + b.w / 2, b.y + b.h / 2), `bench ${i} mid`).toBe(
+        true
+      );
+      expect(hitsSolid(b.x + 1, b.y + 1), `bench ${i} start`).toBe(true);
+      expect(hitsSolid(b.x + b.w - 1, b.y + b.h - 1), `bench ${i} end`).toBe(
+        true
+      );
+    }
+  });
+
+  it("keeps every bench thin enough to never be stepped over", () => {
+    // the loop moves at most `speed * dtCap` = 4 * 3 = 12px per frame, and the
+    // test band around a solid is its size + CHAR_R on both sides. Anything
+    // over 12px of clearance cannot be tunnelled through.
+    const MAX_STEP = 12;
+    for (const [i, b] of BENCHES.entries()) {
+      expect(Math.min(b.w, b.h) + CHAR_R * 2, `bench ${i}`).toBeGreaterThan(
+        MAX_STEP
+      );
+    }
+    for (const [i, t] of TREES.entries()) {
+      expect((t.r + CHAR_R) * 2, `tree ${i}`).toBeGreaterThan(MAX_STEP);
+    }
   });
 });
 
