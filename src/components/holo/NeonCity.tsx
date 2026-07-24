@@ -2201,6 +2201,33 @@ function POILayer() {
             animation: "ncPulse 3.4s ease-in-out infinite",
           }}
         />
+        {/* rooftop billboard — sits on the roof, north edge of the world */}
+        <div
+          id="nc-museum-billboard"
+          style={{
+            position: "absolute",
+            left: "50%",
+            top: 12,
+            transform: "translateX(-50%)",
+            display: "grid",
+            placeItems: "center",
+            padding: "4px 10px",
+            whiteSpace: "nowrap",
+            fontFamily: "var(--font-mono), monospace",
+            fontSize: 9,
+            letterSpacing: ".16em",
+            color: "oklch(0.8 0.12 46)",
+            background: "#0a0913",
+            border: "1px solid oklch(0.8 0.12 46 / .4)",
+            borderRadius: 3,
+            textShadow: "0 0 10px oklch(0.8 0.12 46 / .8)",
+            boxShadow:
+              "0 0 16px oklch(0.8 0.12 46 / .28), inset 0 0 10px oklch(0.8 0.12 46 / .12)",
+            animation: "ncFlick 5.6s infinite",
+          }}
+        >
+          International Spy
+        </div>
         {sign("0.8 0.12 46", "MUSEUM", 7.2)}
       </div>
 
