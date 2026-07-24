@@ -1679,7 +1679,7 @@ function ParkLayer({
         <div className={styles.npName}>
           {first} {last && <i>{last}</i>}
         </div>
-        <div className={styles.npTag}>engineer by day · human by design</div>
+        <div className={styles.npTag}>software engineer · yogi · gamer</div>
       </div>
       {/* vertical platform beside the park (west) */}
       <div
@@ -2070,7 +2070,7 @@ function ProjectsPavilion({ active }: { active: boolean }) {
         style={{
           position: "absolute",
           left: 938,
-          top: 790,
+          top: 810,
           width: 44,
           height: 64,
           background: `oklch(0.85 0.13 190 / ${active ? 0.3 : 0.16})`,
@@ -2081,21 +2081,6 @@ function ProjectsPavilion({ active }: { active: boolean }) {
           zIndex: 3,
         }}
       />
-      <div
-        style={{
-          position: "absolute",
-          left: 994,
-          top: 812,
-          fontFamily: "var(--font-mono), monospace",
-          fontSize: 9,
-          letterSpacing: ".2em",
-          color: "oklch(0.85 0.13 190 / .6)",
-          zIndex: 3,
-          pointerEvents: "none",
-        }}
-      >
-        ENTER
-      </div>
     </>
   );
 }

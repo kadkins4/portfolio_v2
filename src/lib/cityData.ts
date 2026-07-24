@@ -46,7 +46,7 @@ export const PARK = {
   w: 660,
   h: 450,
   radius: "190px 70px 210px 90px",
-  nameplate: { x: 1090, y: 700 },
+  nameplate: { x: 1150, y: 800 },
 };
 // The v3 mockup put a "Terminal Walk" footbridge at (730, 706). It was dropped:
 // the bridge only fits in the mockup's layout, which deletes the Projects
@@ -132,7 +132,7 @@ export const DESTINATIONS: Destination[] = [
     w: 150,
     h: 260,
     pad: { x: 960, y: 822, w: 44, h: 64 },
-    door: { x: 144, y: 140, w: 6, h: 38 },
+    door: { x: 144, y: 180, w: 6, h: 38 },
     href: "/projects",
     teaser: {
       kicker: "✦ ENGINEERING QUARTER · STOREFRONTS LIT",
