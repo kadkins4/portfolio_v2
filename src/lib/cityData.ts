@@ -268,10 +268,10 @@ export const POI_COLLIDERS: { x: number; y: number; w: number; h: number }[] = [
 export const TREES: { x: number; y: number; r: number }[] = [
   { x: 945, y: 615, r: 15 },
   { x: 1072, y: 587, r: 12 },
-  { x: 1394, y: 599, r: 14 },
+  { x: 1424, y: 599, r: 14 },
   { x: 1501, y: 636, r: 11 },
   { x: 948, y: 788, r: 13 },
-  { x: 1318, y: 758, r: 13 },
+  { x: 1280, y: 730, r: 13 },
   { x: 1477, y: 857, r: 12 },
   { x: 1021, y: 936, r: 11 },
   { x: 973, y: 493, r: 13 },
@@ -294,6 +294,8 @@ export const BENCHES: { x: number; y: number; w: number; h: number }[] = [
   { x: 1010, y: 780, w: 14, h: 46 },
   { x: 1500, y: 800, w: 14, h: 46 },
   { x: 1360, y: 930, w: 46, h: 14 },
+  { x: 1190, y: 630, w: 14, h: 56 },
+  { x: 1230, y: 590, w: 56, h: 14 },
 ];
 // street lamps (glow pools, brighten at night)
 export const LAMPS: { x: number; y: number }[] = [

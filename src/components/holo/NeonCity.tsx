@@ -1620,23 +1620,24 @@ function ParkLayer({
         />
         {/* plaza circle */}
         <div
+          id="nc-plaza-circle"
           style={{
             position: "absolute",
-            left: 399,
-            top: 159,
-            width: 88,
-            height: 88,
+            left: 378,
+            top: 170,
+            width: 78,
+            height: 78,
             borderRadius: "50%",
             background: "#131120",
-            border: "1px dashed rgba(243,237,226,.18)",
           }}
         />
         {/* reflecting pond */}
         <div
+          id="nc-reflecting-pond"
           style={{
             position: "absolute",
-            left: 420,
-            top: 24,
+            left: 310,
+            top: 50,
             width: 90,
             height: 90,
             borderRadius: "50%",
@@ -1644,12 +1645,43 @@ function ParkLayer({
             background: "radial-gradient(circle at 40% 35%, #0e1a24, #0a1219)",
             boxShadow: "inset 0 0 20px rgba(0,0,0,.5)",
           }}
-        />
+        >
+          <div id="nc-pond-fountain" className={styles.fountain}>
+            <div className={styles.fountainBasin} />
+            {[0, 1.13, 2.26].map((delay) => (
+              <div
+                key={`ring${delay}`}
+                className={styles.fountainRing}
+                style={{ animationDelay: `${delay}s` }}
+              />
+            ))}
+            <div className={styles.fountainJet} />
+            {/* droplets thrown out on the diagonals, each a half-beat apart */}
+            {[
+              [11, -11],
+              [11, 11],
+              [-11, 11],
+              [-11, -11],
+            ].map(([dx, dy], i) => (
+              <div
+                key={`drop${i}`}
+                className={styles.fountainDrop}
+                style={
+                  {
+                    "--dx": `${dx}px`,
+                    "--dy": `${dy}px`,
+                    animationDelay: `${i * 0.5}s`,
+                  } as CSSProperties
+                }
+              />
+            ))}
+          </div>
+        </div>
         {/* corner label */}
         <div
           style={{
             position: "absolute",
-            right: 26,
+            right: 385,
             bottom: 16,
             fontFamily: "var(--font-mono), monospace",
             fontSize: 10,
@@ -1657,7 +1689,7 @@ function ParkLayer({
             color: "rgba(140,210,160,.5)",
           }}
         >
-          TERMINAL&nbsp;PARK
+          TERMINAL PARK
         </div>
       </div>
       {/* trees */}
