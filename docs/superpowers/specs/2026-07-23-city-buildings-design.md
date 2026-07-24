@@ -156,9 +156,20 @@ Coordinates verbatim from the mockup; copy is ours.
 
 **Commerce (interactive).** Adkins Supply Co. merch (1205, 8) and The Daily
 Grind café (1125, 390). Both are destinations with pads and teasers. Neither
-storefront URL exists yet, so both ship in an **opening-soon** state: the pad
-and teaser work, the CTA is disabled with an honest line. Swapping in a real
-URL is a one-field edit.
+storefront URL exists yet, so both ship in an **opening-soon** state.
+
+Opening-soon is a derived state, not a separate building. A commerce
+destination whose `href` is empty renders:
+
+- an **OPENING SOON placard mounted on the building exterior**, legible at
+  street zoom and readable without stepping on the pad,
+- a teaser whose CTA is disabled and says so plainly,
+- unlit or half-lit signage, so the storefront reads as not-yet-open from a
+  distance.
+
+Filling in the `href` removes the placard, lights the sign, and enables the
+CTA. One field, no code change, nothing to remember to delete. Both URLs are
+roadmap items for the portfolio site and land after this work.
 
 **Tie-ins (interactive).** The Stacks library → studio notes. Observatory →
 currently-learning. The Marquee theater → changelog. Arcade → Ricochet Rogue.
@@ -249,7 +260,8 @@ Each phase is independently verifiable and leaves the city playable.
 
 ## Out of scope
 
-- Real merch and Buy-Me-a-Coffee URLs (Kenny owes these).
+- Real merch and Buy-Me-a-Coffee URLs. Roadmap items; the buildings ship
+  opening-soon and light up when the URLs arrive.
 - Mall interior beyond storefronts — no interiors within interiors.
 - Mobile-specific layout for the east district beyond existing fast travel.
 - Any canvas/WebGL rewrite.
