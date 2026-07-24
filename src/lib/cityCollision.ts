@@ -5,6 +5,7 @@ import {
   POI_COLLIDERS,
   BENCHES,
   TREES,
+  GALLERIA,
 } from "./cityData";
 
 export type Rect = { x: number; y: number; w: number; h: number };
@@ -15,6 +16,10 @@ export const SOLIDS: Rect[] = [
   ...SHELLS.map((s) => ({ x: s.x, y: s.y, w: s.w, h: s.h })),
   ...POI_COLLIDERS,
   ...BENCHES,
+  // the Galleria's perimeter walls (west wall split around the entrance gap)
+  // and its decorative kiosk — same literals GalleriaLayer renders from
+  ...GALLERIA.walls,
+  GALLERIA.kiosk,
 ];
 
 export function hitsSolid(x: number, y: number): boolean {

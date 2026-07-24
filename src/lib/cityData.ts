@@ -52,6 +52,53 @@ export const PARK = {
 // the bridge only fits in the mockup's layout, which deletes the Projects
 // pavilion. We keep the pavilion, so the bridge would run straight through it.
 
+// ---- The Galleria (projects mall) ----
+// A walk-in mall on the east side. Geometry is declared here ONCE: GalleriaLayer
+// renders the walls from `GALLERIA.walls`, and cityCollision reads the same
+// array — a wall you can see is a wall you can't pass, with no second edit.
+// Reposition the whole mall by changing `ox`/`oy`; everything else derives.
+export const GALLERIA = (() => {
+  const ox = 2560;
+  const oy = 430;
+  const w = 520;
+  const h = 620;
+  const wall = 16; // wall thickness; the interior begins `wall` px inside
+  const gapTop = 690; // entrance gap in the west wall (world-space y range)
+  const gapBot = 780;
+  return {
+    x: ox,
+    y: oy,
+    w,
+    h,
+    wall,
+    gap: { top: gapTop, bot: gapBot },
+    // perimeter colliders — the west wall is split around the entrance gap
+    walls: [
+      { x: ox, y: oy, w, h: wall }, // north
+      { x: ox, y: oy + h - wall, w, h: wall }, // south
+      { x: ox + w - wall, y: oy, w: wall, h }, // east
+      { x: ox, y: oy, w: wall, h: gapTop - oy }, // west, above the gap
+      { x: ox, y: gapBot, w: wall, h: oy + h - gapBot }, // west, below the gap
+    ] as { x: number; y: number; w: number; h: number }[],
+    // decorative foreground element outside the entrance; collidable
+    kiosk: { x: 2410, y: 560, w: 90, h: 80 },
+    label: { text: "GALLERIA DISTRICT", x: 2640, y: 1108 },
+    // roof-open trigger zones (world-space). Derived per frame from the player
+    // position — no state, so the roof reverses on exit for free.
+    open: {
+      inside: {
+        x0: ox + wall,
+        x1: ox + w - wall,
+        y0: oy + wall,
+        y1: oy + h - wall,
+      },
+      nearGap: { x0: ox - 60, x1: ox + 40, y0: oy + 240, y1: oy + 370 },
+    },
+  };
+})();
+
+export type RoofAnim = "split" | "iris" | "fade";
+
 // ---- destination buildings ----
 export type Destination = {
   key: "projects" | "resume" | "about" | "contact";

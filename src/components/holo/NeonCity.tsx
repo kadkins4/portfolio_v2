@@ -27,8 +27,10 @@ import {
   DISTRICT_LABELS,
   HUES,
   hueColor,
+  GALLERIA,
   type Destination,
   type Car,
+  type RoofAnim,
 } from "@/lib/cityData";
 import { hitsSolid } from "@/lib/cityCollision";
 import { pathTo } from "@/lib/nav/cityNav";
@@ -36,6 +38,8 @@ import { FAST_TRAVEL_ITEMS } from "@/lib/cityFastTravel";
 import { useIsTouch } from "@/hooks/useIsTouch";
 import TouchJoystick from "./TouchJoystick";
 import FastTravelDrawer from "./FastTravelDrawer";
+import GalleriaLayer from "./GalleriaLayer";
+import CityDevPanel from "./CityDevPanel";
 import HueDot from "./HueDot";
 import styles from "./neonCity.module.css";
 
@@ -160,6 +164,7 @@ export default function NeonCity({
   const panelRef = useRef<string | null>(null);
   const dismissed = useRef<Set<string>>(new Set());
   const onPadRef = useRef<string | null>(null);
+  const roofRef = useRef<HTMLDivElement>(null);
   const start = useRef(0);
   // cinematic arrival intro
   const intro = useRef<{ phase: "ride" | "walk" | "done"; walkT: number }>({
@@ -188,6 +193,25 @@ export default function NeonCity({
     label: "00:00 · NIGHT",
     dot: "#aab4e8",
   });
+  // roof-lift variant: ships "split"; ?dev=1 unlocks live switching + a saved
+  // pick. Kept off the default render path when the query param is absent.
+  const [dev, setDev] = useState(false);
+  const [roofAnim, setRoofAnim] = useState<RoofAnim>("split");
+  useEffect(() => {
+    const isDev =
+      new URLSearchParams(window.location.search).get("dev") === "1";
+    setDev(isDev);
+    if (isDev) {
+      const saved = localStorage.getItem("neoncity.roofAnim");
+      if (saved === "split" || saved === "iris" || saved === "fade") {
+        setRoofAnim(saved);
+      }
+    }
+  }, []);
+  function pickRoofAnim(a: RoofAnim) {
+    setRoofAnim(a);
+    localStorage.setItem("neoncity.roofAnim", a);
+  }
 
   const dest = useMemo(
     () => Object.fromEntries(DESTINATIONS.map((d) => [d.key, d])),
@@ -758,6 +782,22 @@ export default function NeonCity({
         }
       }
 
+      // ---- Galleria roof (open when inside or approaching the gap) ----
+      if (roofRef.current) {
+        const g = GALLERIA.open;
+        const inside =
+          p.x > g.inside.x0 &&
+          p.x < g.inside.x1 &&
+          p.y > g.inside.y0 &&
+          p.y < g.inside.y1;
+        const nearGap =
+          p.x > g.nearGap.x0 &&
+          p.x < g.nearGap.x1 &&
+          p.y > g.nearGap.y0 &&
+          p.y < g.nearGap.y1;
+        roofRef.current.dataset.open = inside || nearGap ? "1" : "0";
+      }
+
       // ---- day/night ----
       const cycleMs = 4 * 60000;
       const t = ((now - start.current) % cycleMs) / cycleMs;
@@ -973,6 +1013,9 @@ export default function NeonCity({
         {/* themed POIs (flavor, not enterable) */}
         <POILayer />
 
+        {/* the projects mall (walk in, roof lifts) */}
+        <GalleriaLayer anim={roofAnim} roofRef={roofRef} />
+
         {/* destination buildings */}
         {DESTINATIONS.filter((d) => d.key !== "projects").map((d) => (
           <DestinationBldg key={d.key} d={d} active={onPad === d.key} />
@@ -1040,9 +1083,10 @@ export default function NeonCity({
         </div>
       </div>
     ),
-    // refs/cars/name are stable; only onPad changes the rendered world
+    // refs/cars/name are stable; onPad drives the pad glow, roofAnim swaps the
+    // roof-lift variant (dev only, rare)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [onPad, name]
+    [onPad, name, roofAnim]
   );
 
   return (
@@ -1052,6 +1096,7 @@ export default function NeonCity({
       aria-label="Neon City, a walkable portfolio overworld"
       className={`${styles.stage}${introPhase !== "done" ? ` ${styles.introFreeze}` : ""}`}
     >
+      {dev && <CityDevPanel roofAnim={roofAnim} onRoofAnim={pickRoofAnim} />}
       {world}
 
       {/* ---- overlays ---- */}
