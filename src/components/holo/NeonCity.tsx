@@ -617,10 +617,11 @@ export default function NeonCity({
         if (!hold) {
           c.x += c.dx * f;
           c.y += c.dy * f;
-          if (c.x > 2460) c.x = -60;
-          if (c.x < -60) c.x = 2460;
-          if (c.y > 1660) c.y = -60;
-          if (c.y < -60) c.y = 1660;
+          // wrap one car-length past each wall so cars re-enter off-screen
+          if (c.x > WORLD.w + 60) c.x = -60;
+          if (c.x < -60) c.x = WORLD.w + 60;
+          if (c.y > WORLD.h + 60) c.y = -60;
+          if (c.y < -60) c.y = WORLD.h + 60;
         }
         // player collision
         if (invuln.current <= 0) {
@@ -1403,25 +1404,25 @@ function StreetLayer() {
         ))}
         {/* straight arterial — V1 traffic runs here */}
         <path
-          d="M 0 320 L 2400 320"
+          d={`M 0 320 L ${WORLD.w} 320`}
           stroke="#0d0c17"
           strokeWidth={78}
           fill="none"
         />
         <path
-          d="M 0 282 L 2400 282"
+          d={`M 0 282 L ${WORLD.w} 282`}
           stroke="rgba(150,140,220,.14)"
           strokeWidth={1.5}
           fill="none"
         />
         <path
-          d="M 0 358 L 2400 358"
+          d={`M 0 358 L ${WORLD.w} 358`}
           stroke="rgba(150,140,220,.14)"
           strokeWidth={1.5}
           fill="none"
         />
         <path
-          d="M 0 320 L 2400 320"
+          d={`M 0 320 L ${WORLD.w} 320`}
           stroke="rgba(243,237,226,.08)"
           strokeWidth={2}
           fill="none"
@@ -2653,11 +2654,13 @@ function POILayer() {
         />
       </div>
 
-      {/* MARINA / DOCKSIDE (cyan) */}
+      {/* MARINA / DOCKSIDE (cyan) — anchored to the east wall, not absolute:
+          these offsets are "distance in from the edge" so the whole cluster
+          rides along if the world is ever resized again. */}
       <div
         style={{
           position: "absolute",
-          left: 2308,
+          left: WORLD.w - 92,
           top: 570,
           width: 92,
           height: 560,
@@ -2671,7 +2674,7 @@ function POILayer() {
       <div
         style={{
           position: "absolute",
-          left: 2255,
+          left: WORLD.w - 145,
           top: 700,
           width: 64,
           height: 12,
@@ -2682,7 +2685,7 @@ function POILayer() {
       <div
         style={{
           position: "absolute",
-          left: 2250,
+          left: WORLD.w - 150,
           top: 930,
           width: 70,
           height: 12,
@@ -2693,7 +2696,7 @@ function POILayer() {
       <div
         style={{
           position: "absolute",
-          left: 2348,
+          left: WORLD.w - 52,
           top: 800,
           width: 11,
           height: 20,
@@ -2706,7 +2709,7 @@ function POILayer() {
       <div
         style={{
           position: "absolute",
-          left: 2242,
+          left: WORLD.w - 158,
           top: 1046,
           fontFamily: "var(--font-mono), monospace",
           fontSize: 10,

@@ -1,11 +1,12 @@
 // Static geometry + content for the walkable Neon City (/city).
-// World is a fixed 2400×1600 canvas; all coords are world-space.
+// World is a fixed 3200×1600 canvas; all coords are world-space. The east
+// 800px is the Galleria district, added when the projects mall landed.
 // Layout C: destinations clustered around Terminal Park, curved streets, the
 // curved Adkins Line rail with a west-side landing, themed POIs + gray shells.
 
 import { PAGE_COPY } from "./constants";
 
-export const WORLD = { w: 2400, h: 1600 };
+export const WORLD = { w: 3200, h: 1600 };
 export const CHAR_R = 13;
 export const MARGIN = 26;
 // Layout C: the arrival landing, just west of the Projects pavilion. The player
@@ -26,8 +27,6 @@ export function hueColor(h: number, l = 0.84, c = 0.13, a?: number): string {
 
 // ---- streets (centerlines; all 80px wide) ----
 export const ROAD_W = 80;
-export const ROADS_H = [360, 1040]; // y centerlines
-export const ROADS_V = [320, 1880]; // x centerlines
 // Grid nodes retired for V1 (the straight grid is gone, replaced by curved
 // streets + one arterial). Kept as an empty export so the dormant traffic-light
 // engine still compiles; V2 repopulates this when cars migrate to path-following.
