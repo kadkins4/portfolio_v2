@@ -936,6 +936,7 @@ export default function NeonCity({
         {BLOBS.map((bl, i) => (
           <div
             key={`blob${i}`}
+            id={`nc-blob-${i}`}
             className={styles.blob}
             style={{
               left: bl.x,
@@ -953,6 +954,7 @@ export default function NeonCity({
         {DISTRICT_LABELS.map((l) => (
           <div
             key={l.text}
+            id={`nc-district-label-${l.text.toLowerCase().replace(/\s+/g, "-")}`}
             className={styles.districtLabel}
             style={{
               left: l.x,
@@ -974,7 +976,7 @@ export default function NeonCity({
         {/* lamps (brighten at night) */}
         <div ref={lampWrapRef}>
           {LAMPS.map((l, i) => (
-            <div key={`lp${i}`}>
+            <div key={`lp${i}`} id={`nc-lamp-${i}`}>
               <div
                 className={styles.lampPool}
                 style={{ left: l.x, top: l.y }}
@@ -994,6 +996,7 @@ export default function NeonCity({
         {SHELLS.map((s, i) => (
           <div
             key={`shell${i}`}
+            id={`nc-shell-${i}`}
             style={{
               position: "absolute",
               left: s.x,
@@ -1103,6 +1106,7 @@ export default function NeonCity({
         {/* character — the mock-up "person" (28×28 box centered on position) */}
         <div
           ref={charRef}
+          id="nc-player"
           className={styles.char}
           style={{
             transform: `translate(${SPAWN.x - 14}px, ${SPAWN.y - 14}px)`,
@@ -1569,6 +1573,7 @@ function ParkLayer({
   return (
     <>
       <div
+        id="nc-park"
         className={styles.park}
         style={{
           left: PARK.x,
@@ -1659,6 +1664,7 @@ function ParkLayer({
       {TREES.map((t, i) => (
         <div
           key={`tree${i}`}
+          id={`nc-tree-${i}`}
           className={styles.tree}
           style={{ left: t.x, top: t.y, width: t.r * 2, height: t.r * 2 }}
         />
@@ -1667,12 +1673,14 @@ function ParkLayer({
       {BENCHES.map((b, i) => (
         <div
           key={`bench${i}`}
+          id={`nc-bench-${i}`}
           className={styles.bench}
           style={{ left: b.x, top: b.y, width: b.w, height: b.h }}
         />
       ))}
       {/* nameplate */}
       <div
+        id="nc-park-nameplate"
         className={styles.nameplate}
         style={{ left: PARK.nameplate.x, top: PARK.nameplate.y }}
       >
@@ -1683,6 +1691,7 @@ function ParkLayer({
       </div>
       {/* vertical platform beside the park (west) */}
       <div
+        id="nc-rail-platform"
         style={{
           position: "absolute",
           left: 696,
@@ -1731,6 +1740,7 @@ function DestinationBldg({ d, active }: { d: Destination; active: boolean }) {
   return (
     <>
       <div
+        id={`nc-building-${d.key}`}
         style={{
           position: "absolute",
           left: d.x,
@@ -1839,6 +1849,7 @@ function DestinationBldg({ d, active }: { d: Destination; active: boolean }) {
         />
         {/* lit accent door strip */}
         <div
+          id={`nc-door-${d.key}`}
           style={{
             position: "absolute",
             left: d.door.x,
@@ -1902,6 +1913,7 @@ function DestinationBldg({ d, active }: { d: Destination; active: boolean }) {
       </div>
       {/* entry pad */}
       <div
+        id={`nc-pad-${d.key}`}
         style={{
           position: "absolute",
           left: pr.x,
@@ -1938,6 +1950,7 @@ function ProjectsPavilion({ active }: { active: boolean }) {
   return (
     <>
       <div
+        id="nc-building-projects"
         style={{
           position: "absolute",
           left: d.x,
@@ -2003,6 +2016,7 @@ function ProjectsPavilion({ active }: { active: boolean }) {
         />
         {/* right-side entrance door strip */}
         <div
+          id="nc-door-projects"
           style={{
             position: "absolute",
             left: d.door.x,
@@ -2067,6 +2081,7 @@ function ProjectsPavilion({ active }: { active: boolean }) {
       />
       {/* entrance pad on the RIGHT (trigger center 960,822) */}
       <div
+        id="nc-pad-projects"
         style={{
           position: "absolute",
           left: 938,
@@ -2116,6 +2131,7 @@ function POILayer() {
     <>
       {/* MUSEUM (amber) */}
       <div
+        id="nc-poi-museum"
         style={{
           position: "absolute",
           left: 520,
@@ -2184,6 +2200,7 @@ function POILayer() {
 
       {/* CONSTRUCTION / SITE 09 (amber) */}
       <div
+        id="nc-poi-construction"
         style={{
           position: "absolute",
           left: 1660,
@@ -2266,6 +2283,7 @@ function POILayer() {
 
       {/* OBSERVATORY (purple) */}
       <div
+        id="nc-poi-observatory"
         style={{
           position: "absolute",
           left: 2140,
@@ -2327,6 +2345,7 @@ function POILayer() {
 
       {/* ARCADE (cyan) */}
       <div
+        id="nc-poi-arcade"
         style={{
           position: "absolute",
           left: 40,
@@ -2430,6 +2449,7 @@ function POILayer() {
 
       {/* BROADCAST TOWER / KNDL FM (cyan) */}
       <div
+        id="nc-poi-broadcast-tower"
         style={{
           position: "absolute",
           left: 2050,
@@ -2503,6 +2523,7 @@ function POILayer() {
 
       {/* RAMEN (amber) */}
       <div
+        id="nc-poi-ramen"
         style={{
           position: "absolute",
           left: 590,
@@ -2740,6 +2761,7 @@ function POILayer() {
           the east and south walls) so it fills the bottom-right waterfront in
           the clear, well below the Galleria, and rides along on any resize. */}
       <div
+        id="nc-marina-basin"
         style={{
           position: "absolute",
           left: WORLD.w - 300,

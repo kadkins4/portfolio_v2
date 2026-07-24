@@ -25,6 +25,7 @@ export default function GalleriaLayer({
     <>
       {/* interior floor — revealed when the roof lifts */}
       <div
+        id="nc-galleria-floor"
         style={{
           position: "absolute",
           left: x + wall,
@@ -42,6 +43,7 @@ export default function GalleriaLayer({
 
       {/* courtyard fountain (collidable centerpiece) */}
       <div
+        id="nc-galleria-fountain"
         style={{
           position: "absolute",
           left: fountain.x,
@@ -69,6 +71,7 @@ export default function GalleriaLayer({
 
       {/* directory board — "YOU ARE HERE" (render-only) */}
       <div
+        id="nc-galleria-directory"
         style={{
           position: "absolute",
           left: directory.x,
@@ -116,6 +119,7 @@ export default function GalleriaLayer({
       {walls.map((wl, i) => (
         <div
           key={`gwall${i}`}
+          id={`nc-galleria-wall-${i}`}
           style={{
             position: "absolute",
             left: wl.x,
@@ -132,6 +136,7 @@ export default function GalleriaLayer({
 
       {/* entrance gap: cyan glow strip on the wall line + dashed ground apron */}
       <div
+        id="nc-galleria-gap-glow"
         className={css.gapGlow}
         style={{
           left: x,
@@ -142,6 +147,7 @@ export default function GalleriaLayer({
         }}
       />
       <div
+        id="nc-galleria-apron"
         className={css.apron}
         style={{
           left: x - 54,
@@ -154,6 +160,7 @@ export default function GalleriaLayer({
 
       {/* kiosk — decorative foreground element outside the entrance */}
       <div
+        id="nc-galleria-kiosk"
         style={{
           position: "absolute",
           left: kiosk.x,
@@ -192,6 +199,7 @@ export default function GalleriaLayer({
 
       {/* ground label */}
       <div
+        id="nc-galleria-label"
         style={{
           position: "absolute",
           left: label.x,
@@ -214,6 +222,7 @@ export default function GalleriaLayer({
       {/* roof — the RAF loop toggles data-open; data-anim comes from the panel */}
       <div
         ref={roofRef}
+        id="nc-galleria-roof"
         className={css.roof}
         data-anim={anim}
         data-open="0"
@@ -292,6 +301,7 @@ function Unit({ u, lit }: { u: GalleriaUnit; lit: boolean }) {
     <>
       {/* the storefront box */}
       <div
+        id={`nc-galleria-unit-${code}`}
         style={{
           position: "absolute",
           left: rect.x,
@@ -424,6 +434,7 @@ function Unit({ u, lit }: { u: GalleriaUnit; lit: boolean }) {
 
         {/* door strip on the facing side */}
         <div
+          id={`nc-galleria-door-${code}`}
           style={{
             position: "absolute",
             ...door,
@@ -440,6 +451,7 @@ function Unit({ u, lit }: { u: GalleriaUnit; lit: boolean }) {
       {/* entrance pad — glows brighter when the player is standing on it */}
       {pad && (
         <div
+          id={`nc-galleria-pad-${code}`}
           style={{
             position: "absolute",
             left: pad.x,
