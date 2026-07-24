@@ -55,10 +55,12 @@ describe("terminal station", () => {
     expect(resume.x).toBeLessThan(T.platform.x);
   });
 
-  it("makes the ticket hall solid", () => {
+  it("keeps the un-drawn ticket hall out of the collision list", () => {
+    // it is not rendered right now, and a collider with nothing drawn over it
+    // is an invisible wall — this one sat right where the player lands
     expect(
       hitsSolid(T.house.x + T.house.w / 2, T.house.y + T.house.h / 2)
-    ).toBe(true);
+    ).toBe(false);
   });
 
   it("leaves the stairs and the platform lane walkable", () => {

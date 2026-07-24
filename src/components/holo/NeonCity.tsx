@@ -1812,101 +1812,23 @@ function TerminalStation() {
           zIndex: 12,
         }}
       >
-        {/* tactile edge stripe along the track side */}
-        <div
-          id="nc-platform-edge"
-          style={{
-            position: "absolute",
-            top: 0,
-            bottom: 0,
-            right: 0,
-            width: 6,
-            backgroundImage:
-              "repeating-linear-gradient(180deg, oklch(0.85 0.13 190 / .5) 0 5px, transparent 5px 11px)",
-          }}
-        />
         <span
           id="nc-platform-name"
           style={{
             position: "absolute",
             left: 9,
-            bottom: 10,
+            bottom: 15,
             fontFamily: mono,
             fontSize: 8,
             letterSpacing: ".3em",
             color: "oklch(0.85 0.13 190 / .75)",
             writingMode: "vertical-rl",
+            zIndex: 30,
           }}
         >
-          TERMINAL · ADKINS LINE
+          TERMINAL PARK · ADKINS LINE
         </span>
       </div>
-      {/* canopy over the waiting area — scenery, drawn above the deck */}
-      <div
-        id="nc-platform-canopy"
-        style={{
-          position: "absolute",
-          left: T.canopy.x,
-          top: T.canopy.y,
-          width: T.canopy.w,
-          height: T.canopy.h,
-          zIndex: 13,
-          borderRadius: 3,
-          background:
-            "linear-gradient(100deg, rgba(150,190,235,.13), rgba(120,160,220,.05))",
-          border: "1px solid rgba(150,190,235,.2)",
-          boxShadow: "inset 0 1px 8px rgba(180,210,240,.18)",
-          pointerEvents: "none",
-        }}
-      />
-      {/* departures board at the head of the platform */}
-      <div
-        id="nc-platform-board"
-        style={{
-          position: "absolute",
-          left: T.board.x,
-          top: T.board.y,
-          width: T.board.w,
-          height: T.board.h,
-          zIndex: 14,
-          borderRadius: 2,
-          background: "#0a0913",
-          border: `1px solid ${cyanDim}`,
-          boxShadow: `0 0 12px oklch(0.85 0.13 190 / .22)`,
-          padding: 3,
-          display: "flex",
-          flexDirection: "column",
-          gap: 2,
-        }}
-      >
-        {[0.75, 0.45, 0.3].map((o, i) => (
-          <div
-            key={i}
-            id={`nc-platform-board-row-${i}`}
-            style={{
-              height: 3,
-              borderRadius: 1,
-              width: i === 0 ? "100%" : i === 1 ? "72%" : "56%",
-              background: `oklch(0.85 0.13 190 / ${o})`,
-            }}
-          />
-        ))}
-      </div>
-      {/* platform bench */}
-      <div
-        id="nc-platform-bench"
-        style={{
-          position: "absolute",
-          left: T.bench.x,
-          top: T.bench.y,
-          width: T.bench.w,
-          height: T.bench.h,
-          zIndex: 14,
-          borderRadius: 2,
-          background: "#191428",
-          border: "1px solid rgba(150,140,220,.3)",
-        }}
-      />
       {/* stairs down to the street, treads running west */}
       <div
         id="nc-terminal-stairs"
@@ -1924,59 +1846,6 @@ function TerminalStation() {
             "repeating-linear-gradient(90deg, rgba(150,140,220,.22) 0 1px, transparent 1px 9px)",
         }}
       />
-      {/* ticket hall at the foot of the stairs */}
-      <div
-        id="nc-terminal-house"
-        style={{
-          position: "absolute",
-          left: T.house.x,
-          top: T.house.y,
-          width: T.house.w,
-          height: T.house.h,
-          zIndex: 12,
-          borderRadius: "10px 4px 8px 5px",
-          background: "#110f1e",
-          border: `1px solid ${cyanDim}`,
-          boxShadow: `0 0 22px oklch(0.85 0.13 190 / .14), inset 0 0 26px rgba(0,0,0,.55)`,
-        }}
-      >
-        {/* two lit ticket windows facing the street */}
-        {[0, 1].map((i) => (
-          <div
-            key={i}
-            id={`nc-ticket-window-${i}`}
-            style={{
-              position: "absolute",
-              left: 12 + i * 34,
-              top: 12,
-              width: 26,
-              height: 18,
-              borderRadius: 2,
-              background: "oklch(0.85 0.13 190 / .18)",
-              border: `1px solid ${cyanDim}`,
-              boxShadow: `0 0 10px oklch(0.85 0.13 190 / .3)`,
-            }}
-          />
-        ))}
-        <div
-          id="nc-ticket-sign"
-          style={{
-            position: "absolute",
-            left: 0,
-            right: 0,
-            bottom: 10,
-            textAlign: "center",
-            fontFamily: mono,
-            fontSize: 8,
-            letterSpacing: ".28em",
-            color: cyan,
-            textShadow: `0 0 8px ${cyan}`,
-            animation: "ncFlick 8s infinite",
-          }}
-        >
-          TICKETS
-        </div>
-      </div>
       {/* turnstiles between the stairs and the street */}
       {[0, 1].map((i) => (
         <div
@@ -2173,6 +2042,13 @@ function DestinationBldg({ d, active }: { d: Destination; active: boolean }) {
               letterSpacing: ".34em",
               color: accent,
               textShadow: `0 0 16px ${accent}`,
+              // long names wrap onto a second line rather than crowding the
+              // plate edge to edge. The negative margin cancels the trailing
+              // letter-space so wrapped lines still read as centred.
+              maxWidth: "86%",
+              textAlign: "center",
+              lineHeight: 1.4,
+              marginRight: "-.34em",
             }}
           >
             {d.sign}
@@ -2329,6 +2205,10 @@ function ProjectsPavilion({ active }: { active: boolean }) {
               letterSpacing: ".3em",
               color: accent,
               textShadow: `0 0 16px ${accent}`,
+              maxWidth: "86%",
+              textAlign: "center",
+              lineHeight: 1.4,
+              marginRight: "-.3em",
             }}
           >
             {d.sign}

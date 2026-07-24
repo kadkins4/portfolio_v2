@@ -7,7 +7,6 @@ import {
   TREES,
   GALLERIA,
   APARTMENT,
-  TERMINAL,
   POND,
   FOUNTAIN_R,
 } from "./cityData";
@@ -34,10 +33,11 @@ export const SOLIDS: Rect[] = [
   ...GALLERIA.walls,
   GALLERIA.kiosk,
   GALLERIA.fountain,
-  // the terminal's ticket hall. The platform, stairs and their dressing stay
-  // walkable — you arrive on them.
-  TERMINAL.house,
 ];
+// NOTE: TERMINAL.house is deliberately absent. The ticket hall is not currently
+// drawn, and a collider with nothing rendered over it is an invisible wall —
+// here, right where the player lands off the stairs. If the hall comes back,
+// it goes back in this list at the same time.
 
 // round solids, tested by distance rather than as boxes: tree canopies and the
 // park fountain's basin
