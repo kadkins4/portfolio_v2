@@ -1338,7 +1338,11 @@ function StreetLayer() {
     "M 412 1130 C 680 1098 950 1128 1250 1128 C 1470 1126 1700 1096 1900 1040",
     "M 252 -40 C 262 20 292 62 320 100 C 700 240 1150 120 1500 190 C 1720 230 1850 140 2010 130 C 2080 127 2120 200 2120 282",
   ];
-  const spur = "M 1010 340 C 1030 430 1070 490 1090 556";
+  // short connector roads — narrower than the main curves (60/56 vs 68/64)
+  const spurs = [
+    "M 1010 340 C 1030 430 1070 490 1090 556", // arterial → park roundabout
+    "M 2085 700 C 2220 688 2350 700 2500 702", // east curve → Galleria entrance
+  ];
   return (
     <>
       <svg
@@ -1358,13 +1362,16 @@ function StreetLayer() {
             strokeLinecap="round"
           />
         ))}
-        <path
-          d={spur}
-          stroke="rgba(150,140,220,.13)"
-          strokeWidth={60}
-          fill="none"
-          strokeLinecap="round"
-        />
+        {spurs.map((d, i) => (
+          <path
+            key={`spo${i}`}
+            d={d}
+            stroke="rgba(150,140,220,.13)"
+            strokeWidth={60}
+            fill="none"
+            strokeLinecap="round"
+          />
+        ))}
         <circle
           cx={1090}
           cy={548}
@@ -1384,15 +1391,18 @@ function StreetLayer() {
             strokeLinecap="round"
           />
         ))}
-        <path
-          d={spur}
-          stroke="#0d0c17"
-          strokeWidth={56}
-          fill="none"
-          strokeLinecap="round"
-        />
+        {spurs.map((d, i) => (
+          <path
+            key={`spb${i}`}
+            d={d}
+            stroke="#0d0c17"
+            strokeWidth={56}
+            fill="none"
+            strokeLinecap="round"
+          />
+        ))}
         {/* dashed centerlines */}
-        {curved.map((d, i) => (
+        {[...curved, ...spurs].map((d, i) => (
           <path
             key={`sc${i}`}
             d={d}
@@ -1429,19 +1439,22 @@ function StreetLayer() {
           strokeDasharray="26 36"
         />
       </svg>
-      {/* arterial crosswalk at the park spur */}
-      <div
-        style={{
-          position: "absolute",
-          left: 986,
-          top: 284,
-          width: 46,
-          height: 72,
-          backgroundImage:
-            "repeating-linear-gradient(0deg, rgba(243,237,226,.1) 0 8px, transparent 8px 19px)",
-          pointerEvents: "none",
-        }}
-      />
+      {/* arterial crosswalks — one at the park spur, one at the Galleria spur */}
+      {[986, 2440].map((left) => (
+        <div
+          key={`xw${left}`}
+          style={{
+            position: "absolute",
+            left,
+            top: 284,
+            width: 46,
+            height: 72,
+            backgroundImage:
+              "repeating-linear-gradient(0deg, rgba(243,237,226,.1) 0 8px, transparent 8px 19px)",
+            pointerEvents: "none",
+          }}
+        />
+      ))}
       {/* arterial tag */}
       <div
         style={{

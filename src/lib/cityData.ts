@@ -46,9 +46,11 @@ export const PARK = {
   w: 660,
   h: 450,
   radius: "190px 70px 210px 90px",
-  nameplate: { x: 1230, y: 750 },
-  platform: { x: 1110, y: 874, w: 240, h: 32 },
+  nameplate: { x: 1090, y: 700 },
 };
+// The v3 mockup put a "Terminal Walk" footbridge at (730, 706). It was dropped:
+// the bridge only fits in the mockup's layout, which deletes the Projects
+// pavilion. We keep the pavilion, so the bridge would run straight through it.
 
 // ---- destination buildings ----
 export type Destination = {
