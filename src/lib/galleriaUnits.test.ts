@@ -41,7 +41,8 @@ describe("buildGalleriaUnits", () => {
     for (const u of buildGalleriaUnits(nine).filter((x) => x.slug)) {
       expect(u.href).toBe(`/projects/${u.slug}`);
       expect(u.pad).toBeDefined();
-      expect(u.teaser?.title).toBe(u.slug);
+      expect(u.name).toBe(u.slug);
+      expect(u.teaser?.title).toBe(`${u.slug}.`);
     }
   });
 

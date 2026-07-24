@@ -59,9 +59,8 @@ describe("Galleria mall", () => {
     ); // east
   });
 
-  it("leaves the mall interior walkable", () => {
-    const cx = x + GALLERIA.w / 2;
-    const cy = GALLERIA.y + GALLERIA.h / 2;
-    expect(hitsSolid(cx, cy)).toBe(false);
+  it("leaves an open courtyard lane walkable", () => {
+    // between the west units and the fountain — clear of every solid
+    expect(hitsSolid(2700, 800)).toBe(false);
   });
 });

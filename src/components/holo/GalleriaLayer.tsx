@@ -18,7 +18,8 @@ export default function GalleriaLayer({
   units: GalleriaUnit[];
   onPad: string | null;
 }) {
-  const { x, y, w, h, wall, gap, walls, kiosk, label } = GALLERIA;
+  const { x, y, w, h, wall, gap, walls, kiosk, fountain, directory, label } =
+    GALLERIA;
 
   return (
     <>
@@ -31,26 +32,84 @@ export default function GalleriaLayer({
           width: w - wall * 2,
           height: h - wall * 2,
           background:
-            "radial-gradient(120% 90% at 50% 0%, #17142880 0%, #0d0b18 70%), #0b0a14",
+            "radial-gradient(120% 90% at 50% 0%, #17142880 0%, #0d0b18 70%), #0e0c18",
           backgroundImage:
-            "repeating-linear-gradient(90deg, rgba(150,140,220,.05) 0 1px, transparent 1px 44px), repeating-linear-gradient(0deg, rgba(150,140,220,.05) 0 1px, transparent 1px 44px)",
+            "repeating-linear-gradient(90deg, rgba(150,140,220,.06) 0 1px, transparent 1px 34px), repeating-linear-gradient(0deg, rgba(150,140,220,.06) 0 1px, transparent 1px 34px)",
           boxShadow: "inset 0 0 60px rgba(0,0,0,.6)",
           zIndex: 3,
         }}
+      />
+
+      {/* courtyard fountain (collidable centerpiece) */}
+      <div
+        style={{
+          position: "absolute",
+          left: fountain.x,
+          top: fountain.y,
+          width: fountain.w,
+          height: fountain.h,
+          borderRadius: "50%",
+          border: "2px dashed rgba(120,200,235,.4)",
+          background:
+            "radial-gradient(circle at 50% 45%, rgba(120,200,235,.18), rgba(20,30,45,.35) 70%)",
+          boxShadow: "inset 0 0 14px rgba(120,200,235,.2)",
+          zIndex: 4,
+        }}
       >
-        {/* concourse spine down the middle of the mall */}
+        <div
+          className={css.ripple}
+          style={{
+            position: "absolute",
+            inset: "34%",
+            borderRadius: "50%",
+            border: "1px solid rgba(140,210,240,.5)",
+          }}
+        />
+      </div>
+
+      {/* directory board — "YOU ARE HERE" (render-only) */}
+      <div
+        style={{
+          position: "absolute",
+          left: directory.x,
+          top: directory.y,
+          width: directory.w,
+          height: directory.h,
+          zIndex: 4,
+          background: "#0c0b16",
+          border: "1px solid rgba(120,200,235,.4)",
+          boxShadow: "0 0 8px rgba(120,200,235,.2)",
+          borderRadius: 2,
+          backgroundImage:
+            "repeating-linear-gradient(0deg, rgba(120,200,235,.16) 0 1px, transparent 1px 5px)",
+        }}
+      >
         <div
           style={{
             position: "absolute",
-            left: "50%",
-            top: 24,
-            bottom: 24,
-            width: 2,
-            transform: "translateX(-1px)",
-            background:
-              "repeating-linear-gradient(0deg, rgba(120,200,235,.22) 0 10px, transparent 10px 26px)",
+            top: 3,
+            right: 3,
+            width: 4,
+            height: 4,
+            borderRadius: "50%",
+            background: "oklch(0.7 0.19 25)",
+            boxShadow: "0 0 5px oklch(0.7 0.19 25)",
           }}
         />
+        <div
+          style={{
+            position: "absolute",
+            left: -6,
+            bottom: -12,
+            width: 38,
+            textAlign: "center",
+            font: "700 5.5px/1 ui-monospace, monospace",
+            letterSpacing: "0.14em",
+            color: "rgba(120,200,235,.7)",
+          }}
+        >
+          YOU ARE HERE
+        </div>
       </div>
 
       {/* perimeter walls — same rects cityCollision reads */}
@@ -203,15 +262,31 @@ export default function GalleriaLayer({
   );
 }
 
-// One storefront. Rendered by state: a lit unit routes to its project, an
-// in-progress unit shows a hoarding + permit board (still routes, since the
-// detail page stays reachable), a vacant unit shows FOR LEASE and has no pad.
+// door strip on the side the unit faces, relative to its box (top-left origin)
+function doorStyle(face: GalleriaUnit["face"], w: number, h: number) {
+  switch (face) {
+    case "S":
+      return { left: w / 2 - 10, top: h - 4, width: 20, height: 4 };
+    case "N":
+      return { left: w / 2 - 10, top: 0, width: 20, height: 4 };
+    case "W":
+      return { left: 0, top: h / 2 - 10, width: 4, height: 20 };
+    case "E":
+      return { left: w - 4, top: h / 2 - 10, width: 4, height: 20 };
+  }
+}
+
+// One storefront, backed flush to a wall with its door facing the courtyard.
+// live → lit box with the project's name on the sign; in-progress → caution
+// hoarding + building-permit board (still routes, the detail page stays
+// reachable); vacant → dimmed box with a FOR LEASE placard, no pad.
 function Unit({ u, lit }: { u: GalleriaUnit; lit: boolean }) {
-  const { rect, hue, state, anchor } = u;
-  const accent = hueColor(hue, 0.82, 0.13);
+  const { rect, hue, state, anchor, code, name } = u;
   const vacant = state === "vacant";
   const building = state === "in-progress";
+  const live = state === "live";
   const pad = u.pad ? centerRect(u.pad) : null;
+  const door = doorStyle(u.face, rect.w, rect.h);
 
   return (
     <>
@@ -224,89 +299,142 @@ function Unit({ u, lit }: { u: GalleriaUnit; lit: boolean }) {
           width: rect.w,
           height: rect.h,
           zIndex: 4,
-          borderRadius: 4,
-          background: vacant
-            ? "linear-gradient(180deg, #131120, #0d0b16)"
-            : "linear-gradient(180deg, #1a1730, #110f1e)",
-          border: `1px solid ${vacant ? "rgba(150,140,220,.14)" : hueColor(hue, 0.7, 0.1, 0.5)}`,
-          boxShadow: vacant
-            ? "inset 0 0 18px rgba(0,0,0,.5)"
-            : `inset 0 0 18px rgba(0,0,0,.45), 0 0 ${anchor ? 22 : 14}px ${hueColor(hue, 0.7, 0.12, anchor ? 0.28 : 0.18)}`,
-          display: "grid",
-          placeItems: "center",
+          borderRadius: 3,
+          background: "#131120",
+          border: `1px solid ${live ? hueColor(hue, 0.85, 0.13, 0.45) : "rgba(150,140,220,.3)"}`,
+          boxShadow: live
+            ? `inset 0 0 16px rgba(0,0,0,.45), 0 0 ${anchor ? 20 : 13}px ${hueColor(hue, 0.7, 0.13, anchor ? 0.26 : 0.14)}`
+            : "inset 0 0 16px rgba(0,0,0,.5)",
         }}
       >
-        {vacant ? (
+        {/* faint inset window grid (shared building vocabulary) */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 8,
+            backgroundImage:
+              "repeating-linear-gradient(90deg, rgba(150,140,220,.09) 0 1px, transparent 1px 12px), repeating-linear-gradient(0deg, rgba(150,140,220,.09) 0 1px, transparent 1px 12px)",
+            pointerEvents: "none",
+          }}
+        />
+
+        {/* sign: live shows the project name, in-progress shows UNIT code */}
+        {(live || building) && (
           <div
             style={{
-              font: "700 9px/1.3 ui-monospace, monospace",
-              letterSpacing: "0.18em",
+              position: "absolute",
+              left: 4,
+              right: 4,
+              top: 6,
               textAlign: "center",
-              color: "rgba(170,180,225,.5)",
+              font: "700 6.5px/1.1 ui-monospace, monospace",
+              letterSpacing: "0.14em",
+              color: live ? hueColor(hue, 0.85, 0.13) : "rgba(200,205,240,.7)",
+              textShadow: live
+                ? `0 0 6px ${hueColor(hue, 0.7, 0.13, 0.7)}`
+                : "none",
+              zIndex: 2,
             }}
           >
-            FOR
-            <br />
-            LEASE
+            {live ? name!.toUpperCase() : `UNIT ${code}`}
+            {anchor && (
+              <div
+                style={{
+                  marginTop: 2,
+                  font: "700 5px/1 ui-monospace, monospace",
+                  letterSpacing: "0.2em",
+                  color: "rgba(243,237,226,.4)",
+                }}
+              >
+                ANCHOR
+              </div>
+            )}
           </div>
-        ) : building ? (
+        )}
+
+        {/* construction overlay: caution stripes + building-permit board */}
+        {building && (
           <>
-            {/* hoarding stripes */}
             <div
               style={{
                 position: "absolute",
-                inset: 5,
+                inset: 0,
                 borderRadius: 3,
                 backgroundImage:
-                  "repeating-linear-gradient(45deg, rgba(240,200,90,.16) 0 10px, rgba(20,18,10,.5) 10px 20px)",
-                border: "1px solid rgba(240,200,90,.3)",
+                  "repeating-linear-gradient(45deg, oklch(0.8 0.12 46 / .22) 0 7px, rgba(14,12,25,.85) 7px 14px)",
               }}
             />
-            {/* permit board */}
             <div
               style={{
-                position: "relative",
-                padding: "3px 6px",
-                font: "700 8px/1.3 ui-monospace, monospace",
-                letterSpacing: "0.12em",
-                color: "rgba(245,220,150,.95)",
-                background: "#0c0b16",
-                border: "1px solid rgba(240,200,90,.4)",
+                position: "absolute",
+                left: "50%",
+                top: "50%",
+                transform: "translate(-50%,-50%)",
+                padding: "3px 5px",
+                maxWidth: rect.w - 12,
+                font: "700 6px/1.25 ui-monospace, monospace",
+                letterSpacing: "0.08em",
                 textAlign: "center",
+                color: "#3a3020",
+                background: "#e8dcc2",
+                border: "1px solid #9a8a60",
               }}
             >
-              BUILDING
-              <br />
-              PERMIT
+              BUILDING PERMIT
+              <div style={{ color: "#5a4d2e", marginTop: 1 }}>{u.permit}</div>
             </div>
           </>
-        ) : (
+        )}
+
+        {/* for-lease overlay: scrim + rotated placard */}
+        {vacant && (
           <>
-            {/* lit sign strip */}
             <div
               style={{
                 position: "absolute",
-                left: 6,
-                right: 6,
-                top: 6,
-                height: 10,
-                borderRadius: 2,
-                background: hueColor(hue, 0.55, 0.12, 0.22),
-                border: `1px solid ${hueColor(hue, 0.75, 0.13, 0.6)}`,
-                boxShadow: `0 0 10px ${hueColor(hue, 0.7, 0.13, 0.4)}`,
+                inset: 0,
+                borderRadius: 3,
+                background: "rgba(10,9,19,.55)",
               }}
             />
-            {/* windows */}
             <div
               style={{
                 position: "absolute",
-                inset: "24px 8px 8px 8px",
-                backgroundImage:
-                  "repeating-linear-gradient(90deg, rgba(150,140,220,.1) 0 1px, transparent 1px 16px)",
+                left: "50%",
+                top: "50%",
+                transform: "translate(-50%,-50%) rotate(-4deg)",
+                padding: "3px 6px",
+                font: "700 7px/1.3 ui-monospace, monospace",
+                letterSpacing: "0.16em",
+                textAlign: "center",
+                color: "rgba(200,205,240,.72)",
+                background: "#0c0b16",
+                border: "1px solid rgba(150,140,220,.3)",
               }}
-            />
+            >
+              FOR LEASE
+              <div
+                style={{ fontSize: 5, opacity: 0.6, letterSpacing: "0.1em" }}
+              >
+                INQUIRE WITHIN
+              </div>
+            </div>
           </>
         )}
+
+        {/* door strip on the facing side */}
+        <div
+          style={{
+            position: "absolute",
+            ...door,
+            borderRadius: 1,
+            background: hueColor(hue, 0.8, 0.13, live ? 0.9 : 0.25),
+            boxShadow: live
+              ? `0 0 6px ${hueColor(hue, 0.7, 0.13, 0.6)}`
+              : "none",
+            zIndex: 3,
+          }}
+        />
       </div>
 
       {/* entrance pad — glows brighter when the player is standing on it */}
@@ -319,9 +447,9 @@ function Unit({ u, lit }: { u: GalleriaUnit; lit: boolean }) {
             width: pad.w,
             height: pad.h,
             zIndex: 4,
-            borderRadius: 6,
-            background: hueColor(hue, 0.7, 0.13, lit ? 0.3 : 0.12),
-            border: `1px solid ${hueColor(hue, 0.75, 0.13, lit ? 0.9 : 0.4)}`,
+            borderRadius: 4,
+            background: hueColor(hue, 0.85, 0.13, lit ? 0.3 : 0.12),
+            border: `1px solid ${hueColor(hue, 0.85, 0.13, lit ? 0.9 : 0.4)}`,
             boxShadow: lit
               ? `0 0 16px ${hueColor(hue, 0.7, 0.13, 0.5)}`
               : "none",

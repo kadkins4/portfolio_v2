@@ -7,11 +7,12 @@ import { GALLERIA } from "./cityData";
 export type UnitFace = "N" | "S" | "E" | "W";
 
 export type UnitSlot = {
+  code: string; // directory code, e.g. "N-01" (shown in the teaser + on con units)
   rx: number; // mall-relative top-left
   ry: number;
   w: number;
   h: number;
-  face: UnitFace; // which side the entrance pad sits on
+  face: UnitFace; // which side the entrance pad (door) sits on
   anchor?: boolean; // the two largest slots take the first two projects
 };
 
@@ -37,6 +38,7 @@ export type UnitTeaser = {
 
 export type GalleriaUnit = {
   id: string;
+  code: string;
   rect: PadRect; // world-space storefront box
   face: UnitFace;
   anchor: boolean;
@@ -44,34 +46,38 @@ export type GalleriaUnit = {
   state: "live" | "in-progress" | "vacant";
   // present only when occupied:
   slug?: string;
+  name?: string; // storefront sign text
+  permit?: string; // permit-board text (in-progress units)
   href?: string;
   pad?: PadRect; // world-space, center-based (matches Destination.pad)
   teaser?: UnitTeaser;
 };
 
-// Two anchors flank the west entrance wall (facing the concourse); the long
-// north and south walls carry the standard storefronts; two more line the
-// east wall. Fourteen in all — comfortably more than today's project count so
-// the mall grows into itself.
+// Fourteen storefronts ring the courtyard, each backed flush to an outer wall
+// with its door facing in — the mockup's floor plan. Two 132px-wide anchor
+// slots (N-01, S-04) sit diagonally across from each other. Array order is the
+// fill priority: anchors first, then west-to-east so any vacancy lands on the
+// back (east) wall rather than by the entrance.
 export const SLOTS: UnitSlot[] = [
-  // anchors — west wall, above and below the entrance gap, facing east
-  { rx: 24, ry: 60, w: 104, h: 150, face: "E", anchor: true },
-  { rx: 24, ry: 420, w: 104, h: 150, face: "E", anchor: true },
-  // north wall, facing south into the concourse
-  { rx: 166, ry: 20, w: 56, h: 78, face: "S" },
-  { rx: 230, ry: 20, w: 56, h: 78, face: "S" },
-  { rx: 294, ry: 20, w: 56, h: 78, face: "S" },
-  { rx: 358, ry: 20, w: 56, h: 78, face: "S" },
-  { rx: 422, ry: 20, w: 56, h: 78, face: "S" },
+  // anchors — the two wide end-cap slots
+  { code: "N-01", rx: 36, ry: 22, w: 132, h: 64, face: "S", anchor: true },
+  { code: "S-04", rx: 340, ry: 534, w: 132, h: 64, face: "N", anchor: true },
+  // west wall, facing east (either side of the entrance gap)
+  { code: "W-01", rx: 22, ry: 110, w: 64, h: 80, face: "E" },
+  // north wall, facing south
+  { code: "N-02", rx: 188, ry: 22, w: 88, h: 64, face: "S" },
   // south wall, facing north
-  { rx: 166, ry: 370, w: 56, h: 78, face: "N" },
-  { rx: 230, ry: 370, w: 56, h: 78, face: "N" },
-  { rx: 294, ry: 370, w: 56, h: 78, face: "N" },
-  { rx: 358, ry: 370, w: 56, h: 78, face: "N" },
-  { rx: 422, ry: 370, w: 56, h: 78, face: "N" },
-  // east wall, facing west
-  { rx: 436, ry: 176, w: 64, h: 84, face: "W" },
-  { rx: 436, ry: 288, w: 64, h: 84, face: "W" },
+  { code: "S-01", rx: 36, ry: 534, w: 88, h: 64, face: "N" },
+  { code: "N-03", rx: 288, ry: 22, w: 88, h: 64, face: "S" },
+  { code: "S-02", rx: 136, ry: 534, w: 88, h: 64, face: "N" },
+  { code: "W-02", rx: 22, ry: 400, w: 64, h: 80, face: "E" },
+  { code: "N-04", rx: 388, ry: 22, w: 88, h: 64, face: "S" },
+  { code: "S-03", rx: 236, ry: 534, w: 88, h: 64, face: "N" },
+  // east wall, facing west — fills last, so the back wall carries the vacancies
+  { code: "E-01", rx: 440, ry: 110, w: 64, h: 80, face: "W" },
+  { code: "E-02", rx: 440, ry: 210, w: 64, h: 80, face: "W" },
+  { code: "E-03", rx: 440, ry: 310, w: 64, h: 80, face: "W" },
+  { code: "E-04", rx: 440, ry: 420, w: 64, h: 80, face: "W" },
 ];
 
 // world-space entrance pad for a slot (center-based, like Destination.pad)
@@ -90,11 +96,12 @@ function worldPad(s: UnitSlot): PadRect {
   }
 }
 
-function teaserFor(p: CityProject): UnitTeaser {
+function teaserFor(p: CityProject, code: string): UnitTeaser {
   const building = p.status === "in-progress";
+  const tail = building ? "PERMIT POSTED" : p.districtLabel.toUpperCase();
   return {
-    kicker: `✦ THE GALLERIA · ${p.districtLabel.toUpperCase()}`,
-    title: p.title,
+    kicker: `✦ THE GALLERIA · UNIT ${code} · ${tail}`,
+    title: `${p.title}.`,
     blurb: p.cityBlurb ?? p.description,
     cta: building ? "> peek at the build" : "> step inside",
   };
@@ -122,6 +129,7 @@ export function buildGalleriaUnits(projects: CityProject[]): GalleriaUnit[] {
     if (!p) {
       return {
         id,
+        code: slot.code,
         rect,
         face: slot.face,
         anchor: !!slot.anchor,
@@ -131,15 +139,21 @@ export function buildGalleriaUnits(projects: CityProject[]): GalleriaUnit[] {
     }
     return {
       id,
+      code: slot.code,
       rect,
       face: slot.face,
       anchor: !!slot.anchor,
       hue: p.hue,
       state: p.status,
       slug: p.slug,
+      name: p.title,
+      permit:
+        p.status === "in-progress"
+          ? `${slot.code} · ${p.title.toUpperCase()}`
+          : undefined,
       href: `/projects/${p.slug}`,
       pad: worldPad(slot),
-      teaser: teaserFor(p),
+      teaser: teaserFor(p, slot.code),
     };
   });
 }

@@ -82,6 +82,10 @@ export const GALLERIA = (() => {
     ] as { x: number; y: number; w: number; h: number }[],
     // decorative foreground element outside the entrance; collidable
     kiosk: { x: 2410, y: 560, w: 90, h: 80 },
+    // courtyard fountain (mall-rel 204,254) — a solid centerpiece; the
+    // directory board beside it is render-only
+    fountain: { x: ox + 204, y: oy + 254, w: 52, h: 52 },
+    directory: { x: ox + 100, y: oy + 270, w: 26, h: 40 },
     label: { text: "GALLERIA DISTRICT", x: 2640, y: 1108 },
     // roof-open trigger zones (world-space). Derived per frame from the player
     // position — no state, so the roof reverses on exit for free.

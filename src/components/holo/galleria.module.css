@@ -123,3 +123,19 @@
     transparent 10px 22px
   );
 }
+
+/* fountain ripple */
+.ripple {
+  animation: gal-ripple 3s ease-in-out infinite;
+}
+@keyframes gal-ripple {
+  0%,
+  100% {
+    transform: scale(0.7);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.2;
+  }
+}
