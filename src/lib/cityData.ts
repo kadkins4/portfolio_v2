@@ -240,7 +240,7 @@ export const SHELLS: {
   { x: 1050, y: 202, w: 120, h: 76, rot: -1, br: "16px 7px 12px 6px" },
   { x: 1360, y: 205, w: 130, h: 78, rot: 1.2, br: "7px 14px 9px 16px" },
   { x: 2250, y: 195, w: 120, h: 85, rot: 2, br: "12px 6px 16px 8px" },
-  { x: 60, y: 185, w: 140, h: 90, rot: 1.8, br: "10px 18px 8px 14px" },
+  { x: 60, y: 175, w: 140, h: 90, rot: 1.8, br: "10px 18px 8px 14px" },
   { x: 1250, y: 420, w: 150, h: 110, rot: -1.4, br: "18px 8px 14px 6px" },
   { x: 1600, y: 390, w: 130, h: 100, rot: 1.1, br: "6px 15px 8px 12px" },
   { x: 120, y: 1080, w: 130, h: 95, rot: -1.6, br: "15px 7px 19px 9px" },

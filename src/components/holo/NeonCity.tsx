@@ -2477,6 +2477,32 @@ function POILayer() {
             animation: "ncPulse 2.4s ease-in-out infinite",
           }}
         />
+        <div
+          id="nc-arcade-billboard"
+          style={{
+            position: "absolute",
+            left: "50%",
+            top: 45,
+            transform: "translateX(-50%)",
+            display: "grid",
+            placeItems: "center",
+            padding: "4px 10px",
+            whiteSpace: "nowrap",
+            fontFamily: "var(--font-mono), monospace",
+            fontSize: 9,
+            letterSpacing: ".16em",
+            color: "oklch(0.85 0.13 190)",
+            background: "#0a0913",
+            border: "1px solid oklch(0.85 0.13 190 / .4)",
+            borderRadius: 3,
+            textShadow: "0 0 10px oklch(0.85 0.13 190 / .8)",
+            boxShadow:
+              "0 0 16px oklch(0.85 0.13 190 / .28), inset 0 0 10px oklch(0.85 0.13 190 / .12)",
+            animation: "ncFlick 5.6s infinite",
+          }}
+        >
+          AERO CLUB
+        </div>
         {sign("0.85 0.13 190", "ARCADE", 6.5)}
       </div>
 
