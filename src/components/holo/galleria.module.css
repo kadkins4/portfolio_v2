@@ -102,6 +102,26 @@
   text-shadow: 0 0 8px rgba(140, 190, 235, 0.6);
 }
 
+/* Sign painted on the roof itself. It rides inside the roof element so the
+   one `data-open` flag both lifts the roof and clears the sign: once you are
+   inside you can see the room, and the name would only be in the way. */
+.roofSign {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+.roof[data-open="1"] .roofSign {
+  opacity: 0;
+}
+
 /* entrance gap glow strip on the west wall */
 .gapGlow {
   position: absolute;

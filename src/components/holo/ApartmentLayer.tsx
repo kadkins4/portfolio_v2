@@ -113,6 +113,7 @@ export default function ApartmentLayer({
         }}
       >
         <div
+          id="nc-apartment-bed-mattress"
           style={{
             position: "absolute",
             inset: 6,
@@ -126,6 +127,7 @@ export default function ApartmentLayer({
           }}
         />
         <div
+          id="nc-apartment-bed-pillow"
           style={{
             position: "absolute",
             left: 10,
@@ -137,22 +139,47 @@ export default function ApartmentLayer({
           }}
         />
       </div>
-      {/* couch */}
+      {/* day bed — the couch, made up as a bed */}
       <div
-        id="nc-apartment-couch"
+        id="nc-apartment-daybed"
         style={{
           position: "absolute",
-          left: FURN.couch.x,
-          top: FURN.couch.y,
-          width: FURN.couch.w,
-          height: FURN.couch.h,
-          borderRadius: "4px 4px 8px 8px",
-          background: "#1c1730",
+          left: FURN.daybed.x,
+          top: FURN.daybed.y,
+          width: FURN.daybed.w,
+          height: FURN.daybed.h,
+          borderRadius: 4,
+          background: "#191428",
           border: "1px solid rgba(150,140,220,.28)",
-          backgroundImage:
-            "repeating-linear-gradient(90deg, rgba(150,140,220,.14) 0 1px, transparent 1px 24px)",
         }}
-      />
+      >
+        <div
+          id="nc-apartment-daybed-mattress"
+          style={{
+            position: "absolute",
+            inset: 5,
+            borderRadius: 3,
+            background: `linear-gradient(160deg, ${hueColor(
+              HUE,
+              0.5,
+              0.08,
+              0.3
+            )}, rgba(20,16,32,.9))`,
+          }}
+        />
+        <div
+          id="nc-apartment-daybed-pillow"
+          style={{
+            position: "absolute",
+            left: 9,
+            top: 9,
+            width: 20,
+            height: 14,
+            borderRadius: 3,
+            background: "rgba(236,232,246,.45)",
+          }}
+        />
+      </div>
       {/* kitchenette counter + burners */}
       <div
         id="nc-apartment-counter"
@@ -174,6 +201,7 @@ export default function ApartmentLayer({
         {[0, 1].map((i) => (
           <div
             key={i}
+            id={`nc-apartment-burner-${i}`}
             style={{
               width: 12,
               height: 12,
@@ -184,6 +212,7 @@ export default function ApartmentLayer({
           />
         ))}
         <div
+          id="nc-apartment-microwave"
           style={{
             width: 22,
             height: 14,
@@ -193,20 +222,33 @@ export default function ApartmentLayer({
           }}
         />
       </div>
-      {/* plant */}
+      {/* desk chair — scenery, so you can stand at the desk */}
       <div
-        id="nc-apartment-plant"
+        id="nc-apartment-chair"
         style={{
           position: "absolute",
-          left: FURN.plant.x,
-          top: FURN.plant.y,
-          width: FURN.plant.w,
-          height: FURN.plant.h,
+          left: A.chair.x,
+          top: A.chair.y,
+          width: A.chair.w,
+          height: A.chair.h,
           borderRadius: "50% 50% 4px 4px",
           background: "radial-gradient(circle at 40% 34%, #1d3324, #0d1712)",
           border: "1px solid rgba(110,190,140,.3)",
         }}
-      />
+      >
+        <div
+          id="nc-apartment-chair-back"
+          style={{
+            position: "absolute",
+            left: 4,
+            top: 2,
+            right: 4,
+            height: 6,
+            borderRadius: 3,
+            background: "rgba(110,190,140,.28)",
+          }}
+        />
+      </div>
       {/* desk + the computer that is the reason you came in */}
       <div
         id="nc-apartment-desk"
@@ -245,18 +287,6 @@ export default function ApartmentLayer({
               active ? 0.7 : 0.35
             )}`,
             animation: "ncFlick 6.5s infinite",
-          }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            left: 8,
-            top: 8,
-            width: 16,
-            height: 10,
-            borderRadius: 2,
-            background: "#0c0b16",
-            border: "1px solid rgba(150,140,220,.25)",
           }}
         />
       </div>
@@ -304,43 +334,34 @@ export default function ApartmentLayer({
             style={{ left: 40, top: 54, width: 48, height: 30 }}
           />
           <div
-            className={roof.billboard}
-            style={{ left: 18, top: 190, width: 92, height: 26 }}
-          >
-            4B
-          </div>
+            className={roof.hvac}
+            style={{ left: 22, top: 206, width: 44, height: 32 }}
+          />
         </div>
-      </div>
-      {/* street-facing sign, sits above the roof so it reads when closed */}
-      <div
-        id="nc-apartment-sign"
-        style={{
-          position: "absolute",
-          left: A.x + A.w / 2,
-          top: A.y + A.h + 10,
-          transform: "translateX(-50%)",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 4,
-          fontFamily: "var(--font-mono), monospace",
-          zIndex: 7,
-          pointerEvents: "none",
-          animation: "ncFlick 7.5s infinite",
-        }}
-      >
+        {/* name painted on the roof; fades out as the roof lifts */}
         <div
-          style={{
-            fontSize: 15,
-            letterSpacing: ".34em",
-            color: accent,
-            textShadow: `0 0 16px ${accent}`,
-          }}
+          id="nc-apartment-sign"
+          className={roof.roofSign}
+          style={{ fontFamily: "var(--font-mono), monospace" }}
         >
-          {D.sign}
-        </div>
-        <div style={{ fontSize: 10, letterSpacing: ".26em", color: dim }}>
-          {D.sub}
+          <div
+            id="nc-apartment-sign-name"
+            style={{
+              fontSize: 15,
+              letterSpacing: ".34em",
+              color: accent,
+              textShadow: `0 0 16px ${accent}`,
+              animation: "ncFlick 7.5s infinite",
+            }}
+          >
+            {D.sign}
+          </div>
+          <div
+            id="nc-apartment-sign-sub"
+            style={{ fontSize: 10, letterSpacing: ".26em", color: dim }}
+          >
+            {D.sub}
+          </div>
         </div>
       </div>
     </>

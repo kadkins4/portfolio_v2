@@ -186,8 +186,9 @@ export const DESTINATIONS: Destination[] = [
     y: 600,
     w: 270,
     h: 300,
-    // the mat lives INSIDE, on the floor at the desk — you walk in to reach it
-    pad: { x: 1748, y: 812, w: 48, h: 30 },
+    // the mat lives INSIDE, on the floor at the desk — you walk in to reach it,
+    // standing behind the chair and facing the computer
+    pad: { x: 1748, y: 800, w: 48, h: 30 },
     door: { x: 1, y: 131, w: 6, h: 38 },
     href: "/about",
     teaser: {
@@ -247,13 +248,15 @@ export const APARTMENT = (() => {
     // furnishings you bump into, laid out around a clear walking lane
     furniture: [
       { id: "bed", x: ox + 160, y: oy + 24, w: 88, h: 64 },
-      { id: "couch", x: ox + 24, y: oy + 24, w: 76, h: 30 },
-      { id: "counter", x: ox + 160, y: oy + 212, w: 88, h: 34 },
+      { id: "daybed", x: ox + 24, y: oy + 24, w: 76, h: 44 },
+      // kitchenette runs flush along the east wall
+      { id: "counter", x: ox + w - wall - 88, y: oy + 212, w: 88, h: 34 },
       { id: "desk", x: ox + 60, y: oy + 246, w: 96, h: 26 },
-      { id: "plant", x: ox + 220, y: oy + 106, w: 22, h: 22 },
     ],
-    // rug is scenery only — it marks the living area, it does not block
-    rug: { x: ox + 40, y: oy + 96, w: 110, h: 84 },
+    // scenery — drawn, but you walk over/past it. The chair has to stay
+    // walk-through or it would fence you off from the mat at the desk.
+    rug: { x: ox + 40, y: oy + 76, w: 110, h: 84 },
+    chair: { x: ox + 96, y: oy + 222, w: 24, h: 24 },
     open: {
       inside: {
         x0: ox + wall,
