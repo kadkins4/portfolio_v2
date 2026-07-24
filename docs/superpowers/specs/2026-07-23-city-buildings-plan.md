@@ -14,7 +14,8 @@ starts. Tickets 4–7 are independent of one another once 1–3 land.
 | T1 world widen          | **done**    | `c990e92` |
 | T2 east approach + park | **done**    | `786b28e` |
 | T3 project status       | done        | `2c57b65` |
-| T4–T8                   | not started | —         |
+| T4 Galleria shell/roof  | done        | `175efb7` |
+| T5–T8                   | not started | —         |
 
 Verified at T2: 56 tests pass, `pnpm build` compiles clean, typecheck clean.
 
