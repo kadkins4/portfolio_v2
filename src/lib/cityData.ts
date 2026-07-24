@@ -254,14 +254,15 @@ export const APARTMENT = (() => {
       { id: "counter", x: ox + w - wall - 92, y: oy + 248, w: 88, h: 34 },
       { id: "desk", x: ox + 18, y: oy + 256, w: 98, h: 26 },
       // plant in the gap between the couch and the bed
-      { id: "plant", x: ox + 130, y: oy + 18, w: 26, h: 26 },
+      { id: "plant-1", x: ox + 158, y: oy + 18, w: 26, h: 26 },
+      { id: "plant-2", x: ox + 128, y: oy + 18, w: 26, h: 26 },
     ],
     // scenery — drawn, but you walk over/past it. The chair has to stay
     // walk-through or it would fence you off from the mat at the desk.
     rug: { x: ox + 36, y: oy + 62, w: 200, h: 104 },
     // pushed left and turned on the diagonal, clearing the desk's right half
     // for the mat — you step up beside the chair to use the computer
-    chair: { x: ox + 30, y: oy + 232, w: 24, h: 24, rot: -30 },
+    chair: { x: ox + 28, y: oy + 222, w: 24, h: 24, rot: -35 },
     open: {
       inside: {
         x0: ox + wall,

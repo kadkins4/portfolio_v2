@@ -14,6 +14,8 @@ const A = APARTMENT;
 
 // furnishings are keyed by the same ids the collider list uses
 const FURN = Object.fromEntries(A.furniture.map((f) => [f.id, f]));
+// any furnishing id beginning with "plant" renders as a potted plant
+const PLANTS = A.furniture.filter((f) => f.id.startsWith("plant"));
 
 /**
  * Unit 4B — a studio you walk into. The roof lifts on entry (same trigger
@@ -242,61 +244,65 @@ export default function ApartmentLayer({
           }}
         />
       </div>
-      {/* plant, in the gap between the couch and the bed */}
-      <div
-        id="nc-apartment-plant"
-        style={{
-          position: "absolute",
-          left: FURN.plant.x,
-          top: FURN.plant.y,
-          width: FURN.plant.w,
-          height: FURN.plant.h,
-        }}
-      >
+      {/* plants — every furnishing whose id starts with "plant" is drawn,
+          so adding another to APARTMENT.furniture is all it takes */}
+      {PLANTS.map((p) => (
         <div
-          id="nc-apartment-plant-pot"
+          key={p.id}
+          id={`nc-apartment-${p.id}`}
           style={{
             position: "absolute",
-            inset: 5,
-            borderRadius: "3px 3px 50% 50%",
-            background: "#241a15",
-            border: "1px solid rgba(214,178,120,.35)",
+            left: p.x,
+            top: p.y,
+            width: p.w,
+            height: p.h,
           }}
-        />
-        {/* fronds, seen from above */}
-        {[0, 60, 120, 180, 240, 300].map((deg) => (
+        >
           <div
-            key={deg}
+            id={`nc-apartment-${p.id}-pot`}
+            style={{
+              position: "absolute",
+              inset: 5,
+              borderRadius: "3px 3px 50% 50%",
+              background: "#241a15",
+              border: "1px solid rgba(214,178,120,.35)",
+            }}
+          />
+          {/* fronds, seen from above */}
+          {[0, 60, 120, 180, 240, 300].map((deg) => (
+            <div
+              key={deg}
+              style={{
+                position: "absolute",
+                left: "50%",
+                top: "50%",
+                width: 11,
+                height: 5,
+                marginTop: -2.5,
+                borderRadius: 3,
+                transformOrigin: "0 50%",
+                transform: `rotate(${deg}deg)`,
+                background: "rgba(110,190,140,.5)",
+              }}
+            />
+          ))}
+          <div
+            id={`nc-apartment-${p.id}-crown`}
             style={{
               position: "absolute",
               left: "50%",
               top: "50%",
-              width: 11,
-              height: 5,
-              marginTop: -2.5,
-              borderRadius: 3,
-              transformOrigin: "0 50%",
-              transform: `rotate(${deg}deg)`,
-              background: "rgba(110,190,140,.5)",
+              width: 9,
+              height: 9,
+              marginLeft: -4.5,
+              marginTop: -4.5,
+              borderRadius: "50%",
+              background: "radial-gradient(circle at 40% 34%, #2a4a32, #12211a)",
+              border: "1px solid rgba(110,190,140,.45)",
             }}
           />
-        ))}
-        <div
-          id="nc-apartment-plant-crown"
-          style={{
-            position: "absolute",
-            left: "50%",
-            top: "50%",
-            width: 9,
-            height: 9,
-            marginLeft: -4.5,
-            marginTop: -4.5,
-            borderRadius: "50%",
-            background: "radial-gradient(circle at 40% 34%, #2a4a32, #12211a)",
-            border: "1px solid rgba(110,190,140,.45)",
-          }}
-        />
-      </div>
+        </div>
+      ))}
 
       {/* desk + the computer that is the reason you came in */}
       <div
