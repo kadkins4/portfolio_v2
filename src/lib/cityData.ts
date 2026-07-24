@@ -117,6 +117,8 @@ export type Destination = {
   pad: { x: number; y: number; w: number; h: number };
   // lit accent entrance strip, offsets relative to the building's top-left
   door: { x: number; y: number; w: number; h: number };
+  // optional world-space stoop drawn beside the building (the pavilion's stairs)
+  stairs?: { x: number; y: number; w: number; h: number };
   href: string;
   teaser: { kicker: string; title: string; blurb: string; cta: string };
 };
@@ -124,20 +126,22 @@ export type Destination = {
 export const DESTINATIONS: Destination[] = [
   {
     key: "projects",
-    sign: "PROJECTS",
-    sub: "( the pavilion )",
+    sign: "Pavilion",
+    sub: "( projects )",
     hue: 190,
     x: 780,
     y: 640,
     w: 150,
     h: 260,
-    pad: { x: 960, y: 822, w: 44, h: 64 },
+    pad: { x: 960, y: 842, w: 44, h: 64 },
     door: { x: 144, y: 180, w: 6, h: 38 },
+    stairs: { x: 736, y: 655, w: 44, h: 64 },
     href: "/projects",
     teaser: {
       kicker: "✦ ENGINEERING QUARTER · STOREFRONTS LIT",
       title: PAGE_COPY.projects.title,
-      blurb: "Shipped products and the notes behind them, all on one block.",
+      blurb:
+        "Shipped products and the notes behind them, all on one block. Visit Galleria for Individual Projects",
       cta: "> enter projects",
     },
   },
@@ -169,7 +173,7 @@ export const DESTINATIONS: Destination[] = [
     y: 600,
     w: 270,
     h: 300,
-    pad: { x: 1606, y: 735, w: 44, h: 70 },
+    pad: { x: 1606, y: 750, w: 44, h: 70 },
     door: { x: 1, y: 131, w: 6, h: 38 },
     href: "/about",
     teaser: {

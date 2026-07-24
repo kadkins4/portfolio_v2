@@ -1935,14 +1935,16 @@ function DestinationBldg({ d, active }: { d: Destination; active: boolean }) {
 // Projects — the bespoke park pavilion (land on the LEFT stairs, enter on the RIGHT pad)
 function ProjectsPavilion({ active }: { active: boolean }) {
   const d = DESTINATIONS.find((x) => x.key === "projects")!;
-  const accent = "oklch(0.85 0.13 190)";
+  const accent = hueColor(d.hue, 0.85);
+  const dim = hueColor(d.hue, 0.85, 0.13, 0.4);
+  const pr = padRect(d);
   const dot = (style: CSSProperties) => (
     <div
       style={{
         position: "absolute",
         width: 7,
         height: 7,
-        background: "oklch(0.85 0.13 190 / .5)",
+        background: hueColor(d.hue, 0.85, 0.13, 0.5),
         ...style,
       }}
     />
@@ -1959,9 +1961,8 @@ function ProjectsPavilion({ active }: { active: boolean }) {
           height: d.h,
           borderRadius: "12px 18px 10px 16px",
           background: "rgba(17,15,30,.94)",
-          border: "1px solid oklch(0.85 0.13 190 / .4)",
-          boxShadow:
-            "0 0 26px oklch(0.85 0.13 190 / .16), inset 0 0 30px rgba(0,0,0,.55)",
+          border: `1px solid ${dim}`,
+          boxShadow: `0 0 26px ${hueColor(d.hue, 0.85, 0.13, 0.16)}, inset 0 0 30px rgba(0,0,0,.55)`,
           zIndex: 3,
         }}
       >
@@ -1982,13 +1983,13 @@ function ProjectsPavilion({ active }: { active: boolean }) {
           left: 10,
           top: "50%",
           marginTop: -4,
-          background: "oklch(0.85 0.13 190 / .35)",
+          background: hueColor(d.hue, 0.85, 0.13, 0.35),
         })}
         {dot({
           right: 10,
           top: "50%",
           marginTop: -4,
-          background: "oklch(0.85 0.13 190 / .35)",
+          background: hueColor(d.hue, 0.85, 0.13, 0.35),
         })}
         {/* antenna + beacon */}
         <div
@@ -2050,49 +2051,54 @@ function ProjectsPavilion({ active }: { active: boolean }) {
               textShadow: `0 0 16px ${accent}`,
             }}
           >
-            PROJECTS
+            {d.sign}
           </div>
           <div
             style={{
               fontFamily: "var(--font-mono), monospace",
               fontSize: 9,
               letterSpacing: ".22em",
-              color: "oklch(0.85 0.13 190 / .4)",
+              color: dim,
             }}
           >
-            ( the pavilion )
+            {d.sub}
           </div>
         </div>
       </div>
-      {/* stairs on the LEFT */}
-      <div
-        style={{
-          position: "absolute",
-          left: 736,
-          top: 655,
-          width: 44,
-          height: 64,
-          background: "#131120",
-          border: "1px solid rgba(150,140,220,.3)",
-          backgroundImage:
-            "repeating-linear-gradient(90deg, rgba(243,237,226,.22) 0 2px, transparent 2px 9px)",
-          zIndex: 5,
-        }}
-      />
-      {/* entrance pad on the RIGHT (trigger center 960,822) */}
+      {/* stoop on the LEFT — you land here, you enter on the right pad */}
+      {d.stairs && (
+        <div
+          id="nc-stairs-projects"
+          style={{
+            position: "absolute",
+            left: d.stairs.x,
+            top: d.stairs.y,
+            width: d.stairs.w,
+            height: d.stairs.h,
+            background: "#131120",
+            border: "1px solid rgba(150,140,220,.3)",
+            backgroundImage:
+              "repeating-linear-gradient(90deg, rgba(243,237,226,.22) 0 2px, transparent 2px 9px)",
+            zIndex: 5,
+          }}
+        />
+      )}
+      {/* entrance pad on the RIGHT — drawn from the same rect the loop tests */}
       <div
         id="nc-pad-projects"
         style={{
           position: "absolute",
-          left: 938,
-          top: 810,
-          width: 44,
-          height: 64,
-          background: `oklch(0.85 0.13 190 / ${active ? 0.3 : 0.16})`,
+          left: pr.x,
+          top: pr.y,
+          width: pr.w,
+          height: pr.h,
+          background: hueColor(d.hue, 0.85, 0.13, active ? 0.3 : 0.16),
           border: `1px solid ${accent}`,
           borderRadius: 4,
           animation: "ncPulse 2s ease-in-out infinite",
-          boxShadow: active ? "0 0 26px oklch(0.85 0.13 190 / .3)" : "none",
+          boxShadow: active
+            ? `0 0 26px ${hueColor(d.hue, 0.85, 0.13, 0.3)}`
+            : "none",
           zIndex: 3,
         }}
       />
