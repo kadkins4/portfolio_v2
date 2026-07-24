@@ -2712,29 +2712,31 @@ function POILayer() {
         />
       </div>
 
-      {/* MARINA / DOCKSIDE (cyan) — anchored to the east wall, not absolute:
-          these offsets are "distance in from the edge" so the whole cluster
-          rides along if the world is ever resized again. */}
+      {/* MARINA / DOCKSIDE (cyan) — anchored to the SE corner (offsets from both
+          the east and south walls) so it fills the bottom-right waterfront in
+          the clear, well below the Galleria, and rides along on any resize. */}
       <div
         style={{
           position: "absolute",
-          left: WORLD.w - 92,
-          top: 570,
-          width: 92,
-          height: 560,
-          borderRadius: "80px 0 0 90px",
+          left: WORLD.w - 300,
+          top: WORLD.h - 372,
+          width: 300,
+          height: 372,
+          borderRadius: "150px 0 0 0",
           background:
-            "radial-gradient(140% 100% at 100% 40%, #0e1a24, #0a1219 75%)",
+            "radial-gradient(120% 110% at 100% 100%, #0e1a24, #0a1219 72%)",
+          borderTop: "1px dashed rgba(140,190,235,.25)",
           borderLeft: "1px dashed rgba(140,190,235,.25)",
-          boxShadow: "inset 0 0 24px rgba(0,0,0,.5)",
+          boxShadow: "inset 0 0 30px rgba(0,0,0,.5)",
         }}
       />
+      {/* dock planks jutting into the basin */}
       <div
         style={{
           position: "absolute",
-          left: WORLD.w - 145,
-          top: 700,
-          width: 64,
+          left: WORLD.w - 176,
+          top: WORLD.h - 250,
+          width: 96,
           height: 12,
           background: "#131120",
           border: "1px solid rgba(150,140,220,.28)",
@@ -2744,18 +2746,19 @@ function POILayer() {
         style={{
           position: "absolute",
           left: WORLD.w - 150,
-          top: 930,
+          top: WORLD.h - 120,
           width: 70,
           height: 12,
           background: "#131120",
           border: "1px solid rgba(150,140,220,.28)",
         }}
       />
+      {/* moored buoy */}
       <div
         style={{
           position: "absolute",
-          left: WORLD.w - 52,
-          top: 800,
+          left: WORLD.w - 58,
+          top: WORLD.h - 190,
           width: 11,
           height: 20,
           borderRadius: 5,
@@ -2767,8 +2770,8 @@ function POILayer() {
       <div
         style={{
           position: "absolute",
-          left: WORLD.w - 158,
-          top: 1046,
+          left: WORLD.w - 214,
+          top: WORLD.h - 404,
           fontFamily: "var(--font-mono), monospace",
           fontSize: 10,
           letterSpacing: ".28em",
