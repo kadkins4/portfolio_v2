@@ -29,6 +29,7 @@ import {
   HUES,
   hueColor,
   GALLERIA,
+  APARTMENT,
   type Destination,
   type Car,
   type RoofAnim,
@@ -45,6 +46,7 @@ import { useIsTouch } from "@/hooks/useIsTouch";
 import TouchJoystick from "./TouchJoystick";
 import FastTravelDrawer from "./FastTravelDrawer";
 import GalleriaLayer from "./GalleriaLayer";
+import ApartmentLayer from "./ApartmentLayer";
 import CityDevPanel from "./CityDevPanel";
 import CollisionDebugLayer from "./CollisionDebugLayer";
 import HueDot from "./HueDot";
@@ -174,6 +176,7 @@ export default function NeonCity({
   const dismissed = useRef<Set<string>>(new Set());
   const onPadRef = useRef<string | null>(null);
   const roofRef = useRef<HTMLDivElement>(null);
+  const aptRoofRef = useRef<HTMLDivElement>(null);
   const start = useRef(0);
   // cinematic arrival intro
   const intro = useRef<{ phase: "ride" | "walk" | "done"; walkT: number }>({
@@ -823,20 +826,19 @@ export default function NeonCity({
         }
       }
 
-      // ---- Galleria roof (open when inside or approaching the gap) ----
+      // ---- roofs (open when inside or approaching the doorway) ----
+      // derived from position every frame, so leaving closes them for free
+      const inZone = (z: { x0: number; x1: number; y0: number; y1: number }) =>
+        p.x > z.x0 && p.x < z.x1 && p.y > z.y0 && p.y < z.y1;
       if (roofRef.current) {
         const g = GALLERIA.open;
-        const inside =
-          p.x > g.inside.x0 &&
-          p.x < g.inside.x1 &&
-          p.y > g.inside.y0 &&
-          p.y < g.inside.y1;
-        const nearGap =
-          p.x > g.nearGap.x0 &&
-          p.x < g.nearGap.x1 &&
-          p.y > g.nearGap.y0 &&
-          p.y < g.nearGap.y1;
-        roofRef.current.dataset.open = inside || nearGap ? "1" : "0";
+        roofRef.current.dataset.open =
+          inZone(g.inside) || inZone(g.nearGap) ? "1" : "0";
+      }
+      if (aptRoofRef.current) {
+        const a = APARTMENT.open;
+        aptRoofRef.current.dataset.open =
+          inZone(a.inside) || inZone(a.nearGap) ? "1" : "0";
       }
 
       // ---- day/night ----
@@ -1065,8 +1067,17 @@ export default function NeonCity({
           onPad={onPad}
         />
 
+        {/* Unit 4B — the walk-in studio (roof lifts, mat is inside) */}
+        <ApartmentLayer
+          anim={roofAnim}
+          roofRef={aptRoofRef}
+          active={onPad === "about"}
+        />
+
         {/* destination buildings */}
-        {DESTINATIONS.filter((d) => d.key !== "projects").map((d) => (
+        {DESTINATIONS.filter(
+          (d) => d.key !== "projects" && d.key !== "about"
+        ).map((d) => (
           <DestinationBldg key={d.key} d={d} active={onPad === d.key} />
         ))}
         <ProjectsPavilion active={onPad === "projects"} />

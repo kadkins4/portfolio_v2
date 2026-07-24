@@ -186,7 +186,8 @@ export const DESTINATIONS: Destination[] = [
     y: 600,
     w: 270,
     h: 300,
-    pad: { x: 1606, y: 750, w: 44, h: 70 },
+    // the mat lives INSIDE, on the floor at the desk — you walk in to reach it
+    pad: { x: 1748, y: 812, w: 48, h: 30 },
     door: { x: 1, y: 131, w: 6, h: 38 },
     href: "/about",
     teaser: {
@@ -217,6 +218,53 @@ export const DESTINATIONS: Destination[] = [
     },
   },
 ];
+
+// ---- Unit 4B (the about apartment) ----
+// A walk-in studio, same contract as the Galleria: geometry declared once here,
+// ApartmentLayer renders from it, cityCollision reads the same rects. The west
+// wall is split around the doorway so you can step inside; the interaction mat
+// sits on the floor at the desk rather than out on the street.
+export const APARTMENT = (() => {
+  const d = DESTINATIONS.find((x) => x.key === "about")!;
+  const { x: ox, y: oy, w, h } = d;
+  const wall = 14;
+  const gapTop = oy + 120;
+  const gapBot = oy + 190;
+  return {
+    x: ox,
+    y: oy,
+    w,
+    h,
+    wall,
+    gap: { top: gapTop, bot: gapBot },
+    walls: [
+      { x: ox, y: oy, w, h: wall }, // north
+      { x: ox, y: oy + h - wall, w, h: wall }, // south
+      { x: ox + w - wall, y: oy, w: wall, h }, // east
+      { x: ox, y: oy, w: wall, h: gapTop - oy }, // west, above the door
+      { x: ox, y: gapBot, w: wall, h: oy + h - gapBot }, // west, below the door
+    ] as { x: number; y: number; w: number; h: number }[],
+    // furnishings you bump into, laid out around a clear walking lane
+    furniture: [
+      { id: "bed", x: ox + 160, y: oy + 24, w: 88, h: 64 },
+      { id: "couch", x: ox + 24, y: oy + 24, w: 76, h: 30 },
+      { id: "counter", x: ox + 160, y: oy + 212, w: 88, h: 34 },
+      { id: "desk", x: ox + 60, y: oy + 246, w: 96, h: 26 },
+      { id: "plant", x: ox + 220, y: oy + 106, w: 22, h: 22 },
+    ],
+    // rug is scenery only — it marks the living area, it does not block
+    rug: { x: ox + 40, y: oy + 96, w: 110, h: 84 },
+    open: {
+      inside: {
+        x0: ox + wall,
+        x1: ox + w - wall,
+        y0: oy + wall,
+        y1: oy + h - wall,
+      },
+      nearGap: { x0: ox - 54, x1: ox + 36, y0: gapTop - 10, y1: gapBot + 10 },
+    },
+  };
+})();
 
 // center-based pad ({x,y} = center) → top-left rect, for collision/detection
 export function centerRect(p: { x: number; y: number; w: number; h: number }) {

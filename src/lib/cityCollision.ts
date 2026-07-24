@@ -6,6 +6,7 @@ import {
   BENCHES,
   TREES,
   GALLERIA,
+  APARTMENT,
   POND,
   FOUNTAIN_R,
 } from "./cityData";
@@ -14,7 +15,15 @@ export type Rect = { x: number; y: number; w: number; h: number };
 
 // axis-aligned solids the player collides with (buildings, fillers, benches)
 export const SOLIDS: Rect[] = [
-  ...DESTINATIONS.map((d) => ({ x: d.x, y: d.y, w: d.w, h: d.h })),
+  // "about" is walk-in: its footprint is not solid, its walls and furniture are
+  ...DESTINATIONS.filter((d) => d.key !== "about").map((d) => ({
+    x: d.x,
+    y: d.y,
+    w: d.w,
+    h: d.h,
+  })),
+  ...APARTMENT.walls,
+  ...APARTMENT.furniture.map((f) => ({ x: f.x, y: f.y, w: f.w, h: f.h })),
   ...SHELLS.map((s) => ({ x: s.x, y: s.y, w: s.w, h: s.h })),
   ...POI_COLLIDERS,
   ...BENCHES,

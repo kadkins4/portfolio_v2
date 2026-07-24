@@ -4,6 +4,8 @@ import {
   SPAWN,
   WORLD,
   GALLERIA,
+  APARTMENT,
+  DESTINATIONS,
   CHAR_R,
   TREES,
   BENCHES,
@@ -103,6 +105,76 @@ describe("park fountain", () => {
     // the fountain is solid, the pond it sits in is not — you can circle it.
     // (east side: a bench sits across the north rim.)
     expect(hitsSolid(POND.x + POND.r - 4, POND.y)).toBe(false);
+  });
+});
+
+describe("Unit 4B apartment", () => {
+  const A = APARTMENT;
+  const about = DESTINATIONS.find((d) => d.key === "about")!;
+
+  it("blocks the west wall above and below the doorway", () => {
+    expect(hitsSolid(A.x + 4, A.gap.top - 40)).toBe(true);
+    expect(hitsSolid(A.x + 4, A.gap.bot + 40)).toBe(true);
+  });
+
+  it("leaves the doorway walkable", () => {
+    expect(hitsSolid(A.x + 4, (A.gap.top + A.gap.bot) / 2)).toBe(false);
+  });
+
+  it("keeps the doorway at least a player-width clear", () => {
+    expect(A.gap.bot - A.gap.top).toBeGreaterThanOrEqual(CHAR_R * 2);
+  });
+
+  it("blocks the north, south, and east walls", () => {
+    const cx = A.x + A.w / 2;
+    expect(hitsSolid(cx, A.y + 4)).toBe(true);
+    expect(hitsSolid(cx, A.y + A.h - 4)).toBe(true);
+    expect(hitsSolid(A.x + A.w - 4, A.y + A.h / 2)).toBe(true);
+  });
+
+  it("makes every furnishing solid", () => {
+    for (const f of A.furniture) {
+      expect(hitsSolid(f.x + f.w / 2, f.y + f.h / 2), f.id).toBe(true);
+    }
+  });
+
+  it("puts the mat inside the apartment, on open floor", () => {
+    // the whole point: you walk in to reach it, and standing there works
+    expect(about.pad.x).toBeGreaterThan(A.open.inside.x0);
+    expect(about.pad.x).toBeLessThan(A.open.inside.x1);
+    expect(about.pad.y).toBeGreaterThan(A.open.inside.y0);
+    expect(about.pad.y).toBeLessThan(A.open.inside.y1);
+    expect(hitsSolid(about.pad.x, about.pad.y)).toBe(false);
+  });
+
+  it("leaves a walkable route from the doorway to the mat", () => {
+    // step in, then walk the lane to the desk — sampled every 6px
+    const start = {
+      x: A.x + A.wall + CHAR_R + 1,
+      y: (A.gap.top + A.gap.bot) / 2,
+    };
+    const end = { x: about.pad.x, y: about.pad.y };
+    const legs = [
+      [start, { x: start.x, y: end.y }],
+      [{ x: start.x, y: end.y }, end],
+    ] as const;
+    for (const [a, b] of legs) {
+      const steps = Math.ceil(Math.hypot(b.x - a.x, b.y - a.y) / 6);
+      for (let i = 0; i <= steps; i++) {
+        const t = steps === 0 ? 0 : i / steps;
+        const x = a.x + (b.x - a.x) * t;
+        const y = a.y + (b.y - a.y) * t;
+        expect(
+          hitsSolid(x, y),
+          `blocked at ${Math.round(x)},${Math.round(y)}`
+        ).toBe(false);
+      }
+    }
+  });
+
+  it("no longer treats the whole footprint as solid", () => {
+    // the middle of the room used to be a wall; now it is a room
+    expect(hitsSolid(A.x + A.w / 2, A.y + A.h / 2)).toBe(false);
   });
 });
 
