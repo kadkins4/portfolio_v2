@@ -7,6 +7,34 @@
 Eight tickets. Each leaves `/city` playable and is verified before the next
 starts. Tickets 4–7 are independent of one another once 1–3 land.
 
+## Progress
+
+| Ticket                  | State       | Commit    |
+| ----------------------- | ----------- | --------- |
+| T1 world widen          | **done**    | `c990e92` |
+| T2 east approach + park | **done**    | `786b28e` |
+| T3 project status       | next        | —         |
+| T4–T8                   | not started | —         |
+
+Verified at T2: 56 tests pass, `pnpm build` compiles clean, typecheck clean.
+
+### What T1/T2 actually changed vs. what the plan predicted
+
+Three of the mockup's "map-wide changes" turned out to already exist in
+production — the curved streets, the camera clamps, and the entire park
+interior (path bars, plaza circle, pond, all at identical coordinates). The
+real work was much smaller than the handoff implied.
+
+Deviations from plan, both deliberate:
+
+- **East-edge furniture is bound to `WORLD.w`**, not shifted +800. Same pixels,
+  but immune to the next resize.
+- **Ambient traffic wrapped at a hardcoded `x > 2460`** — not in the plan.
+  Left alone, cars would have vanished 740px short of the new east wall and the
+  Galleria district would have had no passing traffic. Now derives from `WORLD`.
+- **Footbridge cut** (see spec decision 14).
+- Park spur gained its missing centerline dash (inventory jank item 12).
+
 ## Grounding (verified against source, not the mockup)
 
 - Every camera clamp and SVG `viewBox` in `NeonCity.tsx` derives from
@@ -35,6 +63,7 @@ starts. Tickets 4–7 are independent of one another once 1–3 land.
 **Files.** `src/lib/cityData.ts`, `src/components/holo/NeonCity.tsx`
 
 **Steps.**
+
 1. `WORLD.w` 2400 → 3200.
 2. Sweep `NeonCity.tsx` for hardcoded x-coordinates ≥ 2200 that represent
    east-edge furniture and shift them +800: marina `2308 → 3108`, dock plank
@@ -60,13 +89,15 @@ an off-by-800 building is invisible until someone walks there.
 **Files.** `src/lib/cityData.ts`, `src/components/holo/NeonCity.tsx`
 
 **Steps.**
+
 1. Add spur P6 to `StreetLayer()`: `M 2085 700 C 2220 688 2350 700 2500 702`,
    rendered with the existing spur treatment (60/56 casing/bed).
 2. Add the second crosswalk at (2440, 284), matching the existing 46×72 div at
    (986, 284).
-3. Add the footbridge "TERMINAL WALK" at (730, 706), 184×38. **Not collidable
-   — do not add it to any collider array.** It is a corridor from the rail
-   platform to the park.
+3. ~~Add the footbridge "TERMINAL WALK" at (730, 706), 184×38.~~ **Cut.** It
+   overlaps the Projects pavilion (780, 640, 150×260) by 150 of its 184px. The
+   mockup could place it only because that layout deletes the pavilion. We keep
+   the pavilion, so the bridge has nowhere to go.
 4. Adopt the mockup's park interior (inventory §A). Move `PARK.nameplate` to
    (1090, 700). Delete `PARK.platform` — nothing outside `cityData.ts` reads
    it; the rail platform renders separately near line 1586.
@@ -87,6 +118,7 @@ arterial at both ends. `PARK.platform` gone with no compile error.
 `content/projects/*.mdoc`
 
 **Steps.**
+
 1. Add `status: fields.select({ options: [live, in-progress], defaultValue: "live" })`
    to the projects collection.
 2. Backfill `status: live` into all 9 existing `.mdoc` files.
@@ -110,6 +142,7 @@ from `feed.xml`, and its detail page still resolves. Test covers the filter.
 `src/lib/cityCollision.ts`, `src/components/holo/NeonCity.tsx`
 
 **Steps.**
+
 1. New `GalleriaLayer` component taking origin as a prop. Origin (2560, 430),
    shell 520×620, entrance gap in the west wall at world y 690–780 with cyan
    glow strip and dashed apron.
@@ -143,6 +176,7 @@ the panel is absent from the DOM.
 **Files.** `src/components/holo/GalleriaLayer.tsx`, `src/lib/cityData.ts`
 
 **Steps.**
+
 1. 14 slot literals, mall-relative `rx/ry/w/h` + face (N/S/E/W), two of them
    anchor-sized. Geometry from inventory §B.
 2. Occupancy: sort projects by `featured` desc, `order` asc, `date` desc; two
@@ -175,6 +209,7 @@ overlaps a hanging label (labels hang 13px below; leave 26px).
 **Files.** `src/lib/cityData.ts`, `src/components/holo/NeonCity.tsx`
 
 **Steps.**
+
 1. Adkins Supply Co. at (1205, 8); The Daily Grind at (1125, 390). Both are
    destinations with pads, doors, teasers.
 2. Empty `href` derives the opening-soon state: exterior **OPENING SOON**
@@ -195,6 +230,7 @@ routes anywhere while `href` is empty.
 **Files.** `src/lib/cityData.ts`, `src/components/holo/NeonCity.tsx`
 
 **Steps.**
+
 1. Interactive: The Stacks → studio notes; Observatory → currently-learning;
    The Marquee → changelog; Arcade → Ricochet Rogue; Museum keeps the Diggs
    Johnson banner.
@@ -221,6 +257,7 @@ scaffolding comes out.
 `src/components/holo/NeonCity.tsx`, `src/components/holo/GalleriaLayer.tsx`
 
 **Steps.**
+
 1. Replace `SHELLS` with a hand-placed array varying size, rotation,
    `border-radius` silhouette, and rooftop detail (billboard / skylight / HVAC
    / bare).

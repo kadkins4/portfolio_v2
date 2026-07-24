@@ -12,17 +12,37 @@ truth. Every number below is verbatim from the mockup; every string is ours.
 
 ## Decisions already made
 
-| #   | Decision            | Outcome                                                                                                             |
-| --- | ------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| 1   | World size          | Grow east to **3200×1600** (was 2400×1600)                                                                          |
-| 2   | Roof-lift animation | Ship **split**; iris and fade stay live-switchable for evaluation                                                   |
-| 3   | Shell buildings     | Rebuild by hand with varied size/rotation/silhouette + row-home terraces                                            |
-| 4   | Park                | Adopt the mockup's interior; drop `PARK.platform`; move nameplate to (1090, 700)                                    |
-| 5   | Marina              | Move to x 3108 with the east wall                                                                                   |
-| 6   | Streets             | Extend arterial to 3200; add spur P6, crosswalk (2440, 284), footbridge                                             |
-| 7   | Copy                | Ignore all designer copy. Project copy derives from Keystatic; everything else is written fresh in the city's voice |
-| 8   | Variant panel       | Dev-only (`?dev=1`), deleted once the winners are chosen                                                            |
-| 9   | Shell authoring     | Hand-placed literal array in `cityData.ts`                                                                          |
+| #   | Decision                 | Outcome                                                                                                             |
+| --- | ------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| 1   | World size               | Grow east to **3200×1600** (was 2400×1600)                                                                          |
+| 2   | Roof-lift animation      | Ship **split**; iris and fade stay live-switchable for evaluation                                                   |
+| 3   | Shell buildings          | Rebuild by hand with varied size/rotation/silhouette + row-home terraces                                            |
+| 4   | Park                     | Adopt the mockup's interior; drop `PARK.platform`; move nameplate to (1090, 700)                                    |
+| 5   | Marina                   | Move to x 3108 with the east wall                                                                                   |
+| 6   | Streets                  | Extend arterial to 3200; add spur P6, crosswalk (2440, 284), footbridge                                             |
+| 7   | Copy                     | Ignore all designer copy. Project copy derives from Keystatic; everything else is written fresh in the city's voice |
+| 8   | Variant panel            | Dev-only (`?dev=1`), deleted once the winners are chosen                                                            |
+| 9   | Shell authoring          | Hand-placed literal array in `cityData.ts`                                                                          |
+| 10  | In-progress detail pages | Stay reachable, just unlisted — the permit board needs a target                                                     |
+| 11  | Flavor interaction       | Scenery only, except Madame Oracle's rerollable fortunes                                                            |
+| 12  | Long descriptions        | Optional `cityBlurb` field; never truncate                                                                          |
+| 13  | Projects pavilion        | **Survives.** The Galleria does not replace it                                                                      |
+| 14  | Footbridge               | **Cut.** Only fits in a layout without the pavilion                                                                 |
+
+### Why the pavilion stays (decided during T2)
+
+The mockup deletes the Projects pavilion and moves everything projects-related
+into the Galleria. Taking that wholesale would strand the city's center of
+gravity 1800px from spawn and leave `/projects` without a door.
+
+Instead the two are complementary: the **pavilion is the index door**
+(`/projects`, near spawn), the **Galleria is where you walk among individual
+projects** (east). Keeping both is what forced the footbridge out — it
+overlapped the pavilion by 150 of its 184px.
+
+**Consequence:** the Galleria kiosk's purpose is open again. In the designer's
+layout it was the obvious home for the `/projects` door; that job is taken. It
+needs a reason to exist or it becomes scenery. Resolve during T4.
 
 ## Architecture
 
