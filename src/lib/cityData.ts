@@ -47,7 +47,20 @@ export const PARK = {
   h: 450,
   radius: "190px 70px 210px 90px",
   nameplate: { x: 1150, y: 800 },
+  // reflecting pond, park-relative top-left + diameter (the layer renders it
+  // inside the park div, so these stay park-relative)
+  pond: { rx: 310, ry: 50, d: 90 },
 };
+
+// The pond in world space, and the fountain standing at its middle. Collision
+// reads these, the park layer renders from them — one edit moves both.
+export const POND = {
+  x: PARK.x + PARK.pond.rx + PARK.pond.d / 2,
+  y: PARK.y + PARK.pond.ry + PARK.pond.d / 2,
+  r: PARK.pond.d / 2,
+};
+// basin is 34px across; round up so you bump the stone, not the spray
+export const FOUNTAIN_R = 19;
 // The v3 mockup put a "Terminal Walk" footbridge at (730, 706). It was dropped:
 // the bridge only fits in the mockup's layout, which deletes the Projects
 // pavilion. We keep the pavilion, so the bridge would run straight through it.

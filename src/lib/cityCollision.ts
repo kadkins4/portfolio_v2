@@ -6,6 +6,8 @@ import {
   BENCHES,
   TREES,
   GALLERIA,
+  POND,
+  FOUNTAIN_R,
 } from "./cityData";
 
 export type Rect = { x: number; y: number; w: number; h: number };
@@ -24,6 +26,13 @@ export const SOLIDS: Rect[] = [
   GALLERIA.fountain,
 ];
 
+// round solids, tested by distance rather than as boxes: tree canopies and the
+// park fountain's basin
+export const CIRCLES: { x: number; y: number; r: number }[] = [
+  ...TREES,
+  { x: POND.x, y: POND.y, r: FOUNTAIN_R },
+];
+
 export function hitsSolid(x: number, y: number): boolean {
   for (const s of SOLIDS) {
     if (
@@ -34,10 +43,10 @@ export function hitsSolid(x: number, y: number): boolean {
     )
       return true;
   }
-  for (const t of TREES) {
-    const dx = x - t.x;
-    const dy = y - t.y;
-    if (dx * dx + dy * dy < (t.r + CHAR_R) * (t.r + CHAR_R)) return true;
+  for (const c of CIRCLES) {
+    const dx = x - c.x;
+    const dy = y - c.y;
+    if (dx * dx + dy * dy < (c.r + CHAR_R) * (c.r + CHAR_R)) return true;
   }
   return false;
 }

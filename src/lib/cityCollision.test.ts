@@ -1,6 +1,14 @@
 import { describe, expect, it } from "vitest";
 import { hitsSolid, SOLIDS } from "./cityCollision";
-import { SPAWN, WORLD, GALLERIA, CHAR_R } from "./cityData";
+import {
+  SPAWN,
+  WORLD,
+  GALLERIA,
+  CHAR_R,
+  TREES,
+  POND,
+  FOUNTAIN_R,
+} from "./cityData";
 
 describe("hitsSolid", () => {
   it("reports a collision at the center of the first solid", () => {
@@ -27,6 +35,44 @@ describe("hitsSolid", () => {
       expect(s.x + s.w).toBeLessThanOrEqual(WORLD.w);
       expect(s.y + s.h).toBeLessThanOrEqual(WORLD.h);
     }
+  });
+});
+
+describe("park greenery", () => {
+  it("makes every tree solid at its center", () => {
+    for (const [i, t] of TREES.entries()) {
+      expect(hitsSolid(t.x, t.y), `tree ${i}`).toBe(true);
+    }
+  });
+
+  it("makes every tree solid at its edge", () => {
+    // the player's own radius counts, so contact happens before the trunk
+    for (const [i, t] of TREES.entries()) {
+      expect(hitsSolid(t.x + t.r, t.y), `tree ${i} east edge`).toBe(true);
+      expect(hitsSolid(t.x, t.y - t.r), `tree ${i} north edge`).toBe(true);
+    }
+  });
+
+  it("leaves ground just beyond a tree walkable", () => {
+    const t = TREES[0];
+    expect(hitsSolid(t.x + t.r + CHAR_R + 4, t.y)).toBe(false);
+  });
+});
+
+describe("park fountain", () => {
+  it("blocks the fountain basin", () => {
+    expect(hitsSolid(POND.x, POND.y)).toBe(true);
+  });
+
+  it("blocks the basin rim", () => {
+    expect(hitsSolid(POND.x + FOUNTAIN_R, POND.y)).toBe(true);
+    expect(hitsSolid(POND.x, POND.y + FOUNTAIN_R)).toBe(true);
+  });
+
+  it("leaves the pond water around it walkable", () => {
+    // the fountain is solid, the pond it sits in is not — you can circle it.
+    // (east side: a bench sits across the north rim.)
+    expect(hitsSolid(POND.x + POND.r - 4, POND.y)).toBe(false);
   });
 });
 

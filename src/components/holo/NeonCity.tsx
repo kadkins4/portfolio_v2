@@ -1070,6 +1070,7 @@ export default function NeonCity({
           return (
             <div
               key={`car${i}`}
+              id={`nc-car-${i}`}
               ref={(el) => {
                 carEls.current[i] = el;
               }}
@@ -1094,6 +1095,7 @@ export default function NeonCity({
         {[0, 1, 2].map((i) => (
           <div
             key={`tc${i}`}
+            id={`nc-train-car-${i}`}
             ref={(el) => {
               trainEls.current[i] = el;
             }}
@@ -1283,7 +1285,7 @@ export default function NeonCity({
         </div>
 
         {!everMoved && !panel && introPhase === "done" && (
-          <div className={styles.hint}>
+          <div id="nc-hint" className={styles.hint}>
             {isTouch
               ? "DRAG THE STICK · OR TAP THE STREET"
               : "WALK WITH WASD · OR CLICK THE STREET"}
@@ -1293,6 +1295,7 @@ export default function NeonCity({
         {/* teaser popover */}
         {activePanel?.teaser && (
           <div
+            id="nc-teaser"
             className={styles.teaser}
             style={{ "--tc": HUES[activePanel.hue] } as CSSProperties}
           >
@@ -1341,10 +1344,11 @@ export default function NeonCity({
         {isTouch ? (
           <FastTravelDrawer activeKey={panel} onTravel={fastTravel} />
         ) : (
-          <div className={styles.fastbar}>
+          <div id="nc-fastbar" className={styles.fastbar}>
             {FAST_TRAVEL_ITEMS.map((it) => (
               <button
                 key={it.key}
+                id={`nc-fasttravel-${it.key}`}
                 type="button"
                 className={`${styles.ftBtn} ${
                   it.key === "home"
@@ -1374,6 +1378,7 @@ function RailLayer() {
   // curved Adkins Line, drawn as layered strokes (shadow, glow, core, dark, ties)
   return (
     <svg
+      id="nc-train-tracks"
       width={WORLD.w}
       height={WORLD.h}
       viewBox={`0 0 ${WORLD.w} ${WORLD.h}`}
@@ -1382,11 +1387,12 @@ function RailLayer() {
         left: 0,
         top: 0,
         pointerEvents: "none",
-        zIndex: 11,
+        zIndex: 50,
         overflow: "visible",
       }}
     >
       <path
+        id="nc-rail-shadow"
         d="M 734 1682 C 764 1502 814 1442 784 1322 C 759 1217 614 1192 604 1052 C 597 952 694 927 694 832 L 694 480 C 694 350 654 280 574 220 C 484 150 394 100 334 -20"
         stroke="rgba(0,0,0,.35)"
         strokeWidth={12}
@@ -1395,19 +1401,28 @@ function RailLayer() {
         opacity={0.7}
       />
       <path
+        id="nc-rail-halo"
         d={RAIL_PATH}
         stroke="rgba(120,110,210,.14)"
         strokeWidth={22}
         fill="none"
       />
       <path
+        id="nc-rail-deck"
         d={RAIL_PATH}
         stroke="rgba(150,140,220,.45)"
         strokeWidth={13}
         fill="none"
       />
-      <path d={RAIL_PATH} stroke="#0d0b18" strokeWidth={7} fill="none" />
       <path
+        id="nc-rail-bed"
+        d={RAIL_PATH}
+        stroke="#0d0b18"
+        strokeWidth={7}
+        fill="none"
+      />
+      <path
+        id="nc-rail-ties"
         d={RAIL_PATH}
         stroke="rgba(150,140,220,.3)"
         strokeWidth={13}
@@ -1443,6 +1458,7 @@ function StreetLayer() {
         {curved.map((d, i) => (
           <path
             key={`so${i}`}
+            id={`nc-street-outline-${i}`}
             d={d}
             stroke="rgba(150,140,220,.13)"
             strokeWidth={68}
@@ -1453,6 +1469,7 @@ function StreetLayer() {
         {spurs.map((d, i) => (
           <path
             key={`spo${i}`}
+            id={`nc-spur-outline-${i}`}
             d={d}
             stroke="rgba(150,140,220,.13)"
             strokeWidth={60}
@@ -1461,6 +1478,7 @@ function StreetLayer() {
           />
         ))}
         <circle
+          id="nc-roundabout"
           cx={1090}
           cy={548}
           r={42}
@@ -1472,6 +1490,7 @@ function StreetLayer() {
         {curved.map((d, i) => (
           <path
             key={`sb${i}`}
+            id={`nc-street-bed-${i}`}
             d={d}
             stroke="#0d0c17"
             strokeWidth={64}
@@ -1482,6 +1501,7 @@ function StreetLayer() {
         {spurs.map((d, i) => (
           <path
             key={`spb${i}`}
+            id={`nc-spur-bed-${i}`}
             d={d}
             stroke="#0d0c17"
             strokeWidth={56}
@@ -1493,6 +1513,7 @@ function StreetLayer() {
         {[...curved, ...spurs].map((d, i) => (
           <path
             key={`sc${i}`}
+            id={`nc-street-centerline-${i}`}
             d={d}
             stroke="rgba(243,237,226,.05)"
             strokeWidth={2}
@@ -1531,6 +1552,7 @@ function StreetLayer() {
       {[986, 2440].map((left) => (
         <div
           key={`xw${left}`}
+          id={`nc-crosswalk-${left}`}
           style={{
             position: "absolute",
             left,
@@ -1545,6 +1567,7 @@ function StreetLayer() {
       ))}
       {/* arterial tag */}
       <div
+        id="nc-arterial-tag"
         style={{
           position: "absolute",
           left: 60,
@@ -1583,13 +1606,15 @@ function ParkLayer({
           borderRadius: PARK.radius,
         }}
       >
-        <div className={styles.parkRing} />
+        <div id="nc-park-ring" className={styles.parkRing} />
         {/* winding paths */}
         <div
+          id="nc-park-path-0"
           className={styles.parkPath}
           style={{ left: 14, top: 180, width: 400, transform: "rotate(4deg)" }}
         />
         <div
+          id="nc-park-path-1"
           className={styles.parkPath}
           style={{
             left: 392,
@@ -1599,6 +1624,7 @@ function ParkLayer({
           }}
         />
         <div
+          id="nc-park-path-2"
           className={styles.parkPath}
           style={{
             left: 428,
@@ -1609,6 +1635,7 @@ function ParkLayer({
           }}
         />
         <div
+          id="nc-park-path-3"
           className={styles.parkPath}
           style={{
             left: 404,
@@ -1636,10 +1663,10 @@ function ParkLayer({
           id="nc-reflecting-pond"
           style={{
             position: "absolute",
-            left: 310,
-            top: 50,
-            width: 90,
-            height: 90,
+            left: PARK.pond.rx,
+            top: PARK.pond.ry,
+            width: PARK.pond.d,
+            height: PARK.pond.d,
             borderRadius: "50%",
             border: "1px dashed rgba(140,190,235,.22)",
             background: "radial-gradient(circle at 40% 35%, #0e1a24, #0a1219)",
@@ -1679,6 +1706,7 @@ function ParkLayer({
         </div>
         {/* corner label */}
         <div
+          id="nc-park-corner-label"
           style={{
             position: "absolute",
             right: 385,
@@ -2144,6 +2172,7 @@ function POILayer() {
     "repeating-linear-gradient(90deg, rgba(150,140,220,.06) 0 1px, transparent 1px 18px), repeating-linear-gradient(0deg, rgba(150,140,220,.06) 0 1px, transparent 1px 18px)";
   const sign = (c: string, text: string, dur: number) => (
     <div
+      id={`nc-sign-${text.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
       style={{
         position: "absolute",
         left: "50%",
@@ -2698,6 +2727,7 @@ function POILayer() {
 
       {/* NIGHT MARKET (magenta) */}
       <div
+        id="nc-poi-night-market"
         style={{
           position: "absolute",
           left: 1450,
@@ -2707,9 +2737,10 @@ function POILayer() {
           transform: "rotate(-1.1deg)",
         }}
       >
-        {[0, 70, 140].map((lx) => (
+        {[0, 70, 140].map((lx, i) => (
           <div
             key={lx}
+            id={`nc-market-tent-${i}`}
             style={{
               position: "absolute",
               left: lx,
@@ -2741,6 +2772,7 @@ function POILayer() {
 
       {/* PIXEL PIER gate (magenta landmark) */}
       <div
+        id="nc-pier-halo"
         style={{
           position: "absolute",
           left: 70,
@@ -2753,6 +2785,7 @@ function POILayer() {
         }}
       />
       <div
+        id="nc-poi-pixel-pier"
         style={{
           position: "absolute",
           left: 100,
@@ -2869,6 +2902,7 @@ function POILayer() {
       />
       {/* dock planks jutting into the basin */}
       <div
+        id="nc-marina-plank-0"
         style={{
           position: "absolute",
           left: WORLD.w - 176,
@@ -2880,6 +2914,7 @@ function POILayer() {
         }}
       />
       <div
+        id="nc-marina-plank-1"
         style={{
           position: "absolute",
           left: WORLD.w - 150,
@@ -2892,6 +2927,7 @@ function POILayer() {
       />
       {/* moored buoy */}
       <div
+        id="nc-marina-buoy"
         style={{
           position: "absolute",
           left: WORLD.w - 58,
@@ -2905,6 +2941,7 @@ function POILayer() {
         }}
       />
       <div
+        id="nc-marina-label"
         style={{
           position: "absolute",
           left: WORLD.w - 214,
