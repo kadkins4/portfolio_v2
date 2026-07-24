@@ -7,6 +7,7 @@ import {
   TREES,
   GALLERIA,
   APARTMENT,
+  TERMINAL,
   POND,
   FOUNTAIN_R,
 } from "./cityData";
@@ -33,6 +34,9 @@ export const SOLIDS: Rect[] = [
   ...GALLERIA.walls,
   GALLERIA.kiosk,
   GALLERIA.fountain,
+  // the terminal's ticket hall. The platform, stairs and their dressing stay
+  // walkable — you arrive on them.
+  TERMINAL.house,
 ];
 
 // round solids, tested by distance rather than as boxes: tree canopies and the

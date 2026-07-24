@@ -9,9 +9,6 @@ import { PAGE_COPY } from "./constants";
 export const WORLD = { w: 3200, h: 1600 };
 export const CHAR_R = 13;
 export const MARGIN = 26;
-// Layout C: the arrival landing, just west of the Projects pavilion. The player
-// steps off the train here, then walks around to the pavilion's right-side pad.
-export const SPAWN = { x: 757, y: 714 };
 
 // hue → oklch accent
 export const HUES: Record<number, string> = {
@@ -38,6 +35,40 @@ export const NODES: { x: number; y: number }[] = [];
 // into the vertical platform beside the park (x ~= 680).
 export const RAIL_PATH =
   "M 720 1660 C 750 1480 800 1420 770 1300 C 745 1195 600 1170 590 1030 C 583 930 680 905 680 810 L 680 480 C 680 330 640 260 560 200 C 470 130 380 80 320 -40";
+
+// ---- Terminal station (the end of the Adkins Line) ----
+// The platform sits on the WEST side of the track, in the gap beside the
+// ADKINS LINE building, so you step off facing your destination instead of
+// walking around the train. Everything here is world-space and drives both the
+// renderer (TerminalStation) and the arrival walk — declare the geometry once.
+export const TERMINAL = (() => {
+  // the track's vertical run; the platform hugs its west flank
+  const railX = 680;
+  const platW = 32;
+  const platX = railX - 8 - platW; // 640 — flush with the resume building's east wall
+  return {
+    railX,
+    platform: { x: platX, y: 560, w: platW, h: 230 },
+    // steps down to the street, aimed west at the ADKINS LINE doors. The tread
+    // line sits at the resume pad's own centre-y, so the walk off the stairs is
+    // a straight shot onto the mat.
+    stairs: { x: platX - 52, y: 670, w: 52, h: 40 },
+    // ticket hall at the foot of the stairs — the only solid here, so the
+    // platform lane itself stays walkable end to end
+    house: { x: platX - 84, y: 724, w: 84, h: 74 },
+    // platform dressing. All scenery: the deck is only 32px wide, so anything
+    // solid standing on it would wall the lane off (the player is 26px across).
+    board: { x: platX + 8, y: 572, w: 20, h: 30 },
+    bench: { x: platX + 9, y: 744, w: 18, h: 34 },
+    canopy: { x: platX, y: 600, w: platW, h: 120 },
+    // where the arrival walk ends and you take control, at the stairs' foot
+    landing: { x: platX - 62, y: 690 },
+  };
+})();
+
+// The player steps off the train onto the west platform and down the stairs,
+// landing here — a short straightaway east of the ADKINS LINE entry mat.
+export const SPAWN = { x: TERMINAL.landing.x, y: TERMINAL.landing.y };
 
 // ---- Terminal Park (hero + home anchor) ----
 export const PARK = {

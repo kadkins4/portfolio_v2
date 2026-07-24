@@ -5,6 +5,7 @@ import {
   WORLD,
   GALLERIA,
   APARTMENT,
+  TERMINAL,
   DESTINATIONS,
   CHAR_R,
   TREES,
@@ -26,8 +27,9 @@ describe("hitsSolid", () => {
   });
 
   it("leaves the spawn point walkable", () => {
-    // The arrival landing sits in a narrow corridor between the rail platform
-    // and the Projects pavilion. Anything placed here traps the player.
+    // The arrival landing sits at the foot of the terminal stairs, in the lane
+    // between the ADKINS LINE building and the ticket hall. Anything placed
+    // here traps the player before they ever take a step.
     expect(hitsSolid(SPAWN.x, SPAWN.y)).toBe(false);
   });
 
@@ -38,6 +40,63 @@ describe("hitsSolid", () => {
       expect(s.y).toBeGreaterThanOrEqual(0);
       expect(s.x + s.w).toBeLessThanOrEqual(WORLD.w);
       expect(s.y + s.h).toBeLessThanOrEqual(WORLD.h);
+    }
+  });
+});
+
+describe("terminal station", () => {
+  const T = TERMINAL;
+  const resume = DESTINATIONS.find((d) => d.key === "resume")!;
+
+  it("puts the platform on the west side of the track", () => {
+    // the whole point of the flip: you step off facing the ADKINS LINE
+    // building, not away from it
+    expect(T.platform.x + T.platform.w).toBeLessThanOrEqual(T.railX);
+    expect(resume.x).toBeLessThan(T.platform.x);
+  });
+
+  it("makes the ticket hall solid", () => {
+    expect(
+      hitsSolid(T.house.x + T.house.w / 2, T.house.y + T.house.h / 2)
+    ).toBe(true);
+  });
+
+  it("leaves the stairs and the platform lane walkable", () => {
+    // you arrive on these; a solid on either one strands the player on the deck
+    expect(
+      hitsSolid(T.stairs.x + T.stairs.w / 2, T.stairs.y + T.stairs.h / 2)
+    ).toBe(false);
+    // the deck lane clears the resume building's east wall by CHAR_R
+    const laneX = T.platform.x + T.platform.w - CHAR_R;
+    expect(hitsSolid(laneX, T.platform.y + T.platform.h / 2)).toBe(false);
+  });
+
+  it("lands the player level with the resume pad", () => {
+    // a straight walk west, not a detour around the building
+    expect(SPAWN.y).toBe(resume.pad.y);
+  });
+
+  it("leaves a clear straightaway from the landing to the resume pad", () => {
+    // sampled every 6px — the ticket hall or the building overhanging this lane
+    // would make the arrival read as a dead end
+    const steps = Math.ceil((SPAWN.x - resume.pad.x) / 6);
+    for (let i = 0; i <= steps; i++) {
+      const x = SPAWN.x + ((resume.pad.x - SPAWN.x) * i) / steps;
+      expect(hitsSolid(x, SPAWN.y), `blocked at ${Math.round(x)}`).toBe(false);
+    }
+  });
+
+  it("keeps the platform dressing off the collision list", () => {
+    // the deck is only 32px wide; anything solid standing on it walls off the
+    // lane, so the bench, board and canopy are drawn but not solid
+    for (const [name, r] of [
+      ["bench", T.bench],
+      ["board", T.board],
+    ] as const) {
+      expect(
+        SOLIDS.some((s) => s.x === r.x && s.y === r.y),
+        name
+      ).toBe(false);
     }
   });
 });

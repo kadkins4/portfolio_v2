@@ -16,6 +16,7 @@ import {
   ROAD_W,
   NODES,
   RAIL_PATH,
+  TERMINAL,
   PARK,
   DESTINATIONS,
   padRect,
@@ -84,13 +85,17 @@ const easeIO = (t: number) =>
   t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 const easeIn = (t: number) => t * t * t;
 
-// scripted avatar walk-down: 800ms pause at the top of the stairs, then a
-// smoothstep glide along the stair waypoints to the landing (757,714).
+// Scripted avatar walk-down: 800ms pause at the carriage door, then a
+// smoothstep glide off the west platform, down the stairs, to SPAWN. Derived
+// from TERMINAL so moving the station moves the arrival with it.
 const WALK_PTS: [number, number][] = [
-  [710, 615],
-  [722, 650],
-  [757, 676],
-  [757, 714],
+  // stepping off the carriage onto the deck
+  [TERMINAL.platform.x + TERMINAL.platform.w - 10, TERMINAL.stairs.y - 22],
+  // along the deck to the head of the stairs
+  [TERMINAL.platform.x + 14, TERMINAL.stairs.y + TERMINAL.stairs.h / 2],
+  // down the treads
+  [TERMINAL.stairs.x + 10, SPAWN.y],
+  [SPAWN.x, SPAWN.y],
 ];
 function avatarWalk(wt: number): [number, number] {
   const pause = 800;
@@ -432,8 +437,8 @@ export default function NeonCity({
     if (reduced) {
       intro.current = { phase: "done", walkT: 9999 };
       setIntroPhase("done");
-      pos.current.x = 757;
-      pos.current.y = 714;
+      pos.current.x = SPAWN.x;
+      pos.current.y = SPAWN.y;
       train.current.mode = "dwell";
       train.current.until = Number.POSITIVE_INFINITY;
       camDone.current = { t0: -1e9, fromTx: 0, fromTy: 0, fromS: 1 };
@@ -467,8 +472,8 @@ export default function NeonCity({
         p.y = ay;
         moving = IN.walkT > 800 && IN.walkT < 3200;
         if (IN.walkT >= 3400) {
-          p.x = 757;
-          p.y = 714;
+          p.x = SPAWN.x;
+          p.y = SPAWN.y;
           IN.phase = "done";
           setIntroPhase("done");
           camDone.current = {
@@ -902,8 +907,8 @@ export default function NeonCity({
     intro.current.phase = "done";
     intro.current.walkT = 9999;
     setIntroPhase("done");
-    pos.current.x = 757;
-    pos.current.y = 714;
+    pos.current.x = SPAWN.x;
+    pos.current.y = SPAWN.y;
     pos.current.ang = 0;
     // snap the camera straight to 1:1 (no ease from the cinematic frame)
     camDone.current = { t0: -1e9, fromTx: 0, fromTy: 0, fromS: 1 };
@@ -1778,27 +1783,55 @@ function ParkLayer({
         </div>
         <div className={styles.npTag}>software engineer · yogi · gamer</div>
       </div>
-      {/* vertical platform beside the park (west) */}
+      <TerminalStation />
+    </>
+  );
+}
+
+// The end of the Adkins Line: platform, ticket hall, stairs to the street.
+// Every rect comes from TERMINAL, which collision reads too.
+function TerminalStation() {
+  const T = TERMINAL;
+  const cyan = "oklch(0.85 0.13 190)";
+  const cyanDim = "oklch(0.85 0.13 190 / .35)";
+  const mono = "var(--font-mono), monospace";
+  return (
+    <>
+      {/* platform deck, west of the track */}
       <div
         id="nc-rail-platform"
         style={{
           position: "absolute",
-          left: 696,
-          top: 560,
-          width: 36,
-          height: 250,
+          left: T.platform.x,
+          top: T.platform.y,
+          width: T.platform.w,
+          height: T.platform.h,
           background: "#131120",
-          border: "1px solid rgba(150,140,220,.35)",
+          border: `1px solid ${cyanDim}`,
           borderRadius: 4,
           zIndex: 12,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
         }}
       >
-        <span
+        {/* tactile edge stripe along the track side */}
+        <div
+          id="nc-platform-edge"
           style={{
-            fontFamily: "var(--font-mono), monospace",
+            position: "absolute",
+            top: 0,
+            bottom: 0,
+            right: 0,
+            width: 6,
+            backgroundImage:
+              "repeating-linear-gradient(180deg, oklch(0.85 0.13 190 / .5) 0 5px, transparent 5px 11px)",
+          }}
+        />
+        <span
+          id="nc-platform-name"
+          style={{
+            position: "absolute",
+            left: 9,
+            bottom: 10,
+            fontFamily: mono,
             fontSize: 8,
             letterSpacing: ".3em",
             color: "oklch(0.85 0.13 190 / .75)",
@@ -1808,6 +1841,160 @@ function ParkLayer({
           TERMINAL · ADKINS LINE
         </span>
       </div>
+      {/* canopy over the waiting area — scenery, drawn above the deck */}
+      <div
+        id="nc-platform-canopy"
+        style={{
+          position: "absolute",
+          left: T.canopy.x,
+          top: T.canopy.y,
+          width: T.canopy.w,
+          height: T.canopy.h,
+          zIndex: 13,
+          borderRadius: 3,
+          background:
+            "linear-gradient(100deg, rgba(150,190,235,.13), rgba(120,160,220,.05))",
+          border: "1px solid rgba(150,190,235,.2)",
+          boxShadow: "inset 0 1px 8px rgba(180,210,240,.18)",
+          pointerEvents: "none",
+        }}
+      />
+      {/* departures board at the head of the platform */}
+      <div
+        id="nc-platform-board"
+        style={{
+          position: "absolute",
+          left: T.board.x,
+          top: T.board.y,
+          width: T.board.w,
+          height: T.board.h,
+          zIndex: 14,
+          borderRadius: 2,
+          background: "#0a0913",
+          border: `1px solid ${cyanDim}`,
+          boxShadow: `0 0 12px oklch(0.85 0.13 190 / .22)`,
+          padding: 3,
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+        }}
+      >
+        {[0.75, 0.45, 0.3].map((o, i) => (
+          <div
+            key={i}
+            id={`nc-platform-board-row-${i}`}
+            style={{
+              height: 3,
+              borderRadius: 1,
+              width: i === 0 ? "100%" : i === 1 ? "72%" : "56%",
+              background: `oklch(0.85 0.13 190 / ${o})`,
+            }}
+          />
+        ))}
+      </div>
+      {/* platform bench */}
+      <div
+        id="nc-platform-bench"
+        style={{
+          position: "absolute",
+          left: T.bench.x,
+          top: T.bench.y,
+          width: T.bench.w,
+          height: T.bench.h,
+          zIndex: 14,
+          borderRadius: 2,
+          background: "#191428",
+          border: "1px solid rgba(150,140,220,.3)",
+        }}
+      />
+      {/* stairs down to the street, treads running west */}
+      <div
+        id="nc-terminal-stairs"
+        style={{
+          position: "absolute",
+          left: T.stairs.x,
+          top: T.stairs.y,
+          width: T.stairs.w,
+          height: T.stairs.h,
+          zIndex: 12,
+          borderRadius: 2,
+          background: "#161327",
+          border: `1px solid ${cyanDim}`,
+          backgroundImage:
+            "repeating-linear-gradient(90deg, rgba(150,140,220,.22) 0 1px, transparent 1px 9px)",
+        }}
+      />
+      {/* ticket hall at the foot of the stairs */}
+      <div
+        id="nc-terminal-house"
+        style={{
+          position: "absolute",
+          left: T.house.x,
+          top: T.house.y,
+          width: T.house.w,
+          height: T.house.h,
+          zIndex: 12,
+          borderRadius: "10px 4px 8px 5px",
+          background: "#110f1e",
+          border: `1px solid ${cyanDim}`,
+          boxShadow: `0 0 22px oklch(0.85 0.13 190 / .14), inset 0 0 26px rgba(0,0,0,.55)`,
+        }}
+      >
+        {/* two lit ticket windows facing the street */}
+        {[0, 1].map((i) => (
+          <div
+            key={i}
+            id={`nc-ticket-window-${i}`}
+            style={{
+              position: "absolute",
+              left: 12 + i * 34,
+              top: 12,
+              width: 26,
+              height: 18,
+              borderRadius: 2,
+              background: "oklch(0.85 0.13 190 / .18)",
+              border: `1px solid ${cyanDim}`,
+              boxShadow: `0 0 10px oklch(0.85 0.13 190 / .3)`,
+            }}
+          />
+        ))}
+        <div
+          id="nc-ticket-sign"
+          style={{
+            position: "absolute",
+            left: 0,
+            right: 0,
+            bottom: 10,
+            textAlign: "center",
+            fontFamily: mono,
+            fontSize: 8,
+            letterSpacing: ".28em",
+            color: cyan,
+            textShadow: `0 0 8px ${cyan}`,
+            animation: "ncFlick 8s infinite",
+          }}
+        >
+          TICKETS
+        </div>
+      </div>
+      {/* turnstiles between the stairs and the street */}
+      {[0, 1].map((i) => (
+        <div
+          key={i}
+          id={`nc-turnstile-${i}`}
+          style={{
+            position: "absolute",
+            left: T.stairs.x - 7,
+            top: T.stairs.y + 6 + i * 20,
+            width: 7,
+            height: 9,
+            zIndex: 13,
+            borderRadius: 1,
+            background: "#0d0b18",
+            border: `1px solid ${cyanDim}`,
+          }}
+        />
+      ))}
     </>
   );
 }
