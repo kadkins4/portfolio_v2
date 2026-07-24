@@ -6,6 +6,7 @@ import { renderMarkdoc } from "@/lib/renderMarkdoc";
 import { getBlurDataURL } from "@/lib/getBlurDataURL";
 import { sortStudioItems } from "@/lib/sortStudioItems";
 import { districtOf } from "@/lib/district";
+import { isListed } from "@/lib/projectStatus";
 import config from "../../../../../keystatic.config";
 import JsonLd from "@/components/JsonLd";
 import { SITE_URL } from "@/lib/constants";
@@ -68,23 +69,27 @@ export default async function ProjectDetailPage({ params }: Props) {
   const district = districtOf(slug, tags, item.district);
   const contentResult = await item.content();
 
-  // ordered slug list → find the next storefront
+  // ordered slug list → find the next storefront. Unlisted (in-progress)
+  // projects are dropped so a live page never links into a hidden one — but
+  // this page itself still renders even when it is the unlisted one.
   const ordered: StudioItem[] = sortStudioItems(
-    allProjects.map((p) => ({
-      kind: "project" as const,
-      slug: p.slug,
-      href: `/projects/${p.slug}`,
-      title: p.entry.title,
-      description: p.entry.description,
-      tags: [...(p.entry.tags ?? [])],
-      date: p.entry.date ?? null,
-      image: p.entry.image ?? null,
-      imageFocus: p.entry.imageFocus ?? "center",
-      externalUrl: p.entry.externalUrl ?? null,
-      featured: p.entry.featured ?? false,
-      order: p.entry.order ?? null,
-      district: p.entry.district ?? null,
-    }))
+    allProjects
+      .filter((p) => isListed(p.entry))
+      .map((p) => ({
+        kind: "project" as const,
+        slug: p.slug,
+        href: `/projects/${p.slug}`,
+        title: p.entry.title,
+        description: p.entry.description,
+        tags: [...(p.entry.tags ?? [])],
+        date: p.entry.date ?? null,
+        image: p.entry.image ?? null,
+        imageFocus: p.entry.imageFocus ?? "center",
+        externalUrl: p.entry.externalUrl ?? null,
+        featured: p.entry.featured ?? false,
+        order: p.entry.order ?? null,
+        district: p.entry.district ?? null,
+      }))
   );
   const idx = ordered.findIndex((p) => p.slug === slug);
   const nextItem =

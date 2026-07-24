@@ -1,6 +1,7 @@
 import { createReader } from "@keystatic/core/reader";
 import config from "../../../keystatic.config";
 import { SITE_URL, SITE_NAME } from "@/lib/constants";
+import { isListed } from "@/lib/projectStatus";
 
 function escapeXml(str: string): string {
   return str
@@ -26,7 +27,7 @@ export async function GET() {
 
   const entries: FeedEntry[] = [
     ...projects
-      .filter((p) => p.entry.date)
+      .filter((p) => isListed(p.entry) && p.entry.date)
       .map((p) => ({
         title: p.entry.title,
         description: p.entry.description,

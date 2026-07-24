@@ -250,6 +250,16 @@ export default config({
           ],
           defaultValue: "auto",
         }),
+        status: fields.select({
+          label: "Status",
+          description:
+            "In-progress projects are hidden from the projects index and the feed, and show as an under-construction unit in the neon city.",
+          options: [
+            { label: "Live", value: "live" },
+            { label: "In progress", value: "in-progress" },
+          ],
+          defaultValue: "live",
+        }),
         content: fields.markdoc({ label: "Content" }),
       },
     }),
