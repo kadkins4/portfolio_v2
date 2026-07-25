@@ -138,11 +138,3 @@ export function renderMarkdoc(result: { node: unknown }): React.ReactNode[] {
   const rootChildren = root.children ?? [];
   return rootChildren.map((child, i) => renderNode(child, i));
 }
-
-export function extractText(node: unknown): string {
-  const n = node as MarkdocNode;
-  if (n.type === "text") {
-    return String(n.attributes?.content ?? "");
-  }
-  return (n.children ?? []).map(extractText).join(" ");
-}

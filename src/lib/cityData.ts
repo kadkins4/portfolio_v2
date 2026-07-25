@@ -436,18 +436,6 @@ export function padRect(d: Destination) {
   return centerRect(d.pad);
 }
 
-// ---- filler buildings (atmosphere, collidable, non-interactive) ----
-export type Filler = {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  sign: string;
-  hue: number;
-};
-// Retired in the Layout C cutover; replaced by SHELLS + POIs below.
-export const FILLERS: Filler[] = [];
-
 // Plain gray shells: pure visual fill (not enterable), collidable.
 export const SHELLS: {
   x: number;

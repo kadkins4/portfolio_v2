@@ -4,6 +4,7 @@
 // absence of a project (there is no "for lease" status).
 import { GALLERIA } from "./cityData";
 
+/** @public — field type of UnitSlot/GalleriaUnit; exported for consumers. */
 export type UnitFace = "N" | "S" | "E" | "W";
 
 export type UnitSlot = {
@@ -27,8 +28,10 @@ export type CityProject = {
   districtLabel: string;
 };
 
+/** @public — field type of GalleriaUnit; exported for consumers. */
 export type PadRect = { x: number; y: number; w: number; h: number };
 
+/** @public — field type of GalleriaUnit; exported for consumers. */
 export type UnitTeaser = {
   kicker: string;
   title: string;

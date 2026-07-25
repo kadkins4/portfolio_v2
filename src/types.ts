@@ -1,14 +1,3 @@
-export type ProjectItem = {
-  slug: string;
-  title: string;
-  description: string;
-  tags: string[];
-  image: string | null;
-  imageFocus: string;
-  blurDataURL?: string;
-  externalUrl: string | null;
-};
-
 // Project card shape consumed by the /projects district grid.
 export type WorkItem = {
   slug: string;
@@ -21,16 +10,6 @@ export type WorkItem = {
   blurDataURL?: string;
   externalUrl: string | null;
   district?: string | null;
-};
-
-export type NoteItem = {
-  slug: string;
-  title: string;
-  summary: string;
-  tags: string[];
-  date: string | null;
-  image: string | null;
-  blurDataURL?: string;
 };
 
 // Flattened item for the unified /studio masonry feed.

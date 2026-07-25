@@ -36,7 +36,7 @@ const SLUG_DISTRICT: Record<string, DistrictKey> = {
   saul: "client-web",
 };
 
-export function isDistrictKey(v: unknown): v is DistrictKey {
+function isDistrictKey(v: unknown): v is DistrictKey {
   return typeof v === "string" && v in DISTRICTS;
 }
 
