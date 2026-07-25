@@ -289,7 +289,7 @@ export const STATION = (() => {
   // The long rope's two ends. The clear span each side is the distance minus a
   // body width (CHAR_R * 2 = 26), so `ropeStart` at ox+84 leaves a 44px exit
   // and `ropeEnd` at ox+208 leaves a 38px gate — both comfortably walkable.
-  const ropeStart = ox + 84;
+  const ropeStart = ox + 68;
   const ropeEnd = ox + 208;
   return {
     x: ox,
@@ -332,7 +332,7 @@ export const STATION = (() => {
       // the counter enclosure's east side, closing the approach from that flank
       {
         id: "rail-window",
-        x: ox + 272,
+        x: ox + 260,
         y: counterBot,
         w: 6,
         h: oy + 148 - counterBot,
@@ -347,8 +347,11 @@ export const STATION = (() => {
     ],
     // Greenery. Solid, but purely decorative — the queue is enforced by the
     // ropes alone, so these can be moved anywhere without opening a bypass.
-    // Anything added here renders automatically; wide entries get three crowns.
-    plants: [{ id: "plant-lobby", x: ox + 236, y: oy + 180, w: 46, h: 30 }],
+    // Anything added here renders automatically; a trough gets three crowns
+    // along its long axis, so swapping w and h stands it on end. Rotate it that
+    // way and not with a CSS transform: the collider is this rect, so a turned
+    // sprite would leave the invisible box lying the other way.
+    plants: [{ id: "plant-lobby", x: ox + 256, y: oy + 158, w: 25, h: 56 }],
     // departures board on the east wall — drawn, never collided with
     board: { x: ox + 270, y: oy + 53, w: 14, h: 100 },
     open: {
