@@ -6,8 +6,8 @@ import { NAV_ITEMS } from "@/lib/constants";
 import styles from "./holo.module.css";
 
 // The one-and-only primary nav: brand (→ home) + links + mobile burger/drawer.
-// Used by both HoloFrame (inner pages) and Gateway (home) so the nav is
-// identical everywhere. Links come from NAV_ITEMS (single source of truth).
+// Rendered via HoloFrame, so the nav is identical on every page it wraps.
+// Links come from NAV_ITEMS (single source of truth).
 export default function HoloNav({
   name = "Kendall Adkins",
 }: {

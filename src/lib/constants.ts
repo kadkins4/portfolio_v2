@@ -6,7 +6,7 @@ export const SITE_DESCRIPTION =
   "Software Engineer building performant, accessible, and visually refined web and mobile app experiences. Open to collaborations as a developer or project planner.";
 
 // Single source of truth for the primary nav. Rendered identically on every
-// page via HoloNav (used by both HoloFrame inner pages and the Gateway home).
+// page via HoloNav, which HoloFrame wraps around inner pages.
 export type NavItem = { label: string; href: string };
 export const NAV_ITEMS: NavItem[] = [
   { label: "projects", href: "/projects" },
