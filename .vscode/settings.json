@@ -1,0 +1,27 @@
+{
+  // ESLint 9 flat config (eslint.config.mjs). The extension auto-detects this,
+  // but pinning it avoids a silent fallback to legacy .eslintrc lookup.
+  "eslint.useFlatConfig": true,
+
+  // Every lint error in this repo lives in .tsx. The extension's defaults only
+  // *probe* TypeScript, so state it outright and the squiggles are guaranteed.
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+
+  // Lint as you type rather than only on save.
+  "eslint.run": "onType",
+
+  // Build output should never appear in the explorer or in search results.
+  "files.exclude": {
+    "**/.next": true
+  },
+  "search.exclude": {
+    "**/.next": true,
+    "**/.claude/worktrees": true,
+    "**/pnpm-lock.yaml": true
+  }
+}
