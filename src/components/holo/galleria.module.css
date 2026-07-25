@@ -7,6 +7,20 @@
   position: absolute;
   pointer-events: none;
   z-index: 6;
+  /* Closing: hold the lifted layer until the halves have slid home (matching
+     the 0.55s on .half), so the roof does not drop under the player midway
+     through shutting. z-index steps rather than interpolates, so this reads as
+     a delayed switch, not a fade. */
+  transition: z-index 0s linear 0.55s;
+}
+
+/* Open, the halves clear the footprint entirely and the player is standing
+   inside — so they have to pass *over* the player (z 30) to read as walls
+   rather than floor. Still under the rail deck (z 50) and the train (z 51):
+   the Line always passes overhead. */
+.roof[data-open="1"] {
+  z-index: 35;
+  transition: z-index 0s;
 }
 
 /* the two halves that make up the full roof surface */
