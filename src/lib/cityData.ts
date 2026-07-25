@@ -1,16 +1,14 @@
 // Static geometry + content for the walkable Neon City (/city).
-// World is a fixed 2400×1600 canvas; all coords are world-space.
+// World is a fixed 3200×1600 canvas; all coords are world-space. The east
+// 800px is the Galleria district, added when the projects mall landed.
 // Layout C: destinations clustered around Terminal Park, curved streets, the
 // curved Adkins Line rail with a west-side landing, themed POIs + gray shells.
 
 import { PAGE_COPY } from "./constants";
 
-export const WORLD = { w: 2400, h: 1600 };
+export const WORLD = { w: 3200, h: 1600 };
 export const CHAR_R = 13;
 export const MARGIN = 26;
-// Layout C: the arrival landing, just west of the Projects pavilion. The player
-// steps off the train here, then walks around to the pavilion's right-side pad.
-export const SPAWN = { x: 757, y: 714 };
 
 // hue → oklch accent
 export const HUES: Record<number, string> = {
@@ -26,8 +24,6 @@ export function hueColor(h: number, l = 0.84, c = 0.13, a?: number): string {
 
 // ---- streets (centerlines; all 80px wide) ----
 export const ROAD_W = 80;
-export const ROADS_H = [360, 1040]; // y centerlines
-export const ROADS_V = [320, 1880]; // x centerlines
 // Grid nodes retired for V1 (the straight grid is gone, replaced by curved
 // streets + one arterial). Kept as an empty export so the dormant traffic-light
 // engine still compiles; V2 repopulates this when cars migrate to path-following.
@@ -47,9 +43,73 @@ export const PARK = {
   w: 660,
   h: 450,
   radius: "190px 70px 210px 90px",
-  nameplate: { x: 1230, y: 750 },
-  platform: { x: 1110, y: 874, w: 240, h: 32 },
+  nameplate: { x: 1150, y: 800 },
+  // reflecting pond, park-relative top-left + diameter (the layer renders it
+  // inside the park div, so these stay park-relative)
+  pond: { rx: 310, ry: 50, d: 90 },
 };
+
+// The pond in world space, and the fountain standing at its middle. Collision
+// reads these, the park layer renders from them — one edit moves both.
+export const POND = {
+  x: PARK.x + PARK.pond.rx + PARK.pond.d / 2,
+  y: PARK.y + PARK.pond.ry + PARK.pond.d / 2,
+  r: PARK.pond.d / 2,
+};
+// basin is 34px across; round up so you bump the stone, not the spray
+export const FOUNTAIN_R = 19;
+// The v3 mockup put a "Terminal Walk" footbridge at (730, 706). It was dropped:
+// the bridge only fits in the mockup's layout, which deletes the Projects
+// pavilion. We keep the pavilion, so the bridge would run straight through it.
+
+// ---- The Galleria (projects mall) ----
+// A walk-in mall on the east side. Geometry is declared here ONCE: GalleriaLayer
+// renders the walls from `GALLERIA.walls`, and cityCollision reads the same
+// array — a wall you can see is a wall you can't pass, with no second edit.
+// Reposition the whole mall by changing `ox`/`oy`; everything else derives.
+export const GALLERIA = (() => {
+  const ox = 2560;
+  const oy = 430;
+  const w = 520;
+  const h = 620;
+  const wall = 16; // wall thickness; the interior begins `wall` px inside
+  const gapTop = 690; // entrance gap in the west wall (world-space y range)
+  const gapBot = 780;
+  return {
+    x: ox,
+    y: oy,
+    w,
+    h,
+    wall,
+    gap: { top: gapTop, bot: gapBot },
+    // perimeter colliders — the west wall is split around the entrance gap
+    walls: [
+      { x: ox, y: oy, w, h: wall }, // north
+      { x: ox, y: oy + h - wall, w, h: wall }, // south
+      { x: ox + w - wall, y: oy, w: wall, h }, // east
+      { x: ox, y: oy, w: wall, h: gapTop - oy }, // west, above the gap
+      { x: ox, y: gapBot, w: wall, h: oy + h - gapBot }, // west, below the gap
+    ] as { x: number; y: number; w: number; h: number }[],
+    // decorative foreground element outside the entrance; collidable
+    kiosk: { x: 2410, y: 560, w: 90, h: 80 },
+    // courtyard fountain (mall-rel 204,254) — a solid centerpiece; the
+    // directory board beside it is render-only
+    fountain: { x: ox + 204, y: oy + 254, w: 52, h: 52 },
+    directory: { x: ox + 100, y: oy + 270, w: 26, h: 40 },
+    label: { text: "GALLERIA DISTRICT", x: 2640, y: 1108 },
+    // roof-open trigger zones (world-space). Derived per frame from the player
+    // position — no state, so the roof reverses on exit for free.
+    open: {
+      inside: {
+        x0: ox + wall,
+        x1: ox + w - wall,
+        y0: oy + wall,
+        y1: oy + h - wall,
+      },
+      nearGap: { x0: ox - 60, x1: ox + 40, y0: oy + 240, y1: oy + 370 },
+    },
+  };
+})();
 
 // ---- destination buildings ----
 export type Destination = {
@@ -63,8 +123,12 @@ export type Destination = {
   h: number;
   // entry pad: center (x,y) + size (w,h), matching the prototype's per-spot pads
   pad: { x: number; y: number; w: number; h: number };
-  // lit accent entrance strip, offsets relative to the building's top-left
-  door: { x: number; y: number; w: number; h: number };
+  // lit accent entrance strip, offsets relative to the building's top-left.
+  // Omitted by walk-in buildings, which draw their doorway from their own
+  // wall gap instead (see APARTMENT) — a door here would drive nothing.
+  door?: { x: number; y: number; w: number; h: number };
+  // optional world-space stoop drawn beside the building (the pavilion's stairs)
+  stairs?: { x: number; y: number; w: number; h: number };
   href: string;
   teaser: { kicker: string; title: string; blurb: string; cta: string };
 };
@@ -72,34 +136,37 @@ export type Destination = {
 export const DESTINATIONS: Destination[] = [
   {
     key: "projects",
-    sign: "PROJECTS",
-    sub: "( the pavilion )",
+    sign: "PAVILION",
+    sub: "( projects )",
     hue: 190,
     x: 780,
     y: 640,
     w: 150,
     h: 260,
-    pad: { x: 960, y: 822, w: 44, h: 64 },
-    door: { x: 144, y: 140, w: 6, h: 38 },
+    pad: { x: 960, y: 842, w: 44, h: 64 },
+    door: { x: 144, y: 180, w: 6, h: 38 },
+    stairs: { x: 736, y: 655, w: 44, h: 64 },
     href: "/projects",
     teaser: {
       kicker: "✦ ENGINEERING QUARTER · STOREFRONTS LIT",
       title: PAGE_COPY.projects.title,
-      blurb: "Shipped products and the notes behind them, all on one block.",
+      blurb:
+        "Shipped products and the notes behind them, all on one block. Visit Galleria for Individual Projects",
       cta: "> enter projects",
     },
   },
   {
     key: "resume",
-    sign: "ADKINS LINE",
+    sign: "TERMINAL PARK STATION",
     sub: "( resume )",
     hue: 190,
-    x: 340,
-    y: 430,
+    x: 320,
+    y: 365,
     w: 300,
-    h: 230,
-    pad: { x: 490, y: 690, w: 70, h: 44 },
-    door: { x: 131, y: 224, w: 38, h: 6 },
+    h: 270,
+    // the mat lives INSIDE, at the head of the queue and flush against the
+    // ticket counter — you walk the rope line and step up to the window
+    pad: { x: 471, y: 438, w: 48, h: 30 },
     href: "/resume",
     teaser: {
       kicker: "✦ NEON CITY TRANSIT · CAREER SERVICE",
@@ -117,14 +184,15 @@ export const DESTINATIONS: Destination[] = [
     y: 600,
     w: 270,
     h: 300,
-    pad: { x: 1606, y: 735, w: 44, h: 70 },
-    door: { x: 1, y: 131, w: 6, h: 38 },
+    // the mat lives INSIDE, sitting flush on the desk's north edge beside the
+    // chair — you walk in and step up to the computer to open the About page
+    pad: { x: 1728, y: 838, w: 48, h: 30 },
     href: "/about",
     teaser: {
-      kicker: "✦ NEON CITY HOUSING · RESIDENT 4B",
-      title: "Come on in.",
-      blurb: "The human one: how I got here, and life outside the code.",
-      cta: "> knock on 4B",
+      kicker: "✦ NEON CITY STUDIO · RESIDENT 4B",
+      title: "Boot Up The PC",
+      blurb: "How I got here. Life outside code.",
+      cta: "> Power On",
     },
   },
   {
@@ -149,13 +217,223 @@ export const DESTINATIONS: Destination[] = [
   },
 ];
 
-export function padRect(d: Destination) {
+// ---- Terminal station platform (the end of the Adkins Line) ----
+// The deck sits on the WEST side of the track so you step off facing the
+// station, not away from it. It is an elevated platform: railed on all four
+// sides, with a single break at the ramp mouth, so the turnstiles are the only
+// way up or down. Its west edge butts straight against the station building —
+// derived, not typed — leaving no slot to squeeze through between the two.
+export const TERMINAL = (() => {
+  const stn = DESTINATIONS.find((d) => d.key === "resume")!;
+  const railX = 680; // the track's vertical run
+  const rail = 4; // railing thickness
+  const x = stn.x + stn.w; // flush with the station's east wall
+  const w = railX - 8 - x; // stop short of the track
+  const y = 560;
+  const h = 230;
+  // the break in the west railing. Wide enough to read as a way in at a
+  // glance — a gap the width of the player is a gap nobody notices.
+  const gapTop = 652;
+  const gapBot = 744;
+  const post = 12; // turnstile stile
   return {
-    x: d.pad.x - d.pad.w / 2,
-    y: d.pad.y - d.pad.h / 2,
-    w: d.pad.w,
-    h: d.pad.h,
+    railX,
+    rail,
+    platform: { x, y, w, h },
+    gap: { top: gapTop, bot: gapBot },
+    // Railings. Solid, and the reason the deck reads as raised: walk up the
+    // ramp and you are on the platform until you walk back down it.
+    rails: [
+      { x, y, w, h: rail }, // north end
+      { x, y: y + h - rail, w, h: rail }, // south end
+      { x: x + w - rail, y, w: rail, h }, // trackside
+      { x, y, w: rail, h: gapTop - y }, // west, above the ramp
+      { x, y: gapBot, w: rail, h: y + h - gapBot }, // west, below the ramp
+    ] as { x: number; y: number; w: number; h: number }[],
+    // ramp down to the street, aligned with the gap
+    ramp: { x: x - 60, y: gapTop, w: 60, h: gapBot - gapTop },
+    // turnstile stiles, one at each end of the ramp mouth. Solid, so you are
+    // funnelled between them — this is the gate, not decoration.
+    turnstiles: [
+      { x: x - post, y: gapTop, w: post, h: post },
+      { x: x - post, y: gapBot - post, w: post, h: post },
+    ] as { x: number; y: number; w: number; h: number }[],
+    // Where the arrival walk ends and you take control, at the ramp's foot and
+    // squared up with the middle of the gate — so walking straight back east
+    // carries you through the turnstiles without lining anything up by hand.
+    landing: { x: x - 76, y: (gapTop + gapBot) / 2 },
   };
+})();
+
+// The player rides in, steps off onto the west deck, walks down the ramp
+// through the turnstiles, and takes control here at its foot.
+export const SPAWN = { x: TERMINAL.landing.x, y: TERMINAL.landing.y };
+
+// ---- Terminal Park Station (the resume ticket hall) ----
+// A walk-in hall, same contract as the Galleria and Unit 4B: geometry declared
+// once here, StationLayer renders it, cityCollision reads the same rects.
+//
+// The room is a queue. Three rope lines form one continuous barrier that makes
+// the ONLY route to the ticket window a switchback — in the south door, north
+// until the long rope stops you, east along it, then north through the one gap
+// to the counter. You walk the line to open the resume; you cannot cut across.
+export const STATION = (() => {
+  const d = DESTINATIONS.find((x) => x.key === "resume")!;
+  const { x: ox, y: oy, w, h } = d;
+  const wall = 14;
+  // street door in the south wall, facing the foot of the platform ramp
+  const gapLeft = ox + 75;
+  const gapRight = ox + 150;
+  const counterH = 38;
+  const counterBot = oy + wall + counterH;
+  // The long rope's two ends. The clear span each side is the distance minus a
+  // body width (CHAR_R * 2 = 26), so `ropeStart` at ox+84 leaves a 44px exit
+  // and `ropeEnd` at ox+208 leaves a 38px gate — both comfortably walkable.
+  const ropeStart = ox + 68;
+  const ropeEnd = ox + 208;
+  return {
+    x: ox,
+    y: oy,
+    w,
+    h,
+    wall,
+    gap: { left: gapLeft, right: gapRight },
+    walls: [
+      { x: ox, y: oy, w, h: wall }, // north
+      { x: ox, y: oy, w: wall, h }, // west
+      { x: ox + w - wall, y: oy, w: wall, h }, // east
+      { x: ox, y: oy + h - wall, w: gapLeft - ox, h: wall }, // south, west of the door
+      {
+        x: gapRight,
+        y: oy + h - wall,
+        w: ox + w - gapRight,
+        h: wall,
+      }, // south, east of the door
+    ] as { x: number; y: number; w: number; h: number }[],
+    // the ticket counter runs the full width of the north wall
+    counter: { x: ox + wall, y: oy + wall, w: w - wall * 2, h: counterH },
+    counterBot,
+    // Rope lines. Together they form one barrier from the west wall, east, then
+    // north to the counter — leaving a single gap to reach the window through.
+    rails: [
+      // The long rope. It deliberately stops short of the west wall: that slot
+      // is the EXIT, so once you have been served you walk out down the west
+      // side instead of back through the line. Widen or narrow the exit by
+      // moving `ropeStart`; `ropeEnd` sets the gate to the window.
+      {
+        id: "rail-long",
+        x: ropeStart,
+        y: oy + 95,
+        w: ropeEnd - ropeStart,
+        h: 6,
+      },
+      // the return rope, running east under the counter enclosure
+      { id: "rail-return", x: ox + 153, y: oy + 145, w: 110, h: 6 },
+      // the counter enclosure's east side, closing the approach from that flank
+      {
+        id: "rail-window",
+        x: ox + 260,
+        y: counterBot,
+        w: 6,
+        h: oy + 148 - counterBot,
+      },
+    ],
+    // seating in the lobby, outside the rope. Solid, like the studio's furniture.
+    benches: [
+      { id: "bench-west-1", x: ox + 15, y: oy + 141, w: 22, h: 56 },
+      { id: "bench-west-2", x: ox + 15, y: oy + 201, w: 22, h: 56 },
+      { id: "bench-south-1", x: ox + 165, y: oy + 235, w: 56, h: 20 },
+      { id: "bench-south-2", x: ox + 225, y: oy + 235, w: 56, h: 20 },
+    ],
+    // Greenery. Solid, but purely decorative — the queue is enforced by the
+    // ropes alone, so these can be moved anywhere without opening a bypass.
+    // Anything added here renders automatically; a trough gets three crowns
+    // along its long axis, so swapping w and h stands it on end. Rotate it that
+    // way and not with a CSS transform: the collider is this rect, so a turned
+    // sprite would leave the invisible box lying the other way.
+    plants: [{ id: "plant-lobby", x: ox + 256, y: oy + 158, w: 25, h: 56 }],
+    // departures board on the east wall — drawn, never collided with
+    board: { x: ox + 270, y: oy + 53, w: 14, h: 100 },
+    open: {
+      inside: {
+        x0: ox + wall,
+        x1: ox + w - wall,
+        y0: oy + wall,
+        y1: oy + h - wall,
+      },
+      nearDoor: {
+        x0: gapLeft - 20,
+        x1: gapRight + 20,
+        y0: oy + h - 6,
+        y1: oy + h + 56,
+      },
+    },
+  };
+})();
+
+// ---- Unit 4B (the about apartment) ----
+// A walk-in studio, same contract as the Galleria: geometry declared once here,
+// ApartmentLayer renders from it, cityCollision reads the same rects. The west
+// wall is split around the doorway so you can step inside; the interaction mat
+// sits on the floor at the desk rather than out on the street.
+export const APARTMENT = (() => {
+  const d = DESTINATIONS.find((x) => x.key === "about")!;
+  const { x: ox, y: oy, w, h } = d;
+  const wall = 14;
+  const gapTop = oy + 120;
+  const gapBot = oy + 190;
+  return {
+    x: ox,
+    y: oy,
+    w,
+    h,
+    wall,
+    gap: { top: gapTop, bot: gapBot },
+    walls: [
+      { x: ox, y: oy, w, h: wall }, // north
+      { x: ox, y: oy + h - wall, w, h: wall }, // south
+      { x: ox + w - wall, y: oy, w: wall, h }, // east
+      { x: ox, y: oy, w: wall, h: gapTop - oy }, // west, above the door
+      { x: ox, y: gapBot, w: wall, h: oy + h - gapBot }, // west, below the door
+    ] as { x: number; y: number; w: number; h: number }[],
+    // furnishings you bump into, laid out around a clear walking lane
+    furniture: [
+      // bed runs north-south along the east wall, headboard end at the top
+      { id: "bed", x: ox + w - wall - 68, y: oy + 18, w: 64, h: 92 },
+      { id: "couch", x: ox + 48, y: oy + 18, w: 76, h: 30 },
+      // kitchenette runs flush along the east wall
+      { id: "counter", x: ox + w - wall - 92, y: oy + 248, w: 88, h: 34 },
+      { id: "desk", x: ox + 18, y: oy + 256, w: 98, h: 26 },
+      // plant in the gap between the couch and the bed
+      { id: "plant-1", x: ox + 128, y: oy + 18, w: 26, h: 26 },
+      { id: "plant-2", x: ox + 18, y: oy + 18, w: 26, h: 26 },
+      { id: "plant-3", x: ox + 158, y: oy + 18, w: 26, h: 26 },
+    ],
+    // scenery — drawn, but you walk over/past it. The chair has to stay
+    // walk-through or it would fence you off from the mat at the desk.
+    rug: { x: ox + 36, y: oy + 62, w: 200, h: 104 },
+    // pushed left and turned on the diagonal, clearing the desk's right half
+    // for the mat — you step up beside the chair to use the computer
+    chair: { x: ox + 28, y: oy + 222, w: 24, h: 24, rot: -35 },
+    open: {
+      inside: {
+        x0: ox + wall,
+        x1: ox + w - wall,
+        y0: oy + wall,
+        y1: oy + h - wall,
+      },
+      nearGap: { x0: ox - 54, x1: ox + 36, y0: gapTop - 10, y1: gapBot + 10 },
+    },
+  };
+})();
+
+// center-based pad ({x,y} = center) → top-left rect, for collision/detection
+export function centerRect(p: { x: number; y: number; w: number; h: number }) {
+  return { x: p.x - p.w / 2, y: p.y - p.h / 2, w: p.w, h: p.h };
+}
+
+export function padRect(d: Destination) {
+  return centerRect(d.pad);
 }
 
 // ---- filler buildings (atmosphere, collidable, non-interactive) ----
@@ -184,7 +462,7 @@ export const SHELLS: {
   { x: 1050, y: 202, w: 120, h: 76, rot: -1, br: "16px 7px 12px 6px" },
   { x: 1360, y: 205, w: 130, h: 78, rot: 1.2, br: "7px 14px 9px 16px" },
   { x: 2250, y: 195, w: 120, h: 85, rot: 2, br: "12px 6px 16px 8px" },
-  { x: 60, y: 185, w: 140, h: 90, rot: 1.8, br: "10px 18px 8px 14px" },
+  { x: 60, y: 175, w: 140, h: 90, rot: 1.8, br: "10px 18px 8px 14px" },
   { x: 1250, y: 420, w: 150, h: 110, rot: -1.4, br: "18px 8px 14px 6px" },
   { x: 1600, y: 390, w: 130, h: 100, rot: 1.1, br: "6px 15px 8px 12px" },
   { x: 120, y: 1080, w: 130, h: 95, rot: -1.6, br: "15px 7px 19px 9px" },
@@ -212,10 +490,10 @@ export const POI_COLLIDERS: { x: number; y: number; w: number; h: number }[] = [
 export const TREES: { x: number; y: number; r: number }[] = [
   { x: 945, y: 615, r: 15 },
   { x: 1072, y: 587, r: 12 },
-  { x: 1394, y: 599, r: 14 },
+  { x: 1424, y: 599, r: 14 },
   { x: 1501, y: 636, r: 11 },
   { x: 948, y: 788, r: 13 },
-  { x: 1318, y: 758, r: 13 },
+  { x: 1280, y: 730, r: 13 },
   { x: 1477, y: 857, r: 12 },
   { x: 1021, y: 936, r: 11 },
   { x: 973, y: 493, r: 13 },
@@ -238,15 +516,45 @@ export const BENCHES: { x: number; y: number; w: number; h: number }[] = [
   { x: 1010, y: 780, w: 14, h: 46 },
   { x: 1500, y: 800, w: 14, h: 46 },
   { x: 1360, y: 930, w: 46, h: 14 },
+  { x: 1190, y: 630, w: 14, h: 56 },
+  { x: 1230, y: 590, w: 56, h: 14 },
 ];
-// street lamps (glow pools, brighten at night)
-export const LAMPS: { x: number; y: number }[] = [
-  { x: 1075, y: 545 },
-  { x: 770, y: 950 },
-  { x: 365, y: 1108 },
-  { x: 1900, y: 1055 },
-  { x: 620, y: 292 },
-];
+// Street lamps — glow pools that brighten at night. (x, y) is the pool's
+// centre. Two kinds, and the split is deliberate: entrance lamps are DERIVED
+// from the thing they light, so moving a building drags its lamp along instead
+// of stranding it; ambient lamps are placed by eye along the street curves and
+// across the park lawns, where there is nothing to derive from.
+export const LAMPS: { x: number; y: number }[] = (() => {
+  const dest = (k: Destination["key"]) =>
+    DESTINATIONS.find((d) => d.key === k)!;
+  const stn = dest("resume");
+  const pav = dest("projects");
+  const post = dest("contact");
+  const apt = dest("about");
+  return [
+    // ---- entrances ----
+    { x: stn.x + 58, y: stn.y + stn.h + 29 }, // station door, street side
+    {
+      x: TERMINAL.ramp.x - 4,
+      y: TERMINAL.ramp.y + TERMINAL.ramp.h + 28,
+    }, // foot of the platform ramp
+    { x: pav.x + pav.w + 74, y: pav.y + 166 }, // pavilion approach, park side
+    { x: apt.x - 44, y: (APARTMENT.gap.top + APARTMENT.gap.bot) / 2 }, // 4B door
+    { x: post.x + post.w - 68, y: post.y - 44 }, // post office steps
+    { x: GALLERIA.x - 44, y: (GALLERIA.gap.top + GALLERIA.gap.bot) / 2 }, // mall
+    // ---- park lawns ----
+    { x: 1075, y: 545 }, // north gate, where the spur meets the park
+    { x: 1062, y: 906 }, // south-west lawn
+    { x: 1336, y: 764 }, // east of the pond
+    { x: 1452, y: 942 }, // south-east corner, by the benches
+    // ---- street curves ----
+    { x: 610, y: 150 }, // north grid, outside the museum
+    { x: 365, y: 1108 }, // west curve
+    { x: 1250, y: 1128 }, // the cross street
+    { x: 1900, y: 1055 }, // east curve bend
+    { x: 2300, y: 700 }, // the Galleria spur
+  ];
+})();
 
 // district ground labels (rotated mono)
 // Faint ground labels for the Layout C districts (from the arrival prototype).

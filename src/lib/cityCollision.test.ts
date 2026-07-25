@@ -1,5 +1,100 @@
 import { describe, expect, it } from "vitest";
 import { hitsSolid, SOLIDS } from "./cityCollision";
+import {
+  SPAWN,
+  WORLD,
+  GALLERIA,
+  APARTMENT,
+  STATION,
+  TERMINAL,
+  DESTINATIONS,
+  CHAR_R,
+  TREES,
+  BENCHES,
+  POND,
+  FOUNTAIN_R,
+  centerRect,
+} from "./cityData";
+
+type Pt = { x: number; y: number };
+/**
+ * Walk a route leg by leg, sampling every 6px, and fail on the first blocked
+ * point. Routes are how these rooms are actually used — a pad you cannot reach
+ * is worse than a pad in the wrong place, and a plain "is it solid" assertion
+ * never catches a fitting dropped across the only path to it.
+ */
+function walk(legs: readonly (readonly [Pt, Pt])[], label: string) {
+  for (const [a, b] of legs) {
+    const steps = Math.ceil(Math.hypot(b.x - a.x, b.y - a.y) / 6);
+    for (let i = 0; i <= steps; i++) {
+      const t = steps === 0 ? 0 : i / steps;
+      const x = a.x + (b.x - a.x) * t;
+      const y = a.y + (b.y - a.y) * t;
+      expect(
+        hitsSolid(x, y),
+        `${label}: blocked at ${Math.round(x)},${Math.round(y)}`
+      ).toBe(false);
+    }
+  }
+}
+
+type Box = { x: number; y: number; w: number; h: number };
+/**
+ * Flood the inside of a room on a 4px grid and report whether `target` can be
+ * reached from `start`. `plug` optionally seals one opening, which is how a
+ * barrier is proved to be the ONLY route rather than merely one of them.
+ */
+function reaches(
+  room: { x: number; y: number; w: number; h: number; wall: number },
+  start: Pt,
+  target: Box,
+  plugs: Box[] = []
+): boolean {
+  const step = 4;
+  const x0 = room.x + room.wall;
+  const x1 = room.x + room.w - room.wall;
+  const y0 = room.y + room.wall;
+  const y1 = room.y + room.h - room.wall;
+  const inPlug = (x: number, y: number) =>
+    plugs.some(
+      (p) =>
+        x > p.x - CHAR_R &&
+        x < p.x + p.w + CHAR_R &&
+        y > p.y - CHAR_R &&
+        y < p.y + p.h + CHAR_R
+    );
+  const blocked = (x: number, y: number) => hitsSolid(x, y) || inPlug(x, y);
+  const key = (x: number, y: number) => `${x},${y}`;
+  const sx = Math.round(start.x / step) * step;
+  const sy = Math.round(start.y / step) * step;
+  const seen = new Set([key(sx, sy)]);
+  const queue: Pt[] = [{ x: sx, y: sy }];
+  while (queue.length) {
+    const p = queue.shift()!;
+    if (
+      p.x >= target.x &&
+      p.x <= target.x + target.w &&
+      p.y >= target.y &&
+      p.y <= target.y + target.h
+    )
+      return true;
+    for (const [dx, dy] of [
+      [step, 0],
+      [-step, 0],
+      [0, step],
+      [0, -step],
+    ]) {
+      const nx = p.x + dx;
+      const ny = p.y + dy;
+      if (nx < x0 || nx > x1 || ny < y0 || ny > y1) continue;
+      if (seen.has(key(nx, ny))) continue;
+      if (blocked(nx, ny)) continue;
+      seen.add(key(nx, ny));
+      queue.push({ x: nx, y: ny });
+    }
+  }
+  return false;
+}
 
 describe("hitsSolid", () => {
   it("reports a collision at the center of the first solid", () => {
@@ -10,5 +105,471 @@ describe("hitsSolid", () => {
   it("reports open space far outside every solid", () => {
     // top-left margin corner is street, not a building
     expect(hitsSolid(30, 30)).toBe(false);
+  });
+
+  it("leaves the spawn point walkable", () => {
+    // The arrival landing sits at the foot of the terminal stairs, in the lane
+    // between the ADKINS LINE building and the ticket hall. Anything placed
+    // here traps the player before they ever take a step.
+    expect(hitsSolid(SPAWN.x, SPAWN.y)).toBe(false);
+  });
+
+  it("keeps every solid inside the world bounds", () => {
+    // Catches an east-edge building left behind after a world resize.
+    for (const s of SOLIDS) {
+      expect(s.x).toBeGreaterThanOrEqual(0);
+      expect(s.y).toBeGreaterThanOrEqual(0);
+      expect(s.x + s.w).toBeLessThanOrEqual(WORLD.w);
+      expect(s.y + s.h).toBeLessThanOrEqual(WORLD.h);
+    }
+  });
+});
+
+describe("terminal station", () => {
+  const T = TERMINAL;
+  const resume = DESTINATIONS.find((d) => d.key === "resume")!;
+
+  it("puts the platform on the west side of the track", () => {
+    // the whole point of the flip: you step off facing the ADKINS LINE
+    // building, not away from it
+    expect(T.platform.x + T.platform.w).toBeLessThanOrEqual(T.railX);
+    expect(resume.x).toBeLessThan(T.platform.x);
+  });
+
+  const laneX = T.platform.x + T.platform.w / 2;
+  const gapMid = (T.gap.top + T.gap.bot) / 2;
+
+  it("leaves the ramp and the deck lane walkable", () => {
+    // you arrive on these; a solid on either strands the player on the deck
+    expect(hitsSolid(T.ramp.x + T.ramp.w / 2, gapMid)).toBe(false);
+    expect(hitsSolid(laneX, T.platform.y + T.platform.h / 2)).toBe(false);
+  });
+
+  it("fences the deck on every side but the ramp mouth", () => {
+    // walk into each railing from the deck side and you stop
+    const inset = T.rail + CHAR_R - 1;
+    expect(hitsSolid(laneX, T.platform.y + inset), "north end").toBe(true);
+    expect(
+      hitsSolid(laneX, T.platform.y + T.platform.h - inset),
+      "south end"
+    ).toBe(true);
+    expect(
+      hitsSolid(T.platform.x + T.platform.w - inset, gapMid),
+      "trackside"
+    ).toBe(true);
+    // the west railing, above and below the ramp
+    expect(hitsSolid(T.platform.x + inset, T.gap.top - 40), "west upper").toBe(
+      true
+    );
+    expect(hitsSolid(T.platform.x + inset, T.gap.bot + 40), "west lower").toBe(
+      true
+    );
+  });
+
+  it("makes the ramp mouth the only way on or off the deck", () => {
+    // sample the whole west edge: the only walkable stretch is the gap
+    const edgeX = T.platform.x + T.rail + CHAR_R - 1;
+    for (let y = T.platform.y; y < T.platform.y + T.platform.h; y += 4) {
+      const open = !hitsSolid(edgeX, y);
+      const inGap = y > T.gap.top && y < T.gap.bot;
+      if (open) expect(inGap, `west edge open at y=${y}`).toBe(true);
+    }
+  });
+
+  it("funnels the ramp mouth between the turnstiles", () => {
+    // the stiles are solid, the lane between them is not
+    for (const [i, s] of T.turnstiles.entries()) {
+      expect(hitsSolid(s.x + s.w / 2, s.y + s.h / 2), `stile ${i}`).toBe(true);
+    }
+    expect(hitsSolid(T.turnstiles[0].x + T.turnstiles[0].w / 2, gapMid)).toBe(
+      false
+    );
+  });
+
+  it("leaves the turnstile lane wider than the player", () => {
+    // a gap exactly a body wide is a gap nobody can find
+    const lane = T.turnstiles[1].y - (T.turnstiles[0].y + T.turnstiles[0].h);
+    expect(lane).toBeGreaterThan(CHAR_R * 2 + 8);
+  });
+
+  it("seals the slot between the station and the platform", () => {
+    // the deck's west edge butts against the building, so there is no alley to
+    // squeeze up between the two
+    expect(T.platform.x).toBe(resume.x + resume.w);
+    const slotY = Math.max(T.platform.y, resume.y) + 20;
+    expect(hitsSolid(resume.x + resume.w, slotY)).toBe(true);
+  });
+
+  it("squares the landing up with the middle of the gate", () => {
+    expect(SPAWN.y).toBe((T.gap.top + T.gap.bot) / 2);
+  });
+
+  it("leaves a clear walk from the landing to the station door", () => {
+    // west along the street, then north to the doorway — sampled every 6px.
+    // The pad now lives inside, so this is the route that matters on arrival.
+    const doorX = (STATION.gap.left + STATION.gap.right) / 2;
+    walk(
+      [
+        [SPAWN, { x: doorX, y: SPAWN.y }],
+        [
+          { x: doorX, y: SPAWN.y },
+          { x: doorX, y: STATION.y + STATION.h + 4 },
+        ],
+      ],
+      "landing → door"
+    );
+  });
+
+  it("leaves the deck lane wide enough to walk", () => {
+    // rails eat into a corridor that is already narrow; if the clear span drops
+    // under a body width the deck stops being somewhere you can stand
+    const clear = T.platform.w - T.rail * 2;
+    expect(clear).toBeGreaterThan(CHAR_R * 2);
+  });
+});
+
+describe("park greenery", () => {
+  it("makes every tree solid at its center", () => {
+    for (const [i, t] of TREES.entries()) {
+      expect(hitsSolid(t.x, t.y), `tree ${i}`).toBe(true);
+    }
+  });
+
+  it("makes every tree solid at its edge", () => {
+    // the player's own radius counts, so contact happens before the trunk
+    for (const [i, t] of TREES.entries()) {
+      expect(hitsSolid(t.x + t.r, t.y), `tree ${i} east edge`).toBe(true);
+      expect(hitsSolid(t.x, t.y - t.r), `tree ${i} north edge`).toBe(true);
+    }
+  });
+
+  it("leaves ground just beyond a tree walkable", () => {
+    const t = TREES[0];
+    expect(hitsSolid(t.x + t.r + CHAR_R + 4, t.y)).toBe(false);
+  });
+
+  it("makes every bench solid across its whole span", () => {
+    // benches are thin; sample the middle and both ends so a mis-sized rect
+    // (w/h swapped on a new one) can't slip through
+    for (const [i, b] of BENCHES.entries()) {
+      expect(hitsSolid(b.x + b.w / 2, b.y + b.h / 2), `bench ${i} mid`).toBe(
+        true
+      );
+      expect(hitsSolid(b.x + 1, b.y + 1), `bench ${i} start`).toBe(true);
+      expect(hitsSolid(b.x + b.w - 1, b.y + b.h - 1), `bench ${i} end`).toBe(
+        true
+      );
+    }
+  });
+
+  it("keeps every bench thin enough to never be stepped over", () => {
+    // the loop moves at most `speed * dtCap` = 4 * 3 = 12px per frame, and the
+    // test band around a solid is its size + CHAR_R on both sides. Anything
+    // over 12px of clearance cannot be tunnelled through.
+    const MAX_STEP = 12;
+    for (const [i, b] of BENCHES.entries()) {
+      expect(Math.min(b.w, b.h) + CHAR_R * 2, `bench ${i}`).toBeGreaterThan(
+        MAX_STEP
+      );
+    }
+    for (const [i, t] of TREES.entries()) {
+      expect((t.r + CHAR_R) * 2, `tree ${i}`).toBeGreaterThan(MAX_STEP);
+    }
+  });
+});
+
+describe("park fountain", () => {
+  it("blocks the fountain basin", () => {
+    expect(hitsSolid(POND.x, POND.y)).toBe(true);
+  });
+
+  it("blocks the basin rim", () => {
+    expect(hitsSolid(POND.x + FOUNTAIN_R, POND.y)).toBe(true);
+    expect(hitsSolid(POND.x, POND.y + FOUNTAIN_R)).toBe(true);
+  });
+
+  it("leaves the pond water around it walkable", () => {
+    // the fountain is solid, the pond it sits in is not — you can circle it.
+    // (east side: a bench sits across the north rim.)
+    expect(hitsSolid(POND.x + POND.r - 4, POND.y)).toBe(false);
+  });
+});
+
+describe("Unit 4B apartment", () => {
+  const A = APARTMENT;
+  const about = DESTINATIONS.find((d) => d.key === "about")!;
+
+  it("blocks the west wall above and below the doorway", () => {
+    expect(hitsSolid(A.x + 4, A.gap.top - 40)).toBe(true);
+    expect(hitsSolid(A.x + 4, A.gap.bot + 40)).toBe(true);
+  });
+
+  it("leaves the doorway walkable", () => {
+    expect(hitsSolid(A.x + 4, (A.gap.top + A.gap.bot) / 2)).toBe(false);
+  });
+
+  it("keeps the doorway at least a player-width clear", () => {
+    expect(A.gap.bot - A.gap.top).toBeGreaterThanOrEqual(CHAR_R * 2);
+  });
+
+  it("blocks the north, south, and east walls", () => {
+    const cx = A.x + A.w / 2;
+    expect(hitsSolid(cx, A.y + 4)).toBe(true);
+    expect(hitsSolid(cx, A.y + A.h - 4)).toBe(true);
+    expect(hitsSolid(A.x + A.w - 4, A.y + A.h / 2)).toBe(true);
+  });
+
+  it("makes every furnishing solid", () => {
+    for (const f of A.furniture) {
+      expect(hitsSolid(f.x + f.w / 2, f.y + f.h / 2), f.id).toBe(true);
+    }
+  });
+
+  it("puts the mat inside the apartment, on open floor", () => {
+    // the whole point: you walk in to reach it, and standing there works
+    expect(about.pad.x).toBeGreaterThan(A.open.inside.x0);
+    expect(about.pad.x).toBeLessThan(A.open.inside.x1);
+    expect(about.pad.y).toBeGreaterThan(A.open.inside.y0);
+    expect(about.pad.y).toBeLessThan(A.open.inside.y1);
+    expect(hitsSolid(about.pad.x, about.pad.y)).toBe(false);
+  });
+
+  it("leaves a walkable route from the doorway to the mat", () => {
+    // step in, then walk the lane to the desk — sampled every 6px
+    const start = {
+      x: A.x + A.wall + CHAR_R + 1,
+      y: (A.gap.top + A.gap.bot) / 2,
+    };
+    const end = { x: about.pad.x, y: about.pad.y };
+    const legs = [
+      [start, { x: start.x, y: end.y }],
+      [{ x: start.x, y: end.y }, end],
+    ] as const;
+    for (const [a, b] of legs) {
+      const steps = Math.ceil(Math.hypot(b.x - a.x, b.y - a.y) / 6);
+      for (let i = 0; i <= steps; i++) {
+        const t = steps === 0 ? 0 : i / steps;
+        const x = a.x + (b.x - a.x) * t;
+        const y = a.y + (b.y - a.y) * t;
+        expect(
+          hitsSolid(x, y),
+          `blocked at ${Math.round(x)},${Math.round(y)}`
+        ).toBe(false);
+      }
+    }
+  });
+
+  it("keeps the mat parked against the desk", () => {
+    // the mat is meant to read as "standing at the computer". Move the desk
+    // without moving the mat and this fails — which is exactly what happened
+    // once already.
+    const desk = A.furniture.find((f) => f.id === "desk")!;
+    const mat = centerRect(about.pad);
+    // sits on the desk's north edge — a few px of hand-tuned breathing room is
+    // fine, being nowhere near it (or on top of it) is not
+    const gap = desk.y - (mat.y + mat.h);
+    expect(gap).toBeGreaterThanOrEqual(0);
+    expect(gap).toBeLessThanOrEqual(12);
+    expect(mat.x).toBeGreaterThanOrEqual(desk.x);
+    expect(mat.x + mat.w).toBeLessThanOrEqual(desk.x + desk.w);
+  });
+
+  it("leaves standing room on the mat", () => {
+    // flush is good, unreachable is not: the player's body must fit somewhere
+    // inside the mat without clipping the desk
+    const mat = centerRect(about.pad);
+    const spots = [];
+    for (let y = mat.y; y <= mat.y + mat.h; y += 2) {
+      if (!hitsSolid(about.pad.x, y)) spots.push(y);
+    }
+    expect(spots.length, "walkable rows inside the mat").toBeGreaterThan(4);
+  });
+
+  it("no longer treats the whole footprint as solid", () => {
+    // the middle of the room used to be a wall; now it is a room
+    expect(hitsSolid(A.x + A.w / 2, A.y + A.h / 2)).toBe(false);
+  });
+});
+
+describe("Terminal Park Station", () => {
+  const S = STATION;
+  const resume = DESTINATIONS.find((d) => d.key === "resume")!;
+  const doorX = (S.gap.left + S.gap.right) / 2;
+  const mat = centerRect(resume.pad);
+
+  it("no longer treats the footprint as solid", () => {
+    expect(hitsSolid(S.x + S.w / 2, S.y + S.h - 40)).toBe(false);
+  });
+
+  it("blocks the walls and leaves the street door open", () => {
+    expect(hitsSolid(S.x + 4, S.y + S.h / 2), "west").toBe(true);
+    expect(hitsSolid(S.x + S.w - 4, S.y + S.h / 2), "east").toBe(true);
+    expect(hitsSolid(S.x + S.w / 2, S.y + 4), "north").toBe(true);
+    expect(hitsSolid(S.x + 40, S.y + S.h - 4), "south west of door").toBe(true);
+    expect(hitsSolid(S.x + S.w - 40, S.y + S.h - 4), "south east of door").toBe(
+      true
+    );
+    expect(hitsSolid(doorX, S.y + S.h - 4), "doorway").toBe(false);
+  });
+
+  it("keeps the doorway at least a player-width clear", () => {
+    expect(S.gap.right - S.gap.left).toBeGreaterThanOrEqual(CHAR_R * 2);
+  });
+
+  it("makes the counter, ropes and benches solid", () => {
+    expect(
+      hitsSolid(S.counter.x + S.counter.w / 2, S.counter.y + S.counter.h / 2),
+      "counter"
+    ).toBe(true);
+    for (const r of S.rails) {
+      expect(hitsSolid(r.x + r.w / 2, r.y + r.h / 2), r.id).toBe(true);
+    }
+    for (const b of S.benches) {
+      expect(hitsSolid(b.x + b.w / 2, b.y + b.h / 2), b.id).toBe(true);
+    }
+  });
+
+  const railLong = S.rails.find((r) => r.id === "rail-long")!;
+  const railReturn = S.rails.find((r) => r.id === "rail-return")!;
+  const railWin = S.rails.find((r) => r.id === "rail-window")!;
+  // the cross lane runs between the long rope and the return rope
+  const laneY = (railLong.y + railLong.h + railReturn.y) / 2;
+  // the one gap to the window: east of the long rope, west of the enclosure
+  const gapX = (railLong.x + railLong.w + railWin.x) / 2;
+
+  it("lets you walk the queue from the door to the window", () => {
+    // in the south door, north until the long rope, east along it, then north
+    // through the one gap to the counter — the intended switchback
+    walk(
+      [
+        [
+          { x: doorX, y: S.y + S.h + 6 },
+          { x: doorX, y: laneY },
+        ],
+        [
+          { x: doorX, y: laneY },
+          { x: gapX, y: laneY },
+        ],
+        [
+          { x: gapX, y: laneY },
+          { x: gapX, y: mat.y + mat.h - 2 },
+        ],
+      ],
+      "queue"
+    );
+  });
+
+  it("leaves exactly two ways through the rope line", () => {
+    // The queue has two deliberate openings: the gate to the window, and the
+    // exit slot by the west wall so you can leave without walking back up the
+    // line. Any THIRD opening is an accident — a rope nudged off a wall, or a
+    // fitting moved — and would let the whole queue be skipped unnoticed.
+    const y = railLong.y + railLong.h / 2;
+    const spans: { from: number; to: number }[] = [];
+    let run: number | null = null;
+    for (let x = S.x + S.wall; x <= S.x + S.w - S.wall; x += 2) {
+      const open = !hitsSolid(x, y);
+      if (open && run === null) run = x;
+      if (!open && run !== null) {
+        spans.push({ from: run, to: x });
+        run = null;
+      }
+    }
+    if (run !== null) spans.push({ from: run, to: S.x + S.w - S.wall });
+    expect(spans.map((s2) => `${s2.from}-${s2.to}`).join(", ")).toBe(
+      spans.length === 2
+        ? spans.map((s2) => `${s2.from}-${s2.to}`).join(", ")
+        : "two spans"
+    );
+    expect(spans).toHaveLength(2);
+    // and both must actually admit a body
+    for (const s2 of spans) expect(s2.to - s2.from).toBeGreaterThan(16);
+  });
+
+  it("leaves the gate to the window wider than the player", () => {
+    const gate = railWin.x - (railLong.x + railLong.w) - CHAR_R * 2;
+    expect(gate).toBeGreaterThan(8);
+  });
+
+  it("keeps the mat reachable, and only past the rope line", () => {
+    // Flood from just inside the door: the mat must be reachable. Then seal
+    // BOTH openings and confirm it is not — proving the rope line is the only
+    // thing standing between the lobby and the window, rather than the ropes
+    // being cosmetic and the room simply open.
+    const start = { x: doorX, y: S.y + S.h - S.wall - CHAR_R - 2 };
+    const gate = {
+      x: railLong.x + railLong.w,
+      y: railWin.y,
+      w: railWin.x - (railLong.x + railLong.w),
+      h: railLong.y - railWin.y,
+    };
+    const exit = {
+      x: S.x + S.wall,
+      y: railLong.y,
+      w: railLong.x - (S.x + S.wall),
+      h: railLong.h,
+    };
+    expect(reaches(S, start, mat), "mat unreachable through the queue").toBe(
+      true
+    );
+    expect(
+      reaches(S, start, mat, [gate, exit]),
+      "mat reachable with both openings sealed"
+    ).toBe(false);
+  });
+
+  it("puts the mat at the head of the line, against the counter", () => {
+    // same contract as the studio's mat at the desk: flush enough to read as
+    // "standing at the window", never buried in the counter
+    const gap = S.counter.y + S.counter.h - (mat.y + mat.h);
+    expect(mat.y).toBeGreaterThanOrEqual(S.counter.y + S.counter.h);
+    expect(mat.y - (S.counter.y + S.counter.h)).toBeLessThanOrEqual(12);
+    expect(gap).toBeLessThanOrEqual(0);
+    expect(hitsSolid(resume.pad.x, resume.pad.y)).toBe(false);
+  });
+
+  it("leaves the lobby seating clear of the queue route", () => {
+    // benches are solid; one dropped into the lane would wall the queue off
+    const railLong = S.rails.find((r) => r.id === "rail-long")!;
+    for (const b of S.benches) {
+      const overlapsLane =
+        b.x < S.gap.right && b.x + b.w > S.gap.left && b.y < railLong.y;
+      expect(overlapsLane, `${b.id} sits in the entry lane`).toBe(false);
+    }
+  });
+});
+
+describe("Galleria mall", () => {
+  const { x, gap } = GALLERIA;
+
+  it("blocks the west wall above and below the entrance", () => {
+    // just inside the wall line, north of the gap and south of it
+    expect(hitsSolid(x + 4, gap.top - 40)).toBe(true);
+    expect(hitsSolid(x + 4, gap.bot + 40)).toBe(true);
+  });
+
+  it("leaves the entrance gap walkable", () => {
+    const midY = (gap.top + gap.bot) / 2;
+    // standing in the doorway, on the wall line — should be clear
+    expect(hitsSolid(x + 4, midY)).toBe(false);
+  });
+
+  it("keeps the entrance gap at least a player-width clear", () => {
+    // the gap must admit the player (radius 13 → 26px min); it is 90px here
+    expect(gap.bot - gap.top).toBeGreaterThanOrEqual(CHAR_R * 2);
+  });
+
+  it("blocks the north, south, and east walls", () => {
+    const cx = x + GALLERIA.w / 2;
+    expect(hitsSolid(cx, GALLERIA.y + 4)).toBe(true); // north
+    expect(hitsSolid(cx, GALLERIA.y + GALLERIA.h - 4)).toBe(true); // south
+    expect(hitsSolid(x + GALLERIA.w - 4, GALLERIA.y + GALLERIA.h / 2)).toBe(
+      true
+    ); // east
+  });
+
+  it("leaves an open courtyard lane walkable", () => {
+    // between the west units and the fountain — clear of every solid
+    expect(hitsSolid(2700, 800)).toBe(false);
   });
 });

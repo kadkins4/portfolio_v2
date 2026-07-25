@@ -145,6 +145,106 @@
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
   transform: translate(-50%, -50%);
 }
+/* ---- park fountain (centered in the reflecting pond) ----
+   Seen from above: a stone basin, a white jet at the middle, ripple rings
+   pushing outward, and four droplets thrown off on the diagonals. All
+   procedural — no sprites, same vocabulary as the rest of the city. */
+.fountain {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+/* every child is centered on the fountain origin */
+.fountain > * {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -50%);
+}
+.fountainBasin {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 42% 36%,
+    rgba(190, 222, 240, 0.14),
+    rgba(10, 18, 25, 0.9) 70%
+  );
+  border: 1px solid rgba(196, 226, 244, 0.34);
+  box-shadow:
+    0 0 10px rgba(170, 214, 240, 0.18),
+    inset 0 0 8px rgba(0, 0, 0, 0.55);
+}
+.fountainRing {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid rgba(214, 238, 250, 0.75);
+  animation: ncFountainRing 3.4s ease-out infinite;
+}
+.fountainJet {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.95),
+    rgba(206, 233, 248, 0.55) 55%,
+    rgba(150, 200, 235, 0) 100%
+  );
+  box-shadow: 0 0 14px rgba(226, 244, 255, 0.7);
+  animation: ncFountainJet 2s ease-in-out infinite;
+}
+.fountainDrop {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(236, 248, 255, 0.9);
+  box-shadow: 0 0 5px rgba(210, 236, 252, 0.8);
+  animation: ncFountainDrop 2s ease-out infinite;
+}
+@keyframes ncFountainRing {
+  0% {
+    transform: translate(-50%, -50%) scale(0.32);
+    opacity: 0.7;
+  }
+  70% {
+    opacity: 0.16;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2.3);
+    opacity: 0;
+  }
+}
+@keyframes ncFountainJet {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(0.82);
+    opacity: 0.72;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.18);
+    opacity: 1;
+  }
+}
+@keyframes ncFountainDrop {
+  0% {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy)))
+      scale(0.7);
+    opacity: 0;
+  }
+}
+
 .bench {
   position: absolute;
   background: #251d13;
@@ -728,7 +828,10 @@
   .bk,
   .teaserBk,
   .ring,
-  .hint {
+  .hint,
+  .fountainRing,
+  .fountainJet,
+  .fountainDrop {
     animation: none !important;
   }
 }

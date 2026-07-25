@@ -16,9 +16,11 @@ import {
   ROAD_W,
   NODES,
   RAIL_PATH,
+  TERMINAL,
   PARK,
   DESTINATIONS,
   padRect,
+  centerRect,
   SHELLS,
   BLOBS,
   TREES,
@@ -27,15 +29,28 @@ import {
   DISTRICT_LABELS,
   HUES,
   hueColor,
+  GALLERIA,
+  APARTMENT,
+  STATION,
   type Destination,
   type Car,
 } from "@/lib/cityData";
+import {
+  buildGalleriaUnits,
+  type CityProject,
+  type GalleriaUnit,
+} from "@/lib/galleriaUnits";
 import { hitsSolid } from "@/lib/cityCollision";
 import { pathTo } from "@/lib/nav/cityNav";
 import { FAST_TRAVEL_ITEMS } from "@/lib/cityFastTravel";
 import { useIsTouch } from "@/hooks/useIsTouch";
 import TouchJoystick from "./TouchJoystick";
 import FastTravelDrawer from "./FastTravelDrawer";
+import GalleriaLayer from "./GalleriaLayer";
+import ApartmentLayer from "./ApartmentLayer";
+import StationLayer from "./StationLayer";
+import CityDevPanel from "./CityDevPanel";
+import CollisionDebugLayer from "./CollisionDebugLayer";
 import HueDot from "./HueDot";
 import styles from "./neonCity.module.css";
 
@@ -71,13 +86,20 @@ const easeIO = (t: number) =>
   t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 const easeIn = (t: number) => t * t * t;
 
-// scripted avatar walk-down: 800ms pause at the top of the stairs, then a
-// smoothstep glide along the stair waypoints to the landing (757,714).
+// Scripted avatar walk-down: 800ms pause at the carriage door, then a
+// smoothstep glide off the west platform, down the stairs, to SPAWN. Derived
+// from TERMINAL so moving the station moves the arrival with it.
 const WALK_PTS: [number, number][] = [
-  [710, 615],
-  [722, 650],
-  [757, 676],
-  [757, 714],
+  // stepping off the carriage onto the deck
+  [TERMINAL.platform.x + TERMINAL.platform.w / 2, TERMINAL.gap.top - 40],
+  // along the deck to the ramp mouth
+  [
+    TERMINAL.platform.x + TERMINAL.platform.w / 2,
+    (TERMINAL.gap.top + TERMINAL.gap.bot) / 2,
+  ],
+  // through the turnstiles and down the ramp
+  [TERMINAL.ramp.x + TERMINAL.ramp.w / 2, SPAWN.y],
+  [SPAWN.x, SPAWN.y],
 ];
 function avatarWalk(wt: number): [number, number] {
   const pause = 800;
@@ -111,8 +133,10 @@ function avatarWalk(wt: number): [number, number] {
 
 export default function NeonCity({
   name = "Kendall Adkins",
+  projects = [],
 }: {
   name?: string;
+  projects?: CityProject[];
 }) {
   const router = useRouter();
   const isTouch = useIsTouch();
@@ -160,6 +184,9 @@ export default function NeonCity({
   const panelRef = useRef<string | null>(null);
   const dismissed = useRef<Set<string>>(new Set());
   const onPadRef = useRef<string | null>(null);
+  const roofRef = useRef<HTMLDivElement>(null);
+  const aptRoofRef = useRef<HTMLDivElement>(null);
+  const stnRoofRef = useRef<HTMLDivElement>(null);
   const start = useRef(0);
   // cinematic arrival intro
   const intro = useRef<{ phase: "ride" | "walk" | "done"; walkT: number }>({
@@ -188,11 +215,44 @@ export default function NeonCity({
     label: "00:00 · NIGHT",
     dot: "#aab4e8",
   });
+  // ?dev=1 unlocks the collider overlay. The roof lift is no longer a choice —
+  // "split" shipped, and the iris and fade branches are gone.
+  const [dev, setDev] = useState(false);
+  const [colliders, setColliders] = useState(false);
+  useEffect(() => {
+    const isDev =
+      new URLSearchParams(window.location.search).get("dev") === "1";
+    setDev(isDev);
+    if (isDev) {
+      setColliders(localStorage.getItem("neoncity.colliders") === "1");
+    }
+  }, []);
+  function pickColliders(on: boolean) {
+    setColliders(on);
+    localStorage.setItem("neoncity.colliders", on ? "1" : "0");
+  }
 
   const dest = useMemo(
     () => Object.fromEntries(DESTINATIONS.map((d) => [d.key, d])),
     []
   );
+
+  // Galleria storefronts, derived from the project list. Occupied units carry a
+  // pad + teaser and route to /projects/[slug]; vacant ones render FOR LEASE.
+  const units = useMemo(() => buildGalleriaUnits(projects), [projects]);
+  const unitTargets = useMemo(
+    () =>
+      Object.fromEntries(
+        units.filter((u) => u.pad).map((u) => [u.id, u])
+      ) as Record<string, GalleriaUnit>,
+    [units]
+  );
+  // the RAF loop + key handlers close over initial values, so reach the current
+  // targets through a ref
+  const unitTargetsRef = useRef(unitTargets);
+  useEffect(() => {
+    unitTargetsRef.current = unitTargets;
+  }, [unitTargets]);
 
   // arrival beat fades after ~4.6s
   useEffect(() => {
@@ -238,8 +298,8 @@ export default function NeonCity({
     }
 
     function enterDest(key: string) {
-      const d = dest[key];
-      if (!d) return;
+      const d = dest[key] ?? unitTargetsRef.current[key];
+      if (!d?.href) return;
       router.push(d.href);
     }
 
@@ -373,8 +433,8 @@ export default function NeonCity({
     if (reduced) {
       intro.current = { phase: "done", walkT: 9999 };
       setIntroPhase("done");
-      pos.current.x = 757;
-      pos.current.y = 714;
+      pos.current.x = SPAWN.x;
+      pos.current.y = SPAWN.y;
       train.current.mode = "dwell";
       train.current.until = Number.POSITIVE_INFINITY;
       camDone.current = { t0: -1e9, fromTx: 0, fromTy: 0, fromS: 1 };
@@ -408,8 +468,8 @@ export default function NeonCity({
         p.y = ay;
         moving = IN.walkT > 800 && IN.walkT < 3200;
         if (IN.walkT >= 3400) {
-          p.x = 757;
-          p.y = 714;
+          p.x = SPAWN.x;
+          p.y = SPAWN.y;
           IN.phase = "done";
           setIntroPhase("done");
           camDone.current = {
@@ -617,10 +677,11 @@ export default function NeonCity({
         if (!hold) {
           c.x += c.dx * f;
           c.y += c.dy * f;
-          if (c.x > 2460) c.x = -60;
-          if (c.x < -60) c.x = 2460;
-          if (c.y > 1660) c.y = -60;
-          if (c.y < -60) c.y = 1660;
+          // wrap one car-length past each wall so cars re-enter off-screen
+          if (c.x > WORLD.w + 60) c.x = -60;
+          if (c.x < -60) c.x = WORLD.w + 60;
+          if (c.y > WORLD.h + 60) c.y = -60;
+          if (c.y < -60) c.y = WORLD.h + 60;
         }
         // player collision
         if (invuln.current <= 0) {
@@ -745,6 +806,15 @@ export default function NeonCity({
           break;
         }
       }
+      if (!padKey) {
+        for (const u of Object.values(unitTargetsRef.current)) {
+          const r = centerRect(u.pad!);
+          if (p.x > r.x && p.x < r.x + r.w && p.y > r.y && p.y < r.y + r.h) {
+            padKey = u.id;
+            break;
+          }
+        }
+      }
       if (padKey !== onPadRef.current) {
         onPadRef.current = padKey;
         setOnPad(padKey);
@@ -755,6 +825,26 @@ export default function NeonCity({
         } else if (!dismissed.current.has(padKey) && !ftGlide.current) {
           openPanel(padKey);
         }
+      }
+
+      // ---- roofs (open when inside or approaching the doorway) ----
+      // derived from position every frame, so leaving closes them for free
+      const inZone = (z: { x0: number; x1: number; y0: number; y1: number }) =>
+        p.x > z.x0 && p.x < z.x1 && p.y > z.y0 && p.y < z.y1;
+      if (roofRef.current) {
+        const g = GALLERIA.open;
+        roofRef.current.dataset.open =
+          inZone(g.inside) || inZone(g.nearGap) ? "1" : "0";
+      }
+      if (aptRoofRef.current) {
+        const a = APARTMENT.open;
+        aptRoofRef.current.dataset.open =
+          inZone(a.inside) || inZone(a.nearGap) ? "1" : "0";
+      }
+      if (stnRoofRef.current) {
+        const s = STATION.open;
+        stnRoofRef.current.dataset.open =
+          inZone(s.inside) || inZone(s.nearDoor) ? "1" : "0";
       }
 
       // ---- day/night ----
@@ -818,8 +908,8 @@ export default function NeonCity({
     intro.current.phase = "done";
     intro.current.walkT = 9999;
     setIntroPhase("done");
-    pos.current.x = 757;
-    pos.current.y = 714;
+    pos.current.x = SPAWN.x;
+    pos.current.y = SPAWN.y;
     pos.current.ang = 0;
     // snap the camera straight to 1:1 (no ease from the cinematic frame)
     camDone.current = { t0: -1e9, fromTx: 0, fromTy: 0, fromS: 1 };
@@ -849,7 +939,7 @@ export default function NeonCity({
     if (!everMoved) setEverMoved(true);
   }
 
-  const activePanel = panel ? dest[panel] : null;
+  const activePanel = panel ? (dest[panel] ?? unitTargets[panel]) : null;
 
   // The static world (~300 nodes) only depends on `onPad` for the pad glow;
   // memoizing it keeps the 1Hz clock tick and teaser state from reconciling
@@ -861,6 +951,7 @@ export default function NeonCity({
         {BLOBS.map((bl, i) => (
           <div
             key={`blob${i}`}
+            id={`nc-blob-${i}`}
             className={styles.blob}
             style={{
               left: bl.x,
@@ -878,6 +969,7 @@ export default function NeonCity({
         {DISTRICT_LABELS.map((l) => (
           <div
             key={l.text}
+            id={`nc-district-label-${l.text.toLowerCase().replace(/\s+/g, "-")}`}
             className={styles.districtLabel}
             style={{
               left: l.x,
@@ -899,14 +991,16 @@ export default function NeonCity({
         {/* lamps (brighten at night) */}
         <div ref={lampWrapRef}>
           {LAMPS.map((l, i) => (
-            <div key={`lp${i}`}>
+            <div key={`lp${i}`} id={`nc-lamp-${i}`}>
               <div
                 className={styles.lampPool}
                 style={{ left: l.x, top: l.y }}
               />
+              {/* the core is centred by its own transform, so it takes the
+                  pool's exact position — no half-size offset */}
               <div
                 className={styles.lampCore}
-                style={{ left: l.x - 3, top: l.y - 3 }}
+                style={{ left: l.x, top: l.y }}
               />
             </div>
           ))}
@@ -919,6 +1013,7 @@ export default function NeonCity({
         {SHELLS.map((s, i) => (
           <div
             key={`shell${i}`}
+            id={`nc-shell-${i}`}
             style={{
               position: "absolute",
               left: s.x,
@@ -972,8 +1067,19 @@ export default function NeonCity({
         {/* themed POIs (flavor, not enterable) */}
         <POILayer />
 
+        {/* the projects mall (walk in, roof lifts) */}
+        <GalleriaLayer roofRef={roofRef} units={units} onPad={onPad} />
+
+        {/* Unit 4B — the walk-in studio (roof lifts, mat is inside) */}
+        <ApartmentLayer roofRef={aptRoofRef} active={onPad === "about"} />
+
+        {/* Terminal Park Station — the walk-in ticket hall (mat is inside) */}
+        <StationLayer roofRef={stnRoofRef} active={onPad === "resume"} />
+
         {/* destination buildings */}
-        {DESTINATIONS.filter((d) => d.key !== "projects").map((d) => (
+        {DESTINATIONS.filter(
+          (d) => d.key !== "projects" && d.key !== "about" && d.key !== "resume"
+        ).map((d) => (
           <DestinationBldg key={d.key} d={d} active={onPad === d.key} />
         ))}
         <ProjectsPavilion active={onPad === "projects"} />
@@ -984,6 +1090,7 @@ export default function NeonCity({
           return (
             <div
               key={`car${i}`}
+              id={`nc-car-${i}`}
               ref={(el) => {
                 carEls.current[i] = el;
               }}
@@ -1008,18 +1115,24 @@ export default function NeonCity({
         {[0, 1, 2].map((i) => (
           <div
             key={`tc${i}`}
+            id={`nc-train-car-${i}`}
             ref={(el) => {
               trainEls.current[i] = el;
             }}
+            style={{ zIndex: 51 }}
             className={styles.trainCar}
           >
             <div className={styles.trainWin} />
           </div>
         ))}
 
+        {/* ?dev=1 collider overlay — draws SOLIDS/CIRCLES over the art */}
+        {colliders && <CollisionDebugLayer />}
+
         {/* character — the mock-up "person" (28×28 box centered on position) */}
         <div
           ref={charRef}
+          id="nc-player"
           className={styles.char}
           style={{
             transform: `translate(${SPAWN.x - 14}px, ${SPAWN.y - 14}px)`,
@@ -1039,9 +1152,10 @@ export default function NeonCity({
         </div>
       </div>
     ),
-    // refs/cars/name are stable; only onPad changes the rendered world
+    // refs/cars/name are stable; onPad drives the pad glow, and
+    // roof-lift variant (dev only, rare), units come from the project list
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [onPad, name]
+    [onPad, name, units, colliders]
   );
 
   return (
@@ -1051,6 +1165,9 @@ export default function NeonCity({
       aria-label="Neon City, a walkable portfolio overworld"
       className={`${styles.stage}${introPhase !== "done" ? ` ${styles.introFreeze}` : ""}`}
     >
+      {dev && (
+        <CityDevPanel colliders={colliders} onColliders={pickColliders} />
+      )}
       {world}
 
       {/* ---- overlays ---- */}
@@ -1194,7 +1311,7 @@ export default function NeonCity({
         </div>
 
         {!everMoved && !panel && introPhase === "done" && (
-          <div className={styles.hint}>
+          <div id="nc-hint" className={styles.hint}>
             {isTouch
               ? "DRAG THE STICK · OR TAP THE STREET"
               : "WALK WITH WASD · OR CLICK THE STREET"}
@@ -1202,8 +1319,9 @@ export default function NeonCity({
         )}
 
         {/* teaser popover */}
-        {activePanel && (
+        {activePanel?.teaser && (
           <div
+            id="nc-teaser"
             className={styles.teaser}
             style={{ "--tc": HUES[activePanel.hue] } as CSSProperties}
           >
@@ -1252,10 +1370,11 @@ export default function NeonCity({
         {isTouch ? (
           <FastTravelDrawer activeKey={panel} onTravel={fastTravel} />
         ) : (
-          <div className={styles.fastbar}>
+          <div id="nc-fastbar" className={styles.fastbar}>
             {FAST_TRAVEL_ITEMS.map((it) => (
               <button
                 key={it.key}
+                id={`nc-fasttravel-${it.key}`}
                 type="button"
                 className={`${styles.ftBtn} ${
                   it.key === "home"
@@ -1285,6 +1404,7 @@ function RailLayer() {
   // curved Adkins Line, drawn as layered strokes (shadow, glow, core, dark, ties)
   return (
     <svg
+      id="nc-train-tracks"
       width={WORLD.w}
       height={WORLD.h}
       viewBox={`0 0 ${WORLD.w} ${WORLD.h}`}
@@ -1293,11 +1413,12 @@ function RailLayer() {
         left: 0,
         top: 0,
         pointerEvents: "none",
-        zIndex: 11,
+        zIndex: 50,
         overflow: "visible",
       }}
     >
       <path
+        id="nc-rail-shadow"
         d="M 734 1682 C 764 1502 814 1442 784 1322 C 759 1217 614 1192 604 1052 C 597 952 694 927 694 832 L 694 480 C 694 350 654 280 574 220 C 484 150 394 100 334 -20"
         stroke="rgba(0,0,0,.35)"
         strokeWidth={12}
@@ -1306,19 +1427,28 @@ function RailLayer() {
         opacity={0.7}
       />
       <path
+        id="nc-rail-halo"
         d={RAIL_PATH}
         stroke="rgba(120,110,210,.14)"
         strokeWidth={22}
         fill="none"
       />
       <path
+        id="nc-rail-deck"
         d={RAIL_PATH}
         stroke="rgba(150,140,220,.45)"
         strokeWidth={13}
         fill="none"
       />
-      <path d={RAIL_PATH} stroke="#0d0b18" strokeWidth={7} fill="none" />
       <path
+        id="nc-rail-bed"
+        d={RAIL_PATH}
+        stroke="#0d0b18"
+        strokeWidth={7}
+        fill="none"
+      />
+      <path
+        id="nc-rail-ties"
         d={RAIL_PATH}
         stroke="rgba(150,140,220,.3)"
         strokeWidth={13}
@@ -1337,7 +1467,11 @@ function StreetLayer() {
     "M 412 1130 C 680 1098 950 1128 1250 1128 C 1470 1126 1700 1096 1900 1040",
     "M 252 -40 C 262 20 292 62 320 100 C 700 240 1150 120 1500 190 C 1720 230 1850 140 2010 130 C 2080 127 2120 200 2120 282",
   ];
-  const spur = "M 1010 340 C 1030 430 1070 490 1090 556";
+  // short connector roads — narrower than the main curves (60/56 vs 68/64)
+  const spurs = [
+    "M 1010 340 C 1030 430 1070 490 1090 556", // arterial → park roundabout
+    "M 2085 700 C 2220 688 2350 700 2500 702", // east curve → Galleria entrance
+  ];
   return (
     <>
       <svg
@@ -1350,6 +1484,7 @@ function StreetLayer() {
         {curved.map((d, i) => (
           <path
             key={`so${i}`}
+            id={`nc-street-outline-${i}`}
             d={d}
             stroke="rgba(150,140,220,.13)"
             strokeWidth={68}
@@ -1357,14 +1492,19 @@ function StreetLayer() {
             strokeLinecap="round"
           />
         ))}
-        <path
-          d={spur}
-          stroke="rgba(150,140,220,.13)"
-          strokeWidth={60}
-          fill="none"
-          strokeLinecap="round"
-        />
+        {spurs.map((d, i) => (
+          <path
+            key={`spo${i}`}
+            id={`nc-spur-outline-${i}`}
+            d={d}
+            stroke="rgba(150,140,220,.13)"
+            strokeWidth={60}
+            fill="none"
+            strokeLinecap="round"
+          />
+        ))}
         <circle
+          id="nc-roundabout"
           cx={1090}
           cy={548}
           r={42}
@@ -1376,6 +1516,7 @@ function StreetLayer() {
         {curved.map((d, i) => (
           <path
             key={`sb${i}`}
+            id={`nc-street-bed-${i}`}
             d={d}
             stroke="#0d0c17"
             strokeWidth={64}
@@ -1383,17 +1524,22 @@ function StreetLayer() {
             strokeLinecap="round"
           />
         ))}
-        <path
-          d={spur}
-          stroke="#0d0c17"
-          strokeWidth={56}
-          fill="none"
-          strokeLinecap="round"
-        />
+        {spurs.map((d, i) => (
+          <path
+            key={`spb${i}`}
+            id={`nc-spur-bed-${i}`}
+            d={d}
+            stroke="#0d0c17"
+            strokeWidth={56}
+            fill="none"
+            strokeLinecap="round"
+          />
+        ))}
         {/* dashed centerlines */}
-        {curved.map((d, i) => (
+        {[...curved, ...spurs].map((d, i) => (
           <path
             key={`sc${i}`}
+            id={`nc-street-centerline-${i}`}
             d={d}
             stroke="rgba(243,237,226,.05)"
             strokeWidth={2}
@@ -1403,46 +1549,51 @@ function StreetLayer() {
         ))}
         {/* straight arterial — V1 traffic runs here */}
         <path
-          d="M 0 320 L 2400 320"
+          d={`M 0 320 L ${WORLD.w} 320`}
           stroke="#0d0c17"
           strokeWidth={78}
           fill="none"
         />
         <path
-          d="M 0 282 L 2400 282"
+          d={`M 0 282 L ${WORLD.w} 282`}
           stroke="rgba(150,140,220,.14)"
           strokeWidth={1.5}
           fill="none"
         />
         <path
-          d="M 0 358 L 2400 358"
+          d={`M 0 358 L ${WORLD.w} 358`}
           stroke="rgba(150,140,220,.14)"
           strokeWidth={1.5}
           fill="none"
         />
         <path
-          d="M 0 320 L 2400 320"
+          d={`M 0 320 L ${WORLD.w} 320`}
           stroke="rgba(243,237,226,.08)"
           strokeWidth={2}
           fill="none"
           strokeDasharray="26 36"
         />
       </svg>
-      {/* arterial crosswalk at the park spur */}
-      <div
-        style={{
-          position: "absolute",
-          left: 986,
-          top: 284,
-          width: 46,
-          height: 72,
-          backgroundImage:
-            "repeating-linear-gradient(0deg, rgba(243,237,226,.1) 0 8px, transparent 8px 19px)",
-          pointerEvents: "none",
-        }}
-      />
+      {/* arterial crosswalks — one at the park spur, one at the Galleria spur */}
+      {[986, 2440].map((left) => (
+        <div
+          key={`xw${left}`}
+          id={`nc-crosswalk-${left}`}
+          style={{
+            position: "absolute",
+            left,
+            top: 284,
+            width: 46,
+            height: 72,
+            backgroundImage:
+              "repeating-linear-gradient(0deg, rgba(243,237,226,.1) 0 8px, transparent 8px 19px)",
+            pointerEvents: "none",
+          }}
+        />
+      ))}
       {/* arterial tag */}
       <div
+        id="nc-arterial-tag"
         style={{
           position: "absolute",
           left: 60,
@@ -1454,7 +1605,7 @@ function StreetLayer() {
           pointerEvents: "none",
         }}
       >
-        ARTERIAL · V1 TRAFFIC
+        Corellian Run Road
       </div>
     </>
   );
@@ -1471,6 +1622,7 @@ function ParkLayer({
   return (
     <>
       <div
+        id="nc-park"
         className={styles.park}
         style={{
           left: PARK.x,
@@ -1480,13 +1632,15 @@ function ParkLayer({
           borderRadius: PARK.radius,
         }}
       >
-        <div className={styles.parkRing} />
+        <div id="nc-park-ring" className={styles.parkRing} />
         {/* winding paths */}
         <div
+          id="nc-park-path-0"
           className={styles.parkPath}
           style={{ left: 14, top: 180, width: 400, transform: "rotate(4deg)" }}
         />
         <div
+          id="nc-park-path-1"
           className={styles.parkPath}
           style={{
             left: 392,
@@ -1496,6 +1650,7 @@ function ParkLayer({
           }}
         />
         <div
+          id="nc-park-path-2"
           className={styles.parkPath}
           style={{
             left: 428,
@@ -1506,6 +1661,7 @@ function ParkLayer({
           }}
         />
         <div
+          id="nc-park-path-3"
           className={styles.parkPath}
           style={{
             left: 404,
@@ -1517,36 +1673,69 @@ function ParkLayer({
         />
         {/* plaza circle */}
         <div
+          id="nc-plaza-circle"
           style={{
             position: "absolute",
-            left: 399,
-            top: 159,
-            width: 88,
-            height: 88,
+            left: 378,
+            top: 170,
+            width: 78,
+            height: 78,
             borderRadius: "50%",
             background: "#131120",
-            border: "1px dashed rgba(243,237,226,.18)",
           }}
         />
         {/* reflecting pond */}
         <div
+          id="nc-reflecting-pond"
           style={{
             position: "absolute",
-            left: 420,
-            top: 24,
-            width: 90,
-            height: 90,
+            left: PARK.pond.rx,
+            top: PARK.pond.ry,
+            width: PARK.pond.d,
+            height: PARK.pond.d,
             borderRadius: "50%",
             border: "1px dashed rgba(140,190,235,.22)",
             background: "radial-gradient(circle at 40% 35%, #0e1a24, #0a1219)",
             boxShadow: "inset 0 0 20px rgba(0,0,0,.5)",
           }}
-        />
+        >
+          <div id="nc-pond-fountain" className={styles.fountain}>
+            <div className={styles.fountainBasin} />
+            {[0, 1.13, 2.26].map((delay) => (
+              <div
+                key={`ring${delay}`}
+                className={styles.fountainRing}
+                style={{ animationDelay: `${delay}s` }}
+              />
+            ))}
+            <div className={styles.fountainJet} />
+            {/* droplets thrown out on the diagonals, each a half-beat apart */}
+            {[
+              [11, -11],
+              [11, 11],
+              [-11, 11],
+              [-11, -11],
+            ].map(([dx, dy], i) => (
+              <div
+                key={`drop${i}`}
+                className={styles.fountainDrop}
+                style={
+                  {
+                    "--dx": `${dx}px`,
+                    "--dy": `${dy}px`,
+                    animationDelay: `${i * 0.5}s`,
+                  } as CSSProperties
+                }
+              />
+            ))}
+          </div>
+        </div>
         {/* corner label */}
         <div
+          id="nc-park-corner-label"
           style={{
             position: "absolute",
-            right: 26,
+            right: 385,
             bottom: 16,
             fontFamily: "var(--font-mono), monospace",
             fontSize: 10,
@@ -1554,13 +1743,14 @@ function ParkLayer({
             color: "rgba(140,210,160,.5)",
           }}
         >
-          TERMINAL&nbsp;PARK
+          TERMINAL PARK
         </div>
       </div>
       {/* trees */}
       {TREES.map((t, i) => (
         <div
           key={`tree${i}`}
+          id={`nc-tree-${i}`}
           className={styles.tree}
           style={{ left: t.x, top: t.y, width: t.r * 2, height: t.r * 2 }}
         />
@@ -1569,49 +1759,142 @@ function ParkLayer({
       {BENCHES.map((b, i) => (
         <div
           key={`bench${i}`}
+          id={`nc-bench-${i}`}
           className={styles.bench}
           style={{ left: b.x, top: b.y, width: b.w, height: b.h }}
         />
       ))}
       {/* nameplate */}
       <div
+        id="nc-park-nameplate"
         className={styles.nameplate}
         style={{ left: PARK.nameplate.x, top: PARK.nameplate.y }}
       >
         <div className={styles.npName}>
           {first} {last && <i>{last}</i>}
         </div>
-        <div className={styles.npTag}>engineer by day · human by design</div>
+        <div className={styles.npTag}>software engineer · yogi · gamer</div>
       </div>
-      {/* vertical platform beside the park (west) */}
+      <TerminalStation />
+    </>
+  );
+}
+
+// The end of the Adkins Line: platform, ticket hall, stairs to the street.
+// Every rect comes from TERMINAL, which collision reads too.
+function TerminalStation() {
+  const T = TERMINAL;
+  const cyan = "oklch(0.85 0.13 190)";
+  const cyanDim = "oklch(0.85 0.13 190 / .35)";
+  const mono = "var(--font-mono), monospace";
+  return (
+    <>
+      {/* platform deck, west of the track */}
       <div
+        id="nc-rail-platform"
         style={{
           position: "absolute",
-          left: 696,
-          top: 560,
-          width: 36,
-          height: 250,
+          left: T.platform.x,
+          top: T.platform.y,
+          width: T.platform.w,
+          height: T.platform.h,
           background: "#131120",
-          border: "1px solid rgba(150,140,220,.35)",
+          border: `1px solid ${cyanDim}`,
           borderRadius: 4,
           zIndex: 12,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
         }}
       >
         <span
+          id="nc-platform-name"
           style={{
-            fontFamily: "var(--font-mono), monospace",
+            position: "absolute",
+            left: 9,
+            bottom: 15,
+            fontFamily: mono,
             fontSize: 8,
             letterSpacing: ".3em",
             color: "oklch(0.85 0.13 190 / .75)",
             writingMode: "vertical-rl",
+            zIndex: 30,
           }}
         >
-          TERMINAL · ADKINS LINE
+          TERMINAL PARK · ADKINS LINE
         </span>
       </div>
+      {/* ramp down to the street, treads running west */}
+      <div
+        id="nc-terminal-ramp"
+        style={{
+          position: "absolute",
+          left: T.ramp.x,
+          top: T.ramp.y,
+          width: T.ramp.w,
+          height: T.ramp.h,
+          zIndex: 12,
+          borderRadius: 2,
+          // lighter at the street end, darker where it meets the deck, so the
+          // ramp reads as climbing rather than lying flat
+          background: "linear-gradient(90deg, #100e1c, #1b1730)",
+          border: `1px solid ${cyanDim}`,
+          backgroundImage:
+            "repeating-linear-gradient(90deg, rgba(150,140,220,.2) 0 1px, transparent 1px 9px)",
+        }}
+      />
+      {/* railings — the fence that makes the deck a one-way-in space */}
+      {T.rails.map((r, i) => (
+        <div
+          key={`rail${i}`}
+          id={`nc-platform-rail-${i}`}
+          style={{
+            position: "absolute",
+            left: r.x,
+            top: r.y,
+            width: r.w,
+            height: r.h,
+            zIndex: 14,
+            borderRadius: 1,
+            background: "#0d0b18",
+            border: `1px solid ${cyanDim}`,
+            boxShadow: `0 0 8px oklch(0.85 0.13 190 / .18)`,
+          }}
+        />
+      ))}
+      {/* turnstile stiles at the ramp mouth — you pass between them */}
+      {T.turnstiles.map((s, i) => (
+        <div
+          key={`stile${i}`}
+          id={`nc-turnstile-${i}`}
+          style={{
+            position: "absolute",
+            left: s.x,
+            top: s.y,
+            width: s.w,
+            height: s.h,
+            zIndex: 15,
+            borderRadius: 2,
+            background: "#12101f",
+            border: `1px solid ${cyanDim}`,
+            boxShadow: `0 0 10px oklch(0.85 0.13 190 / .25)`,
+          }}
+        >
+          {/* the arm, angled across the lane */}
+          <div
+            id={`nc-turnstile-${i}-arm`}
+            style={{
+              position: "absolute",
+              left: "50%",
+              top: "50%",
+              width: 11,
+              height: 2,
+              marginTop: -1,
+              borderRadius: 1,
+              transformOrigin: "0 50%",
+              transform: `rotate(${i === 0 ? 52 : -52}deg)`,
+              background: "oklch(0.85 0.13 190 / .7)",
+            }}
+          />
+        </div>
+      ))}
     </>
   );
 }
@@ -1633,6 +1916,7 @@ function DestinationBldg({ d, active }: { d: Destination; active: boolean }) {
   return (
     <>
       <div
+        id={`nc-building-${d.key}`}
         style={{
           position: "absolute",
           left: d.x,
@@ -1739,19 +2023,22 @@ function DestinationBldg({ d, active }: { d: Destination; active: boolean }) {
             animation: "ncBlink 1.5s step-end infinite",
           }}
         />
-        {/* lit accent door strip */}
-        <div
-          style={{
-            position: "absolute",
-            left: d.door.x,
-            top: d.door.y,
-            width: d.door.w,
-            height: d.door.h,
-            background: accent,
-            boxShadow: `0 0 14px ${accent}`,
-            opacity: 0.9,
-          }}
-        />
+        {/* lit accent door strip (walk-in buildings draw their own doorway) */}
+        {d.door && (
+          <div
+            id={`nc-door-${d.key}`}
+            style={{
+              position: "absolute",
+              left: d.door.x,
+              top: d.door.y,
+              width: d.door.w,
+              height: d.door.h,
+              background: accent,
+              boxShadow: `0 0 14px ${accent}`,
+              opacity: 0.9,
+            }}
+          />
+        )}
         {/* corner pulse light */}
         <div
           style={{
@@ -1786,6 +2073,13 @@ function DestinationBldg({ d, active }: { d: Destination; active: boolean }) {
               letterSpacing: ".34em",
               color: accent,
               textShadow: `0 0 16px ${accent}`,
+              // long names wrap onto a second line rather than crowding the
+              // plate edge to edge. The negative margin cancels the trailing
+              // letter-space so wrapped lines still read as centred.
+              maxWidth: "86%",
+              textAlign: "center",
+              lineHeight: 1.4,
+              marginRight: "-.34em",
             }}
           >
             {d.sign}
@@ -1804,6 +2098,7 @@ function DestinationBldg({ d, active }: { d: Destination; active: boolean }) {
       </div>
       {/* entry pad */}
       <div
+        id={`nc-pad-${d.key}`}
         style={{
           position: "absolute",
           left: pr.x,
@@ -1825,14 +2120,16 @@ function DestinationBldg({ d, active }: { d: Destination; active: boolean }) {
 // Projects — the bespoke park pavilion (land on the LEFT stairs, enter on the RIGHT pad)
 function ProjectsPavilion({ active }: { active: boolean }) {
   const d = DESTINATIONS.find((x) => x.key === "projects")!;
-  const accent = "oklch(0.85 0.13 190)";
+  const accent = hueColor(d.hue, 0.85);
+  const dim = hueColor(d.hue, 0.85, 0.13, 0.4);
+  const pr = padRect(d);
   const dot = (style: CSSProperties) => (
     <div
       style={{
         position: "absolute",
         width: 7,
         height: 7,
-        background: "oklch(0.85 0.13 190 / .5)",
+        background: hueColor(d.hue, 0.85, 0.13, 0.5),
         ...style,
       }}
     />
@@ -1840,6 +2137,7 @@ function ProjectsPavilion({ active }: { active: boolean }) {
   return (
     <>
       <div
+        id="nc-building-projects"
         style={{
           position: "absolute",
           left: d.x,
@@ -1848,9 +2146,8 @@ function ProjectsPavilion({ active }: { active: boolean }) {
           height: d.h,
           borderRadius: "12px 18px 10px 16px",
           background: "rgba(17,15,30,.94)",
-          border: "1px solid oklch(0.85 0.13 190 / .4)",
-          boxShadow:
-            "0 0 26px oklch(0.85 0.13 190 / .16), inset 0 0 30px rgba(0,0,0,.55)",
+          border: `1px solid ${dim}`,
+          boxShadow: `0 0 26px ${hueColor(d.hue, 0.85, 0.13, 0.16)}, inset 0 0 30px rgba(0,0,0,.55)`,
           zIndex: 3,
         }}
       >
@@ -1871,13 +2168,13 @@ function ProjectsPavilion({ active }: { active: boolean }) {
           left: 10,
           top: "50%",
           marginTop: -4,
-          background: "oklch(0.85 0.13 190 / .35)",
+          background: hueColor(d.hue, 0.85, 0.13, 0.35),
         })}
         {dot({
           right: 10,
           top: "50%",
           marginTop: -4,
-          background: "oklch(0.85 0.13 190 / .35)",
+          background: hueColor(d.hue, 0.85, 0.13, 0.35),
         })}
         {/* antenna + beacon */}
         <div
@@ -1904,18 +2201,21 @@ function ProjectsPavilion({ active }: { active: boolean }) {
           }}
         />
         {/* right-side entrance door strip */}
-        <div
-          style={{
-            position: "absolute",
-            left: d.door.x,
-            top: d.door.y,
-            width: d.door.w,
-            height: d.door.h,
-            background: accent,
-            boxShadow: `0 0 14px ${accent}`,
-            opacity: 0.9,
-          }}
-        />
+        {d.door && (
+          <div
+            id="nc-door-projects"
+            style={{
+              position: "absolute",
+              left: d.door.x,
+              top: d.door.y,
+              width: d.door.w,
+              height: d.door.h,
+              background: accent,
+              boxShadow: `0 0 14px ${accent}`,
+              opacity: 0.9,
+            }}
+          />
+        )}
         {/* sign plate */}
         <div
           style={{
@@ -1936,68 +2236,45 @@ function ProjectsPavilion({ active }: { active: boolean }) {
               letterSpacing: ".3em",
               color: accent,
               textShadow: `0 0 16px ${accent}`,
+              maxWidth: "86%",
+              textAlign: "center",
+              lineHeight: 1.4,
+              marginRight: "-.3em",
             }}
           >
-            PROJECTS
+            {d.sign}
           </div>
           <div
             style={{
               fontFamily: "var(--font-mono), monospace",
               fontSize: 9,
               letterSpacing: ".22em",
-              color: "oklch(0.85 0.13 190 / .4)",
+              color: dim,
             }}
           >
-            ( the pavilion )
+            {d.sub}
           </div>
         </div>
       </div>
-      {/* stairs on the LEFT */}
+      {/* entrance pad on the RIGHT — drawn from the same rect the loop tests */}
       <div
+        id="nc-pad-projects"
         style={{
           position: "absolute",
-          left: 736,
-          top: 655,
-          width: 44,
-          height: 64,
-          background: "#131120",
-          border: "1px solid rgba(150,140,220,.3)",
-          backgroundImage:
-            "repeating-linear-gradient(90deg, rgba(243,237,226,.22) 0 2px, transparent 2px 9px)",
-          zIndex: 5,
-        }}
-      />
-      {/* entrance pad on the RIGHT (trigger center 960,822) */}
-      <div
-        style={{
-          position: "absolute",
-          left: 938,
-          top: 790,
-          width: 44,
-          height: 64,
-          background: `oklch(0.85 0.13 190 / ${active ? 0.3 : 0.16})`,
+          left: pr.x,
+          top: pr.y,
+          width: pr.w,
+          height: pr.h,
+          background: hueColor(d.hue, 0.85, 0.13, active ? 0.3 : 0.16),
           border: `1px solid ${accent}`,
           borderRadius: 4,
           animation: "ncPulse 2s ease-in-out infinite",
-          boxShadow: active ? "0 0 26px oklch(0.85 0.13 190 / .3)" : "none",
+          boxShadow: active
+            ? `0 0 26px ${hueColor(d.hue, 0.85, 0.13, 0.3)}`
+            : "none",
           zIndex: 3,
         }}
       />
-      <div
-        style={{
-          position: "absolute",
-          left: 994,
-          top: 812,
-          fontFamily: "var(--font-mono), monospace",
-          fontSize: 9,
-          letterSpacing: ".2em",
-          color: "oklch(0.85 0.13 190 / .6)",
-          zIndex: 3,
-          pointerEvents: "none",
-        }}
-      >
-        ENTER
-      </div>
     </>
   );
 }
@@ -2008,6 +2285,7 @@ function POILayer() {
     "repeating-linear-gradient(90deg, rgba(150,140,220,.06) 0 1px, transparent 1px 18px), repeating-linear-gradient(0deg, rgba(150,140,220,.06) 0 1px, transparent 1px 18px)";
   const sign = (c: string, text: string, dur: number) => (
     <div
+      id={`nc-sign-${text.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
       style={{
         position: "absolute",
         left: "50%",
@@ -2033,6 +2311,7 @@ function POILayer() {
     <>
       {/* MUSEUM (amber) */}
       <div
+        id="nc-poi-museum"
         style={{
           position: "absolute",
           left: 520,
@@ -2096,11 +2375,39 @@ function POILayer() {
             animation: "ncPulse 3.4s ease-in-out infinite",
           }}
         />
+        {/* rooftop billboard — sits on the roof, north edge of the world */}
+        <div
+          id="nc-museum-billboard"
+          style={{
+            position: "absolute",
+            left: "50%",
+            top: 12,
+            transform: "translateX(-50%)",
+            display: "grid",
+            placeItems: "center",
+            padding: "4px 10px",
+            whiteSpace: "nowrap",
+            fontFamily: "var(--font-mono), monospace",
+            fontSize: 9,
+            letterSpacing: ".16em",
+            color: "oklch(0.8 0.12 46)",
+            background: "#0a0913",
+            border: "1px solid oklch(0.8 0.12 46 / .4)",
+            borderRadius: 3,
+            textShadow: "0 0 10px oklch(0.8 0.12 46 / .8)",
+            boxShadow:
+              "0 0 16px oklch(0.8 0.12 46 / .28), inset 0 0 10px oklch(0.8 0.12 46 / .12)",
+            animation: "ncFlick 5.6s infinite",
+          }}
+        >
+          International Spy
+        </div>
         {sign("0.8 0.12 46", "MUSEUM", 7.2)}
       </div>
 
       {/* CONSTRUCTION / SITE 09 (amber) */}
       <div
+        id="nc-poi-construction"
         style={{
           position: "absolute",
           left: 1660,
@@ -2183,6 +2490,7 @@ function POILayer() {
 
       {/* OBSERVATORY (purple) */}
       <div
+        id="nc-poi-observatory"
         style={{
           position: "absolute",
           left: 2140,
@@ -2244,6 +2552,7 @@ function POILayer() {
 
       {/* ARCADE (cyan) */}
       <div
+        id="nc-poi-arcade"
         style={{
           position: "absolute",
           left: 40,
@@ -2342,11 +2651,38 @@ function POILayer() {
             animation: "ncPulse 2.4s ease-in-out infinite",
           }}
         />
+        <div
+          id="nc-arcade-billboard"
+          style={{
+            position: "absolute",
+            left: "50%",
+            top: 45,
+            transform: "translateX(-50%)",
+            display: "grid",
+            placeItems: "center",
+            padding: "4px 10px",
+            whiteSpace: "nowrap",
+            fontFamily: "var(--font-mono), monospace",
+            fontSize: 9,
+            letterSpacing: ".16em",
+            color: "oklch(0.85 0.13 190)",
+            background: "#0a0913",
+            border: "1px solid oklch(0.85 0.13 190 / .4)",
+            borderRadius: 3,
+            textShadow: "0 0 10px oklch(0.85 0.13 190 / .8)",
+            boxShadow:
+              "0 0 16px oklch(0.85 0.13 190 / .28), inset 0 0 10px oklch(0.85 0.13 190 / .12)",
+            animation: "ncFlick 5.6s infinite",
+          }}
+        >
+          AERO CLUB
+        </div>
         {sign("0.85 0.13 190", "ARCADE", 6.5)}
       </div>
 
       {/* BROADCAST TOWER / KNDL FM (cyan) */}
       <div
+        id="nc-poi-broadcast-tower"
         style={{
           position: "absolute",
           left: 2050,
@@ -2420,6 +2756,7 @@ function POILayer() {
 
       {/* RAMEN (amber) */}
       <div
+        id="nc-poi-ramen"
         style={{
           position: "absolute",
           left: 590,
@@ -2503,6 +2840,7 @@ function POILayer() {
 
       {/* NIGHT MARKET (magenta) */}
       <div
+        id="nc-poi-night-market"
         style={{
           position: "absolute",
           left: 1450,
@@ -2512,9 +2850,10 @@ function POILayer() {
           transform: "rotate(-1.1deg)",
         }}
       >
-        {[0, 70, 140].map((lx) => (
+        {[0, 70, 140].map((lx, i) => (
           <div
             key={lx}
+            id={`nc-market-tent-${i}`}
             style={{
               position: "absolute",
               left: lx,
@@ -2546,6 +2885,7 @@ function POILayer() {
 
       {/* PIXEL PIER gate (magenta landmark) */}
       <div
+        id="nc-pier-halo"
         style={{
           position: "absolute",
           left: 70,
@@ -2558,6 +2898,7 @@ function POILayer() {
         }}
       />
       <div
+        id="nc-poi-pixel-pier"
         style={{
           position: "absolute",
           left: 100,
@@ -2653,48 +2994,57 @@ function POILayer() {
         />
       </div>
 
-      {/* MARINA / DOCKSIDE (cyan) */}
+      {/* MARINA / DOCKSIDE (cyan) — anchored to the SE corner (offsets from both
+          the east and south walls) so it fills the bottom-right waterfront in
+          the clear, well below the Galleria, and rides along on any resize. */}
       <div
+        id="nc-marina-basin"
         style={{
           position: "absolute",
-          left: 2308,
-          top: 570,
-          width: 92,
-          height: 560,
-          borderRadius: "80px 0 0 90px",
+          left: WORLD.w - 300,
+          top: WORLD.h - 372,
+          width: 300,
+          height: 372,
+          borderRadius: "150px 0 0 0",
           background:
-            "radial-gradient(140% 100% at 100% 40%, #0e1a24, #0a1219 75%)",
+            "radial-gradient(120% 110% at 100% 100%, #0e1a24, #0a1219 72%)",
+          borderTop: "1px dashed rgba(140,190,235,.25)",
           borderLeft: "1px dashed rgba(140,190,235,.25)",
-          boxShadow: "inset 0 0 24px rgba(0,0,0,.5)",
+          boxShadow: "inset 0 0 30px rgba(0,0,0,.5)",
         }}
       />
+      {/* dock planks jutting into the basin */}
       <div
+        id="nc-marina-plank-0"
         style={{
           position: "absolute",
-          left: 2255,
-          top: 700,
-          width: 64,
+          left: WORLD.w - 176,
+          top: WORLD.h - 250,
+          width: 96,
           height: 12,
           background: "#131120",
           border: "1px solid rgba(150,140,220,.28)",
         }}
       />
       <div
+        id="nc-marina-plank-1"
         style={{
           position: "absolute",
-          left: 2250,
-          top: 930,
+          left: WORLD.w - 150,
+          top: WORLD.h - 120,
           width: 70,
           height: 12,
           background: "#131120",
           border: "1px solid rgba(150,140,220,.28)",
         }}
       />
+      {/* moored buoy */}
       <div
+        id="nc-marina-buoy"
         style={{
           position: "absolute",
-          left: 2348,
-          top: 800,
+          left: WORLD.w - 58,
+          top: WORLD.h - 190,
           width: 11,
           height: 20,
           borderRadius: 5,
@@ -2704,10 +3054,11 @@ function POILayer() {
         }}
       />
       <div
+        id="nc-marina-label"
         style={{
           position: "absolute",
-          left: 2242,
-          top: 1046,
+          left: WORLD.w - 214,
+          top: WORLD.h - 404,
           fontFamily: "var(--font-mono), monospace",
           fontSize: 10,
           letterSpacing: ".28em",

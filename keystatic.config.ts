@@ -217,6 +217,12 @@ export default config({
           label: "Description",
           multiline: true,
         }),
+        cityBlurb: fields.text({
+          label: "City blurb (optional)",
+          description:
+            "Short teaser shown on this project's Galleria storefront. Falls back to the description when empty.",
+          multiline: true,
+        }),
         tags: fields.array(fields.text({ label: "Tag" }), {
           label: "Tags",
           description: "Category tags (e.g., Game, Work, Tool, Mobile)",
@@ -269,6 +275,16 @@ export default config({
             { label: "Client Web", value: "client-web" },
           ],
           defaultValue: "auto",
+        }),
+        status: fields.select({
+          label: "Status",
+          description:
+            "In-progress projects are hidden from the projects index and the feed, and show as an under-construction unit in the neon city.",
+          options: [
+            { label: "Live", value: "live" },
+            { label: "In progress", value: "in-progress" },
+          ],
+          defaultValue: "live",
         }),
         content: fields.markdoc({
           label: "Content",

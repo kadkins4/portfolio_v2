@@ -1,0 +1,186 @@
+/* The shared roof for every building you can walk into. `data-open` is toggled
+   imperatively per frame by the RAF loop, and the two halves slide apart.
+   The iris and fade variants were prototyped alongside it and cut: iris was
+   janky and cost frames, fade read as flat. Split stays. */
+
+.roof {
+  position: absolute;
+  pointer-events: none;
+  z-index: 6;
+}
+
+/* the two halves that make up the full roof surface */
+.half {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 50%;
+  overflow: hidden;
+  background: linear-gradient(160deg, #1a1730 0%, #12101f 60%, #0d0b18 100%);
+  border: 1px solid rgba(150, 140, 220, 0.16);
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.55);
+  transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.halfL {
+  left: 0;
+  border-right: 1px solid rgba(150, 140, 220, 0.22);
+}
+.halfR {
+  right: 0;
+  border-left: 1px solid rgba(150, 140, 220, 0.22);
+}
+
+/* the halves slide off in opposite directions */
+.roof[data-open="1"] .halfL {
+  transform: translateX(-104%);
+}
+.roof[data-open="1"] .halfR {
+  transform: translateX(104%);
+}
+
+/* rooftop detail painted on the closed roof (reads as "the cover") */
+.skylight {
+  position: absolute;
+  border-radius: 6px;
+  background:
+    linear-gradient(
+      120deg,
+      rgba(140, 190, 235, 0.22),
+      rgba(120, 160, 220, 0.08)
+    ),
+    #0c0b16;
+  border: 1px solid rgba(150, 190, 235, 0.28);
+  box-shadow: inset 0 1px 6px rgba(180, 210, 240, 0.25);
+}
+.skylight::after {
+  /* specular streak so it reads as glass, not a hole */
+  content: "";
+  position: absolute;
+  inset: 2px;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(190, 220, 245, 0.16) 0 1px,
+    transparent 1px 10px
+  );
+  border-radius: 4px;
+}
+.hvac {
+  position: absolute;
+  background: #0a0913;
+  border: 1px solid rgba(150, 140, 220, 0.2);
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.6);
+}
+.billboard {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  font:
+    700 11px/1 ui-monospace,
+    monospace;
+  letter-spacing: 0.16em;
+  color: rgba(140, 190, 235, 0.9);
+  background: #0a0913;
+  border: 1px solid rgba(140, 190, 235, 0.35);
+  box-shadow:
+    0 0 14px rgba(120, 170, 220, 0.25),
+    inset 0 0 10px rgba(120, 170, 220, 0.12);
+  text-shadow: 0 0 8px rgba(140, 190, 235, 0.6);
+}
+
+/* ---- rooftop kit ----
+   A couple of extra roof parts beyond the shared .skylight / .hvac, so the
+   buildings that open are not identical from above. Kept deliberately quiet:
+   the sign and the lit doorway already mark these out, the roof should not. */
+
+/* round vent stack with a cap */
+.vent {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 32%, #1b1830, #0a0913);
+  border: 1px solid rgba(150, 140, 220, 0.3);
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.7);
+}
+.vent::after {
+  content: "";
+  position: absolute;
+  inset: 26%;
+  border-radius: 50%;
+  border: 1px solid rgba(150, 140, 220, 0.34);
+}
+
+/* satellite dish — domestic, for the studio roof */
+.dish {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle at 62% 38%, #232038, #0c0b16 70%);
+  border: 1px solid rgba(150, 140, 220, 0.35);
+}
+.dish::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 44%;
+  height: 1px;
+  transform: rotate(-34deg);
+  transform-origin: 0 50%;
+  background: rgba(180, 170, 235, 0.55);
+}
+
+/* Sign painted on the roof itself. It rides inside the roof element so the
+   one `data-open` flag both lifts the roof and clears the sign: once you are
+   inside you can see the room, and the name would only be in the way. */
+.roofSign {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+.roof[data-open="1"] .roofSign {
+  opacity: 0;
+}
+
+/* entrance gap glow strip on the west wall */
+.gapGlow {
+  position: absolute;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    rgba(120, 200, 235, 0.5),
+    rgba(120, 200, 235, 0)
+  );
+  box-shadow: 0 0 18px rgba(120, 200, 235, 0.55);
+}
+.apron {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 3px;
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgba(120, 200, 235, 0.22) 0 10px,
+    transparent 10px 22px
+  );
+}
+
+/* fountain ripple */
+.ripple {
+  animation: gal-ripple 3s ease-in-out infinite;
+}
+@keyframes gal-ripple {
+  0%,
+  100% {
+    transform: scale(0.7);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.2;
+  }
+}

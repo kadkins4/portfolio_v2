@@ -3,6 +3,7 @@ import { createReader } from "@keystatic/core/reader";
 import config from "../../../../keystatic.config";
 import { getBlurDataURL } from "@/lib/getBlurDataURL";
 import { sortStudioItems } from "@/lib/sortStudioItems";
+import { isListed } from "@/lib/projectStatus";
 import type { StudioItem } from "@/types";
 import ProjectsDistrict from "@/components/holo/ProjectsDistrict";
 import type { WorkItem } from "@/components/holo/SelectedWork";
@@ -26,24 +27,26 @@ export default async function ProjectsPage() {
   ]);
 
   const studioItems: StudioItem[] = await Promise.all(
-    projects.map(async (item) => ({
-      kind: "project" as const,
-      slug: item.slug,
-      href: `/projects/${item.slug}`,
-      title: item.entry.title,
-      description: item.entry.description,
-      tags: [...(item.entry.tags ?? [])],
-      date: item.entry.date ?? null,
-      image: item.entry.image ?? null,
-      imageFocus: item.entry.imageFocus ?? "center",
-      blurDataURL: item.entry.image
-        ? await getBlurDataURL(item.entry.image)
-        : undefined,
-      externalUrl: item.entry.externalUrl ?? null,
-      featured: item.entry.featured ?? false,
-      order: item.entry.order ?? null,
-      district: item.entry.district ?? null,
-    }))
+    projects
+      .filter((item) => isListed(item.entry))
+      .map(async (item) => ({
+        kind: "project" as const,
+        slug: item.slug,
+        href: `/projects/${item.slug}`,
+        title: item.entry.title,
+        description: item.entry.description,
+        tags: [...(item.entry.tags ?? [])],
+        date: item.entry.date ?? null,
+        image: item.entry.image ?? null,
+        imageFocus: item.entry.imageFocus ?? "center",
+        blurDataURL: item.entry.image
+          ? await getBlurDataURL(item.entry.image)
+          : undefined,
+        externalUrl: item.entry.externalUrl ?? null,
+        featured: item.entry.featured ?? false,
+        order: item.entry.order ?? null,
+        district: item.entry.district ?? null,
+      }))
   );
 
   const items: WorkItem[] = sortStudioItems(studioItems).map((it) => ({
