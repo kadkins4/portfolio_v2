@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { promptFor } from "./prompt";
 import styles from "./typedReveal.module.css";
 
@@ -80,22 +81,22 @@ export default function TypedReveal({
   backLabel?: string;
 }) {
   const prompt = promptFor(name);
+  const reduced = usePrefersReducedMotion();
   const [current, setCurrent] = useState(0); // index of the running step
-  const [typed, setTyped] = useState(""); // typed-so-far for the active typed step
-  const reduceRef = useRef(false);
+  // typed-so-far, tagged with the step it belongs to. Tagging lets render
+  // ignore text left over from the previous step instead of the effect having
+  // to clear it with a synchronous setState on every advance.
+  const [typed, setTyped] = useState({ step: -1, text: "" });
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
-  // detect reduced motion once; if set, show everything immediately
-  useEffect(() => {
-    reduceRef.current = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
-    if (reduceRef.current) setCurrent(steps.length);
-  }, [steps.length]);
+  // Reduced motion skips the animation wholesale: every step reads as already
+  // finished. Derived rather than pushed into `current` via an effect, so it is
+  // correct on the very first client render.
+  const cursor = reduced ? steps.length : current;
 
   // run the current step
   useEffect(() => {
-    if (reduceRef.current) return;
+    if (reduced) return;
     if (current >= steps.length) return;
     const step = steps[current];
 
@@ -108,8 +109,9 @@ export default function TypedReveal({
 
     // command | line: type out, then advance
     const text = step.text;
-    setTyped("");
     const local: ReturnType<typeof setTimeout>[] = [];
+    const show = (n: number) =>
+      setTyped({ step: current, text: text.slice(0, n) });
 
     if (step.kind === "line" && step.speed === "fast") {
       // chunked typing: whole string in ~FAST_MS regardless of length
@@ -120,7 +122,7 @@ export default function TypedReveal({
       while (shown < text.length) {
         shown = Math.min(text.length, shown + chars);
         const n = shown;
-        local.push(setTimeout(() => setTyped(text.slice(0, n)), frame * 16));
+        local.push(setTimeout(() => show(n), frame * 16));
         frame++;
       }
       local.push(
@@ -130,7 +132,7 @@ export default function TypedReveal({
       // one char at a time, spaced so the whole line takes ~TYPE_MS
       const perChar = Math.max(16, TYPE_MS / Math.max(1, text.length));
       for (let n = 1; n <= text.length; n++) {
-        local.push(setTimeout(() => setTyped(text.slice(0, n)), n * perChar));
+        local.push(setTimeout(() => show(n), n * perChar));
       }
       local.push(
         setTimeout(
@@ -142,7 +144,7 @@ export default function TypedReveal({
 
     timers.current.push(...local);
     return () => local.forEach(clearTimeout);
-  }, [current, steps]);
+  }, [current, steps, reduced]);
 
   // clear all timers on unmount
   useEffect(() => {
@@ -151,7 +153,7 @@ export default function TypedReveal({
   }, []);
 
   const showBack = Boolean(backHref && backLabel);
-  const done = current >= steps.length;
+  const done = cursor >= steps.length;
 
   return (
     <main
@@ -164,14 +166,16 @@ export default function TypedReveal({
       )}
       {head}
       {steps.map((step, i) => {
-        const past = i < current;
-        const active = i === current;
+        // Under reduced motion `cursor` is already past the end, so every step
+        // reads as `past` and nothing needs a separate reduced-motion branch.
+        const past = i < cursor;
+        const active = i === cursor;
 
         if (step.kind === "reveal") {
           return (
             <RevealBlock
               key={i}
-              active={past || reduceRef.current}
+              active={past}
               stagger={step.stagger ?? DEFAULT_STAGGER}
               className={step.className}
             >
@@ -181,9 +185,10 @@ export default function TypedReveal({
         }
 
         const isCmd = step.kind === "command";
-        const text =
-          past || reduceRef.current ? step.text : active ? typed : "";
-        const showCursor = isCmd && active && !reduceRef.current;
+        // Text tagged for a different step is leftover from the previous one.
+        const shown = typed.step === i ? typed.text : "";
+        const text = past ? step.text : active ? shown : "";
+        const showCursor = isCmd && active;
         const tone =
           step.kind === "line" && step.tone === "error" ? styles.error : "";
 

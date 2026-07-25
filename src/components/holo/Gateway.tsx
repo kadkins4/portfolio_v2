@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import styles from "./holo.module.css";
 import HoloNav from "./HoloNav";
 
@@ -138,19 +139,18 @@ function Panel({
 }
 
 export default function Gateway({ name, craft, life }: GatewayProps) {
-  const [booting, setBooting] = useState(true);
+  const reduced = usePrefersReducedMotion();
+  const [bootDone, setBootDone] = useState(false);
 
+  // Reduced motion is handled by deriving `booting` below rather than by
+  // setting state here, so the boot screen never paints for a frame first.
   useEffect(() => {
-    const reduce = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
-    if (reduce) {
-      setBooting(false);
-      return;
-    }
-    const t = setTimeout(() => setBooting(false), 1080);
+    if (reduced) return;
+    const t = setTimeout(() => setBootDone(true), 1080);
     return () => clearTimeout(t);
-  }, []);
+  }, [reduced]);
+
+  const booting = !bootDone && !reduced;
 
   return (
     <div className={`${styles.shell} ${booting ? "" : styles.play}`}>
