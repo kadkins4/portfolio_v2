@@ -44,6 +44,11 @@ import { hitsSolid } from "@/lib/cityCollision";
 import { pathTo } from "@/lib/nav/cityNav";
 import { FAST_TRAVEL_ITEMS } from "@/lib/cityFastTravel";
 import { useIsTouch } from "@/hooks/useIsTouch";
+import {
+  useColliders,
+  useDevFlag,
+  writeColliders,
+} from "@/hooks/useCityDevFlags";
 import TouchJoystick from "./TouchJoystick";
 import FastTravelDrawer from "./FastTravelDrawer";
 import GalleriaLayer from "./GalleriaLayer";
@@ -213,6 +218,9 @@ export default function NeonCity({
   const [introPhase, setIntroPhase] = useState<"ride" | "walk" | "done">(
     "ride"
   );
+  // Last phase pushed into state, so the per-frame reconcile only fires on a
+  // real transition instead of every frame.
+  const syncedPhase = useRef<"ride" | "walk" | "done">("ride");
   const [caption, setCaption] = useState("THE ADKINS LINE · INBOUND");
   const [everMoved, setEverMoved] = useState(false);
   const [arrived, setArrived] = useState(true);
@@ -222,20 +230,12 @@ export default function NeonCity({
   });
   // ?dev=1 unlocks the collider overlay. The roof lift is no longer a choice —
   // "split" shipped, and the iris and fade branches are gone.
-  const [dev, setDev] = useState(false);
-  const [colliders, setColliders] = useState(false);
-  useEffect(() => {
-    const isDev =
-      new URLSearchParams(window.location.search).get("dev") === "1";
-    setDev(isDev);
-    if (isDev) {
-      setColliders(localStorage.getItem("neoncity.colliders") === "1");
-    }
-  }, []);
-  function pickColliders(on: boolean) {
-    setColliders(on);
-    localStorage.setItem("neoncity.colliders", on ? "1" : "0");
-  }
+  // Both are client-only reads, resolved on the first client render instead of
+  // pushed into state by a mount effect. The stored collider flag stays gated
+  // behind ?dev=1 so the overlay can never appear for an ordinary visitor.
+  const dev = useDevFlag();
+  const colliders = useColliders() && dev;
+  const pickColliders = writeColliders;
 
   const dest = useMemo(
     () => Object.fromEntries(DESTINATIONS.map((d) => [d.key, d])),
@@ -439,8 +439,9 @@ export default function NeonCity({
       typeof window.matchMedia === "function" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced) {
+      // The HUD is caught up by the phase reconcile on the first frame below,
+      // rather than by a setState in this effect body.
       intro.current = { phase: "done", walkT: 9999 };
-      setIntroPhase("done");
       pos.current.x = SPAWN.x;
       pos.current.y = SPAWN.y;
       train.current.mode = "dwell";
@@ -464,6 +465,14 @@ export default function NeonCity({
       let vy = 0;
       let moving = false;
       const IN = intro.current;
+      // The cinematic's phase lives in a ref so the loop can read it without a
+      // re-render; mirror it into state whenever it drifts so the HUD follows.
+      // Reduced motion jumps straight to "done" before the loop starts, and
+      // this is what carries that across.
+      if (IN.phase !== syncedPhase.current) {
+        syncedPhase.current = IN.phase;
+        setIntroPhase(IN.phase);
+      }
       if (IN.phase === "ride") {
         // cinematic: camera follows the train; the avatar is hidden here
       } else if (IN.phase === "walk") {

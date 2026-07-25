@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useState, type CSSProperties } from "react";
+import { useState, useSyncExternalStore, type CSSProperties } from "react";
 import PageShell from "./PageShell";
 import PageTitle from "./PageTitle";
 import ContactDispatch, { type SocialLink } from "./ContactDispatch";
 import { yearsSince } from "@/lib/yearsSince";
+
+const noopSubscribe = () => () => {};
 import styles from "./resumeLine.module.css";
 
 export type Station = {
@@ -71,10 +73,15 @@ export default function ResumeLine({
   // single open station; first one open by default
   const [openRow, setOpenRow] = useState<number | null>(0);
 
-  // Seed with the server value (no hydration mismatch), then recompute against
-  // the viewer's clock so "N+ YRS" is always current without a rebuild.
-  const [years, setYears] = useState(initialYears);
-  useEffect(() => setYears(yearsSince(careerStart)), [careerStart]);
+  // Server snapshot is the build-time value, so markup matches on hydration;
+  // the client then reads the viewer's own clock, keeping "N+ YRS" current even
+  // if the page was built before the anniversary. Nothing to subscribe to — the
+  // number changes at most once a year, never mid-session.
+  const years = useSyncExternalStore(
+    noopSubscribe,
+    () => yearsSince(careerStart),
+    () => initialYears
+  );
 
   return (
     <PageShell active="resume" name={name}>
