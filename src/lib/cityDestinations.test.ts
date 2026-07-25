@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { DESTINATIONS, padRect, WORLD } from "./cityData";
-import { hitsSolid } from "./cityCollision";
+import { DESTINATIONS, LAMPS, MARGIN, padRect, WORLD } from "./cityData";
+import { hitsSolid, SOLIDS } from "./cityCollision";
 
 describe("destination entry pads", () => {
   it("puts every pad center on walkable ground", () => {
@@ -25,6 +25,26 @@ describe("destination entry pads", () => {
     const hrefs = new Set(DESTINATIONS.map((d) => d.href));
     expect(keys.size).toBe(DESTINATIONS.length);
     expect(hrefs.size).toBe(DESTINATIONS.length);
+  });
+
+  it("keeps every street lamp out of a building", () => {
+    // A lamp inside a footprint glows through the roof. They are street
+    // furniture, so every one of them belongs on open ground.
+    for (const [i, l] of LAMPS.entries()) {
+      const inside = SOLIDS.find(
+        (s) => l.x > s.x && l.x < s.x + s.w && l.y > s.y && l.y < s.y + s.h
+      );
+      expect(inside, `lamp ${i} at ${l.x},${l.y}`).toBeUndefined();
+    }
+  });
+
+  it("keeps every street lamp inside the world margin", () => {
+    for (const [i, l] of LAMPS.entries()) {
+      expect(l.x, `lamp ${i} x`).toBeGreaterThan(MARGIN);
+      expect(l.x, `lamp ${i} x`).toBeLessThan(WORLD.w - MARGIN);
+      expect(l.y, `lamp ${i} y`).toBeGreaterThan(MARGIN);
+      expect(l.y, `lamp ${i} y`).toBeLessThan(WORLD.h - MARGIN);
+    }
   });
 
   it("keeps the projects stoop clear of its entry pad", () => {

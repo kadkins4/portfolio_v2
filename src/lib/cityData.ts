@@ -163,11 +163,11 @@ export const DESTINATIONS: Destination[] = [
     sub: "( resume )",
     hue: 190,
     x: 320,
-    y: 430,
+    y: 365,
     w: 300,
-    h: 200,
+    h: 270,
     pad: { x: 490, y: 690, w: 70, h: 44 },
-    door: { x: 130, y: 198, w: 38, h: 6 },
+    door: { x: 75, y: 265, w: 75, h: 6 },
     href: "/resume",
     teaser: {
       kicker: "✦ NEON CITY TRANSIT · CAREER SERVICE",
@@ -418,14 +418,42 @@ export const BENCHES: { x: number; y: number; w: number; h: number }[] = [
   { x: 1190, y: 630, w: 14, h: 56 },
   { x: 1230, y: 590, w: 56, h: 14 },
 ];
-// street lamps (glow pools, brighten at night)
-export const LAMPS: { x: number; y: number }[] = [
-  { x: 1075, y: 545 },
-  { x: 770, y: 950 },
-  { x: 365, y: 1108 },
-  { x: 1900, y: 1055 },
-  { x: 620, y: 292 },
-];
+// Street lamps — glow pools that brighten at night. (x, y) is the pool's
+// centre. Two kinds, and the split is deliberate: entrance lamps are DERIVED
+// from the thing they light, so moving a building drags its lamp along instead
+// of stranding it; ambient lamps are placed by eye along the street curves and
+// across the park lawns, where there is nothing to derive from.
+export const LAMPS: { x: number; y: number }[] = (() => {
+  const dest = (k: Destination["key"]) =>
+    DESTINATIONS.find((d) => d.key === k)!;
+  const stn = dest("resume");
+  const pav = dest("projects");
+  const post = dest("contact");
+  const apt = dest("about");
+  return [
+    // ---- entrances ----
+    { x: stn.x + 58, y: stn.y + stn.h + 29 }, // station door, street side
+    {
+      x: TERMINAL.ramp.x - 4,
+      y: TERMINAL.ramp.y + TERMINAL.ramp.h + 28,
+    }, // foot of the platform ramp
+    { x: pav.x + pav.w + 74, y: pav.y + 166 }, // pavilion approach, park side
+    { x: apt.x - 44, y: (APARTMENT.gap.top + APARTMENT.gap.bot) / 2 }, // 4B door
+    { x: post.x + post.w - 68, y: post.y - 44 }, // post office steps
+    { x: GALLERIA.x - 44, y: (GALLERIA.gap.top + GALLERIA.gap.bot) / 2 }, // mall
+    // ---- park lawns ----
+    { x: 1075, y: 545 }, // north gate, where the spur meets the park
+    { x: 1062, y: 906 }, // south-west lawn
+    { x: 1336, y: 764 }, // east of the pond
+    { x: 1452, y: 942 }, // south-east corner, by the benches
+    // ---- street curves ----
+    { x: 610, y: 150 }, // north grid, outside the museum
+    { x: 365, y: 1108 }, // west curve
+    { x: 1250, y: 1128 }, // the cross street
+    { x: 1900, y: 1055 }, // east curve bend
+    { x: 2300, y: 700 }, // the Galleria spur
+  ];
+})();
 
 // district ground labels (rotated mono)
 // Faint ground labels for the Layout C districts (from the arrival prototype).

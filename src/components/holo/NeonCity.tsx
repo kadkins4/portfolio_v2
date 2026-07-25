@@ -998,9 +998,11 @@ export default function NeonCity({
                 className={styles.lampPool}
                 style={{ left: l.x, top: l.y }}
               />
+              {/* the core is centred by its own transform, so it takes the
+                  pool's exact position — no half-size offset */}
               <div
                 className={styles.lampCore}
-                style={{ left: l.x - 3, top: l.y - 3 }}
+                style={{ left: l.x, top: l.y }}
               />
             </div>
           ))}
