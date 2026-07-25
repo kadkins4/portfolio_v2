@@ -5,6 +5,7 @@ import {
   WORLD,
   GALLERIA,
   APARTMENT,
+  STATION,
   TERMINAL,
   DESTINATIONS,
   CHAR_R,
@@ -14,6 +15,84 @@ import {
   FOUNTAIN_R,
   centerRect,
 } from "./cityData";
+
+type Pt = { x: number; y: number };
+/**
+ * Walk a route leg by leg, sampling every 6px, and fail on the first blocked
+ * point. Routes are how these rooms are actually used — a pad you cannot reach
+ * is worse than a pad in the wrong place, and a plain "is it solid" assertion
+ * never catches a fitting dropped across the only path to it.
+ */
+function walk(legs: readonly (readonly [Pt, Pt])[], label: string) {
+  for (const [a, b] of legs) {
+    const steps = Math.ceil(Math.hypot(b.x - a.x, b.y - a.y) / 6);
+    for (let i = 0; i <= steps; i++) {
+      const t = steps === 0 ? 0 : i / steps;
+      const x = a.x + (b.x - a.x) * t;
+      const y = a.y + (b.y - a.y) * t;
+      expect(
+        hitsSolid(x, y),
+        `${label}: blocked at ${Math.round(x)},${Math.round(y)}`
+      ).toBe(false);
+    }
+  }
+}
+
+type Box = { x: number; y: number; w: number; h: number };
+/**
+ * Flood the inside of a room on a 4px grid and report whether `target` can be
+ * reached from `start`. `plug` optionally seals one opening, which is how a
+ * barrier is proved to be the ONLY route rather than merely one of them.
+ */
+function reaches(
+  room: { x: number; y: number; w: number; h: number; wall: number },
+  start: Pt,
+  target: Box,
+  plug?: Box
+): boolean {
+  const step = 4;
+  const x0 = room.x + room.wall;
+  const x1 = room.x + room.w - room.wall;
+  const y0 = room.y + room.wall;
+  const y1 = room.y + room.h - room.wall;
+  const inPlug = (x: number, y: number) =>
+    !!plug &&
+    x > plug.x - CHAR_R &&
+    x < plug.x + plug.w + CHAR_R &&
+    y > plug.y - CHAR_R &&
+    y < plug.y + plug.h + CHAR_R;
+  const blocked = (x: number, y: number) => hitsSolid(x, y) || inPlug(x, y);
+  const key = (x: number, y: number) => `${x},${y}`;
+  const sx = Math.round(start.x / step) * step;
+  const sy = Math.round(start.y / step) * step;
+  const seen = new Set([key(sx, sy)]);
+  const queue: Pt[] = [{ x: sx, y: sy }];
+  while (queue.length) {
+    const p = queue.shift()!;
+    if (
+      p.x >= target.x &&
+      p.x <= target.x + target.w &&
+      p.y >= target.y &&
+      p.y <= target.y + target.h
+    )
+      return true;
+    for (const [dx, dy] of [
+      [step, 0],
+      [-step, 0],
+      [0, step],
+      [0, -step],
+    ]) {
+      const nx = p.x + dx;
+      const ny = p.y + dy;
+      if (nx < x0 || nx > x1 || ny < y0 || ny > y1) continue;
+      if (seen.has(key(nx, ny))) continue;
+      if (blocked(nx, ny)) continue;
+      seen.add(key(nx, ny));
+      queue.push({ x: nx, y: ny });
+    }
+  }
+  return false;
+}
 
 describe("hitsSolid", () => {
   it("reports a collision at the center of the first solid", () => {
@@ -119,27 +198,24 @@ describe("terminal station", () => {
     expect(hitsSolid(resume.x + resume.w, slotY)).toBe(true);
   });
 
-  it("lands the player level with the resume pad", () => {
-    // a straight walk west, not a detour around the building. The landing is
-    // squared up with the gate rather than pinned to the pad's exact centre, so
-    // allow anywhere within the pad's own span.
-    const pad = centerRect(resume.pad);
-    expect(SPAWN.y).toBeGreaterThan(pad.y);
-    expect(SPAWN.y).toBeLessThan(pad.y + pad.h);
-  });
-
   it("squares the landing up with the middle of the gate", () => {
     expect(SPAWN.y).toBe((T.gap.top + T.gap.bot) / 2);
   });
 
-  it("leaves a clear straightaway from the landing to the resume pad", () => {
-    // sampled every 6px — the ticket hall or the building overhanging this lane
-    // would make the arrival read as a dead end
-    const steps = Math.ceil((SPAWN.x - resume.pad.x) / 6);
-    for (let i = 0; i <= steps; i++) {
-      const x = SPAWN.x + ((resume.pad.x - SPAWN.x) * i) / steps;
-      expect(hitsSolid(x, SPAWN.y), `blocked at ${Math.round(x)}`).toBe(false);
-    }
+  it("leaves a clear walk from the landing to the station door", () => {
+    // west along the street, then north to the doorway — sampled every 6px.
+    // The pad now lives inside, so this is the route that matters on arrival.
+    const doorX = (STATION.gap.left + STATION.gap.right) / 2;
+    walk(
+      [
+        [SPAWN, { x: doorX, y: SPAWN.y }],
+        [
+          { x: doorX, y: SPAWN.y },
+          { x: doorX, y: STATION.y + STATION.h + 4 },
+        ],
+      ],
+      "landing → door"
+    );
   });
 
   it("leaves the deck lane wide enough to walk", () => {
@@ -310,6 +386,114 @@ describe("Unit 4B apartment", () => {
   it("no longer treats the whole footprint as solid", () => {
     // the middle of the room used to be a wall; now it is a room
     expect(hitsSolid(A.x + A.w / 2, A.y + A.h / 2)).toBe(false);
+  });
+});
+
+describe("Terminal Park Station", () => {
+  const S = STATION;
+  const resume = DESTINATIONS.find((d) => d.key === "resume")!;
+  const doorX = (S.gap.left + S.gap.right) / 2;
+  const mat = centerRect(resume.pad);
+
+  it("no longer treats the footprint as solid", () => {
+    expect(hitsSolid(S.x + S.w / 2, S.y + S.h - 40)).toBe(false);
+  });
+
+  it("blocks the walls and leaves the street door open", () => {
+    expect(hitsSolid(S.x + 4, S.y + S.h / 2), "west").toBe(true);
+    expect(hitsSolid(S.x + S.w - 4, S.y + S.h / 2), "east").toBe(true);
+    expect(hitsSolid(S.x + S.w / 2, S.y + 4), "north").toBe(true);
+    expect(hitsSolid(S.x + 40, S.y + S.h - 4), "south west of door").toBe(true);
+    expect(hitsSolid(S.x + S.w - 40, S.y + S.h - 4), "south east of door").toBe(
+      true
+    );
+    expect(hitsSolid(doorX, S.y + S.h - 4), "doorway").toBe(false);
+  });
+
+  it("keeps the doorway at least a player-width clear", () => {
+    expect(S.gap.right - S.gap.left).toBeGreaterThanOrEqual(CHAR_R * 2);
+  });
+
+  it("makes the counter, ropes and benches solid", () => {
+    expect(
+      hitsSolid(S.counter.x + S.counter.w / 2, S.counter.y + S.counter.h / 2),
+      "counter"
+    ).toBe(true);
+    for (const r of S.rails) {
+      expect(hitsSolid(r.x + r.w / 2, r.y + r.h / 2), r.id).toBe(true);
+    }
+    for (const b of S.benches) {
+      expect(hitsSolid(b.x + b.w / 2, b.y + b.h / 2), b.id).toBe(true);
+    }
+  });
+
+  const railLong = S.rails.find((r) => r.id === "rail-long")!;
+  const railReturn = S.rails.find((r) => r.id === "rail-return")!;
+  const railWin = S.rails.find((r) => r.id === "rail-window")!;
+  // the cross lane runs between the long rope and the return rope
+  const laneY = (railLong.y + railLong.h + railReturn.y) / 2;
+  // the one gap to the window: east of the long rope, west of the enclosure
+  const gapX = (railLong.x + railLong.w + railWin.x) / 2;
+
+  it("lets you walk the queue from the door to the window", () => {
+    // in the south door, north until the long rope, east along it, then north
+    // through the one gap to the counter — the intended switchback
+    walk(
+      [
+        [
+          { x: doorX, y: S.y + S.h + 6 },
+          { x: doorX, y: laneY },
+        ],
+        [
+          { x: doorX, y: laneY },
+          { x: gapX, y: laneY },
+        ],
+        [
+          { x: gapX, y: laneY },
+          { x: gapX, y: mat.y + mat.h - 2 },
+        ],
+      ],
+      "queue"
+    );
+  });
+
+  it("makes the rope gap the only way to the window", () => {
+    // Flood the room from just inside the door and confirm the mat is
+    // reachable; then plug the single gap and confirm it is not. That is the
+    // whole point of the queue — if it can be walked around, it is decoration.
+    const start = { x: doorX, y: S.y + S.h - S.wall - CHAR_R - 2 };
+    const plug = {
+      x: railLong.x + railLong.w,
+      y: railWin.y,
+      w: railWin.x - (railLong.x + railLong.w),
+      h: railLong.y - railWin.y,
+    };
+    expect(reaches(S, start, mat), "mat unreachable through the queue").toBe(
+      true
+    );
+    expect(reaches(S, start, mat, plug), "queue can be walked around").toBe(
+      false
+    );
+  });
+
+  it("puts the mat at the head of the line, against the counter", () => {
+    // same contract as the studio's mat at the desk: flush enough to read as
+    // "standing at the window", never buried in the counter
+    const gap = S.counter.y + S.counter.h - (mat.y + mat.h);
+    expect(mat.y).toBeGreaterThanOrEqual(S.counter.y + S.counter.h);
+    expect(mat.y - (S.counter.y + S.counter.h)).toBeLessThanOrEqual(12);
+    expect(gap).toBeLessThanOrEqual(0);
+    expect(hitsSolid(resume.pad.x, resume.pad.y)).toBe(false);
+  });
+
+  it("leaves the lobby seating clear of the queue route", () => {
+    // benches are solid; one dropped into the lane would wall the queue off
+    const railLong = S.rails.find((r) => r.id === "rail-long")!;
+    for (const b of S.benches) {
+      const overlapsLane =
+        b.x < S.gap.right && b.x + b.w > S.gap.left && b.y < railLong.y;
+      expect(overlapsLane, `${b.id} sits in the entry lane`).toBe(false);
+    }
   });
 });
 

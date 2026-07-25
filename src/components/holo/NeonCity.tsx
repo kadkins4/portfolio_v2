@@ -31,6 +31,7 @@ import {
   hueColor,
   GALLERIA,
   APARTMENT,
+  STATION,
   type Destination,
   type Car,
   type RoofAnim,
@@ -48,6 +49,7 @@ import TouchJoystick from "./TouchJoystick";
 import FastTravelDrawer from "./FastTravelDrawer";
 import GalleriaLayer from "./GalleriaLayer";
 import ApartmentLayer from "./ApartmentLayer";
+import StationLayer from "./StationLayer";
 import CityDevPanel from "./CityDevPanel";
 import CollisionDebugLayer from "./CollisionDebugLayer";
 import HueDot from "./HueDot";
@@ -185,6 +187,7 @@ export default function NeonCity({
   const onPadRef = useRef<string | null>(null);
   const roofRef = useRef<HTMLDivElement>(null);
   const aptRoofRef = useRef<HTMLDivElement>(null);
+  const stnRoofRef = useRef<HTMLDivElement>(null);
   const start = useRef(0);
   // cinematic arrival intro
   const intro = useRef<{ phase: "ride" | "walk" | "done"; walkT: number }>({
@@ -848,6 +851,11 @@ export default function NeonCity({
         aptRoofRef.current.dataset.open =
           inZone(a.inside) || inZone(a.nearGap) ? "1" : "0";
       }
+      if (stnRoofRef.current) {
+        const s = STATION.open;
+        stnRoofRef.current.dataset.open =
+          inZone(s.inside) || inZone(s.nearDoor) ? "1" : "0";
+      }
 
       // ---- day/night ----
       const cycleMs = 4 * 60000;
@@ -1084,9 +1092,16 @@ export default function NeonCity({
           active={onPad === "about"}
         />
 
+        {/* Terminal Park Station — the walk-in ticket hall (mat is inside) */}
+        <StationLayer
+          anim={roofAnim}
+          roofRef={stnRoofRef}
+          active={onPad === "resume"}
+        />
+
         {/* destination buildings */}
         {DESTINATIONS.filter(
-          (d) => d.key !== "projects" && d.key !== "about"
+          (d) => d.key !== "projects" && d.key !== "about" && d.key !== "resume"
         ).map((d) => (
           <DestinationBldg key={d.key} d={d} active={onPad === d.key} />
         ))}

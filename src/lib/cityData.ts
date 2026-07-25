@@ -166,8 +166,9 @@ export const DESTINATIONS: Destination[] = [
     y: 365,
     w: 300,
     h: 270,
-    pad: { x: 490, y: 690, w: 70, h: 44 },
-    door: { x: 75, y: 265, w: 75, h: 6 },
+    // the mat lives INSIDE, at the head of the queue and flush against the
+    // ticket counter — you walk the rope line and step up to the window
+    pad: { x: 550, y: 438, w: 48, h: 30 },
     href: "/resume",
     teaser: {
       kicker: "✦ NEON CITY TRANSIT · CAREER SERVICE",
@@ -269,6 +270,86 @@ export const TERMINAL = (() => {
 // The player rides in, steps off onto the west deck, walks down the ramp
 // through the turnstiles, and takes control here at its foot.
 export const SPAWN = { x: TERMINAL.landing.x, y: TERMINAL.landing.y };
+
+// ---- Terminal Park Station (the resume ticket hall) ----
+// A walk-in hall, same contract as the Galleria and Unit 4B: geometry declared
+// once here, StationLayer renders it, cityCollision reads the same rects.
+//
+// The room is a queue. Three rope lines form one continuous barrier that makes
+// the ONLY route to the ticket window a switchback — in the south door, north
+// until the long rope stops you, east along it, then north through the one gap
+// to the counter. You walk the line to open the resume; you cannot cut across.
+export const STATION = (() => {
+  const d = DESTINATIONS.find((x) => x.key === "resume")!;
+  const { x: ox, y: oy, w, h } = d;
+  const wall = 14;
+  // street door in the south wall, facing the foot of the platform ramp
+  const gapLeft = ox + 75;
+  const gapRight = ox + 150;
+  const counterH = 38;
+  const counterBot = oy + wall + counterH;
+  return {
+    x: ox,
+    y: oy,
+    w,
+    h,
+    wall,
+    gap: { left: gapLeft, right: gapRight },
+    walls: [
+      { x: ox, y: oy, w, h: wall }, // north
+      { x: ox, y: oy, w: wall, h }, // west
+      { x: ox + w - wall, y: oy, w: wall, h }, // east
+      { x: ox, y: oy + h - wall, w: gapLeft - ox, h: wall }, // south, west of the door
+      {
+        x: gapRight,
+        y: oy + h - wall,
+        w: ox + w - gapRight,
+        h: wall,
+      }, // south, east of the door
+    ] as { x: number; y: number; w: number; h: number }[],
+    // the ticket counter runs the full width of the north wall
+    counter: { x: ox + wall, y: oy + wall, w: w - wall * 2, h: counterH },
+    counterBot,
+    // Rope lines. Together they form one barrier from the west wall, east, then
+    // north to the counter — leaving a single gap to reach the window through.
+    rails: [
+      // the long rope: blocks every northward route west of the gap
+      { id: "rail-long", x: ox + wall, y: oy + 99, w: 186, h: 6 },
+      // the return rope, running east under the counter enclosure
+      { id: "rail-return", x: ox + 150, y: oy + 165, w: 110, h: 6 },
+      // the counter enclosure's east side, closing the approach from that flank
+      {
+        id: "rail-window",
+        x: ox + 260,
+        y: counterBot,
+        w: 6,
+        h: oy + 171 - counterBot,
+      },
+    ],
+    // seating in the lobby, outside the rope. Solid, like the studio's furniture.
+    benches: [
+      { id: "bench-west-1", x: ox + 24, y: oy + 135, w: 22, h: 56 },
+      { id: "bench-west-2", x: ox + 24, y: oy + 201, w: 22, h: 56 },
+      { id: "bench-south", x: ox + 180, y: oy + 200, w: 56, h: 20 },
+    ],
+    // departures board on the east wall — drawn, never collided with
+    board: { x: ox + 272, y: oy + 75, w: 14, h: 60 },
+    open: {
+      inside: {
+        x0: ox + wall,
+        x1: ox + w - wall,
+        y0: oy + wall,
+        y1: oy + h - wall,
+      },
+      nearDoor: {
+        x0: gapLeft - 20,
+        x1: gapRight + 20,
+        y0: oy + h - 6,
+        y1: oy + h + 56,
+      },
+    },
+  };
+})();
 
 // ---- Unit 4B (the about apartment) ----
 // A walk-in studio, same contract as the Galleria: geometry declared once here,
