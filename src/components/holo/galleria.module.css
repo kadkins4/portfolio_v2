@@ -23,6 +23,17 @@
   transition: z-index 0s;
 }
 
+/* The global reduced-motion reset clamps transition-duration but not
+   transition-delay, so the 0.55s hold above survives it: the halves would snap
+   shut instantly while the roof stayed lifted over the player for another half
+   second — exactly the artifact the delay exists to prevent. The hold is only
+   meaningful when there is a slide to wait for, so drop it with the slide. */
+@media (prefers-reduced-motion: reduce) {
+  .roof {
+    transition-delay: 0s;
+  }
+}
+
 /* the two halves that make up the full roof surface */
 .half {
   position: absolute;
