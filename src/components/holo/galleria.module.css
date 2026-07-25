@@ -1,27 +1,12 @@
-/* The Galleria roof. `data-open` is toggled imperatively per frame by the RAF
-   loop; `data-anim` is set from the dev panel (default "split"). All three
-   animations live behind the one element so the loop never branches. */
+/* The shared roof for every building you can walk into. `data-open` is toggled
+   imperatively per frame by the RAF loop, and the two halves slide apart.
+   The iris and fade variants were prototyped alongside it and cut: iris was
+   janky and cost frames, fade read as flat. Split stays. */
 
 .roof {
   position: absolute;
   pointer-events: none;
   z-index: 6;
-}
-
-/* iris + fade act on the whole roof surface */
-.roof[data-anim="iris"] {
-  clip-path: circle(78% at 50% 45%);
-  transition: clip-path 0.55s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.roof[data-anim="iris"][data-open="1"] {
-  clip-path: circle(0% at 50% 45%);
-}
-
-.roof[data-anim="fade"] {
-  transition: opacity 0.5s ease;
-}
-.roof[data-anim="fade"][data-open="1"] {
-  opacity: 0;
 }
 
 /* the two halves that make up the full roof surface */
@@ -45,11 +30,11 @@
   border-left: 1px solid rgba(150, 140, 220, 0.22);
 }
 
-/* split (default) — the two halves slide off in opposite directions */
-.roof[data-anim="split"][data-open="1"] .halfL {
+/* the halves slide off in opposite directions */
+.roof[data-open="1"] .halfL {
   transform: translateX(-104%);
 }
-.roof[data-anim="split"][data-open="1"] .halfR {
+.roof[data-open="1"] .halfR {
   transform: translateX(104%);
 }
 

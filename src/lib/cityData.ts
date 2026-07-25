@@ -111,8 +111,6 @@ export const GALLERIA = (() => {
   };
 })();
 
-export type RoofAnim = "split" | "iris" | "fade";
-
 // ---- destination buildings ----
 export type Destination = {
   key: "projects" | "resume" | "about" | "contact";

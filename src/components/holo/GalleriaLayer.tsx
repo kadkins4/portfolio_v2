@@ -1,5 +1,5 @@
 import type { Ref } from "react";
-import { GALLERIA, hueColor, centerRect, type RoofAnim } from "@/lib/cityData";
+import { GALLERIA, hueColor, centerRect } from "@/lib/cityData";
 import type { GalleriaUnit } from "@/lib/galleriaUnits";
 import css from "./galleria.module.css";
 
@@ -8,12 +8,10 @@ import css from "./galleria.module.css";
 // component owns the static shell, the roof surface + detail, and the
 // storefront units (occupancy derived from the project list upstream).
 export default function GalleriaLayer({
-  anim,
   roofRef,
   units,
   onPad,
 }: {
-  anim: RoofAnim;
   roofRef: Ref<HTMLDivElement>;
   units: GalleriaUnit[];
   onPad: string | null;
@@ -219,12 +217,11 @@ export default function GalleriaLayer({
         <Unit key={u.id} u={u} lit={onPad === u.id} />
       ))}
 
-      {/* roof — the RAF loop toggles data-open; data-anim comes from the panel */}
+      {/* roof — the RAF loop toggles data-open, which slides the halves apart */}
       <div
         ref={roofRef}
         id="nc-galleria-roof"
         className={css.roof}
-        data-anim={anim}
         data-open="0"
         style={{ left: x, top: y, width: w, height: h }}
       >

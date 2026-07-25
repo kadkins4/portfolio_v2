@@ -2,7 +2,6 @@
 
 import type { RefObject } from "react";
 import { APARTMENT, DESTINATIONS, hueColor, padRect } from "@/lib/cityData";
-import type { RoofAnim } from "@/lib/cityData";
 // the roof-lift animation is generic; reuse the Galleria's rather than fork it
 import roof from "./galleria.module.css";
 
@@ -23,11 +22,9 @@ const PLANTS = A.furniture.filter((f) => f.id.startsWith("plant"));
  * position), revealing the apartment and the mat on the floor at the desk.
  */
 export default function ApartmentLayer({
-  anim,
   roofRef,
   active,
 }: {
-  anim: RoofAnim;
   roofRef: RefObject<HTMLDivElement | null>;
   active: boolean;
 }) {
@@ -370,7 +367,6 @@ export default function ApartmentLayer({
         ref={roofRef}
         id="nc-apartment-roof"
         className={roof.roof}
-        data-anim={anim}
         data-open="0"
         style={{ left: A.x, top: A.y, width: A.w, height: A.h }}
       >

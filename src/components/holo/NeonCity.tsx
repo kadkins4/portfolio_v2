@@ -34,7 +34,6 @@ import {
   STATION,
   type Destination,
   type Car,
-  type RoofAnim,
 } from "@/lib/cityData";
 import {
   buildGalleriaUnits,
@@ -216,27 +215,18 @@ export default function NeonCity({
     label: "00:00 · NIGHT",
     dot: "#aab4e8",
   });
-  // roof-lift variant: ships "split"; ?dev=1 unlocks live switching + a saved
-  // pick. Kept off the default render path when the query param is absent.
+  // ?dev=1 unlocks the collider overlay. The roof lift is no longer a choice —
+  // "split" shipped, and the iris and fade branches are gone.
   const [dev, setDev] = useState(false);
-  const [roofAnim, setRoofAnim] = useState<RoofAnim>("split");
   const [colliders, setColliders] = useState(false);
   useEffect(() => {
     const isDev =
       new URLSearchParams(window.location.search).get("dev") === "1";
     setDev(isDev);
     if (isDev) {
-      const saved = localStorage.getItem("neoncity.roofAnim");
-      if (saved === "split" || saved === "iris" || saved === "fade") {
-        setRoofAnim(saved);
-      }
       setColliders(localStorage.getItem("neoncity.colliders") === "1");
     }
   }, []);
-  function pickRoofAnim(a: RoofAnim) {
-    setRoofAnim(a);
-    localStorage.setItem("neoncity.roofAnim", a);
-  }
   function pickColliders(on: boolean) {
     setColliders(on);
     localStorage.setItem("neoncity.colliders", on ? "1" : "0");
@@ -1078,26 +1068,13 @@ export default function NeonCity({
         <POILayer />
 
         {/* the projects mall (walk in, roof lifts) */}
-        <GalleriaLayer
-          anim={roofAnim}
-          roofRef={roofRef}
-          units={units}
-          onPad={onPad}
-        />
+        <GalleriaLayer roofRef={roofRef} units={units} onPad={onPad} />
 
         {/* Unit 4B — the walk-in studio (roof lifts, mat is inside) */}
-        <ApartmentLayer
-          anim={roofAnim}
-          roofRef={aptRoofRef}
-          active={onPad === "about"}
-        />
+        <ApartmentLayer roofRef={aptRoofRef} active={onPad === "about"} />
 
         {/* Terminal Park Station — the walk-in ticket hall (mat is inside) */}
-        <StationLayer
-          anim={roofAnim}
-          roofRef={stnRoofRef}
-          active={onPad === "resume"}
-        />
+        <StationLayer roofRef={stnRoofRef} active={onPad === "resume"} />
 
         {/* destination buildings */}
         {DESTINATIONS.filter(
@@ -1175,10 +1152,10 @@ export default function NeonCity({
         </div>
       </div>
     ),
-    // refs/cars/name are stable; onPad drives the pad glow, roofAnim swaps the
+    // refs/cars/name are stable; onPad drives the pad glow, and
     // roof-lift variant (dev only, rare), units come from the project list
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [onPad, name, roofAnim, units, colliders]
+    [onPad, name, units, colliders]
   );
 
   return (
@@ -1189,12 +1166,7 @@ export default function NeonCity({
       className={`${styles.stage}${introPhase !== "done" ? ` ${styles.introFreeze}` : ""}`}
     >
       {dev && (
-        <CityDevPanel
-          roofAnim={roofAnim}
-          onRoofAnim={pickRoofAnim}
-          colliders={colliders}
-          onColliders={pickColliders}
-        />
+        <CityDevPanel colliders={colliders} onColliders={pickColliders} />
       )}
       {world}
 

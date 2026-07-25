@@ -2,7 +2,6 @@
 
 import type { RefObject } from "react";
 import { STATION, DESTINATIONS, hueColor, padRect } from "@/lib/cityData";
-import type { RoofAnim } from "@/lib/cityData";
 // the roof-lift animation is generic; reuse the Galleria's rather than fork it
 import roof from "./galleria.module.css";
 
@@ -18,11 +17,9 @@ const S = STATION;
  * the rope line funnels you to the window, where the mat sits.
  */
 export default function StationLayer({
-  anim,
   roofRef,
   active,
 }: {
-  anim: RoofAnim;
   roofRef: RefObject<HTMLDivElement | null>;
   active: boolean;
 }) {
@@ -317,7 +314,6 @@ export default function StationLayer({
         ref={roofRef}
         id="nc-station-roof"
         className={roof.roof}
-        data-anim={anim}
         data-open="0"
         style={{ left: S.x, top: S.y, width: S.w, height: S.h }}
       >
