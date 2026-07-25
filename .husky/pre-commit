@@ -1,0 +1,11 @@
+# Fast gate (~5s). Anything slower belongs in pre-push, or this hook just
+# teaches you to reach for --no-verify.
+#
+# ESLint and Prettier run through lint-staged, so they only see the files in
+# this commit. Neither auto-fixes: a hook that rewrites your code mid-commit
+# stages edits you never read. Run `pnpm format` / `pnpm lint --fix` yourself.
+pnpm exec lint-staged
+
+# Types are cross-file, so this one has to look at the whole project — a broken
+# import in a file you did not stage is still a broken build.
+pnpm exec tsc --noEmit

@@ -13,7 +13,19 @@
     "test:watch": "vitest",
     "postbuild": "next-sitemap",
     "sync:studio": "tsx scripts/sync-notes.ts",
-    "sync:resume": "tsx scripts/sync-resume.ts"
+    "sync:resume": "tsx scripts/sync-resume.ts",
+    "typecheck": "tsc --noEmit",
+    "verify": "pnpm test && pnpm build && pnpm deadcode",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,mjs,cjs}": [
+      "eslint",
+      "prettier --check"
+    ],
+    "*.{json,css,md,yml,yaml}": [
+      "prettier --check"
+    ]
   },
   "dependencies": {
     "@keystatic/core": "^0.5.48",
@@ -39,9 +51,11 @@
     "eslint-config-next": "16.1.6",
     "eslint-config-prettier": "^10.1.8",
     "gray-matter": "^4.0.3",
+    "husky": "^9.1.7",
     "js-yaml": "4.1.1",
     "jsdom": "^28.1.0",
     "knip": "^6.29.0",
+    "lint-staged": "^17.2.0",
     "prettier": "^3.8.1",
     "tsx": "^4.22.3",
     "typescript": "^5",

@@ -1,0 +1,13 @@
+# Thorough gate (~30s). Runs once per push instead of once per commit, which
+# is the only reason it can afford to be this slow.
+#
+# Confirms package.json and pnpm-lock.yaml agree. Vercel installs with a frozen
+# lockfile, so a drift caught here is a deploy that would have failed remotely.
+pnpm install --frozen-lockfile
+
+pnpm test
+pnpm build
+
+# Dead-code report. Warning-only by design (`--no-exit-code`), so it never
+# blocks a push — it just makes the rot visible before it ships.
+pnpm deadcode
