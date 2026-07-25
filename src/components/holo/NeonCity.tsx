@@ -172,7 +172,12 @@ export default function NeonCity({
     toY: number;
     t0: number | null;
   } | null>(null);
-  const cars = useRef<Car[]>(seedCars());
+  // One array, two handles: render maps `carList` (so we never read a ref
+  // during render), while the rAF loop keeps mutating `cars.current` in place.
+  // They are the same object — the car <div>s are laid out once and animated
+  // imperatively via `carEls`, so render never needs to see position changes.
+  const carList = useMemo(() => seedCars(), []);
+  const cars = useRef<Car[]>(carList);
   const train = useRef<{
     mode: "in" | "dwell" | "out" | "away";
     t: number;
@@ -353,9 +358,12 @@ export default function NeonCity({
       markMoved();
     };
 
+    // Captured once so cleanup detaches from the same node it attached to,
+    // even if the ref has moved on by teardown.
+    const stage = stageRef.current;
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
-    stageRef.current?.addEventListener("click", onClick);
+    stage?.addEventListener("click", onClick);
 
     start.current = performance.now();
     let lastNow = performance.now();
@@ -896,7 +904,7 @@ export default function NeonCity({
       cancelAnimationFrame(raf);
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("keyup", onKeyUp);
-      stageRef.current?.removeEventListener("click", onClick);
+      stage?.removeEventListener("click", onClick);
       measSvg.remove();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1085,7 +1093,7 @@ export default function NeonCity({
         <ProjectsPavilion active={onPad === "projects"} />
 
         {/* cars */}
-        {cars.current.map((c, i) => {
+        {carList.map((c, i) => {
           const horiz = c.dx !== 0;
           return (
             <div
