@@ -197,7 +197,7 @@ export function findPath(g: NavGrid, start: Pt, goal: Pt): Pt[] {
   cells.reverse();
 
   // to world points
-  let pts = cells.map((kk) =>
+  const pts = cells.map((kk) =>
     cellCenter(g, kk % g.cols, Math.floor(kk / g.cols))
   );
   // end exactly on the tapped point only if it is not inside a solid; a tap into
