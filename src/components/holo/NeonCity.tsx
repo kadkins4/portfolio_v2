@@ -54,7 +54,7 @@ import CollisionDebugLayer from "./CollisionDebugLayer";
 import HueDot from "./HueDot";
 import styles from "./neonCity.module.css";
 
-const BONK_WORDS = ["BONK!", "OOF!", "HEY!", "WATCH IT!"];
+const BONK_WORDS = ["BONK!", "OOF!", "HEY!", "WATCH IT!", "*SPLAT*"];
 
 const KEYMAP: Record<string, string> = {
   w: "up",
@@ -1784,7 +1784,6 @@ function ParkLayer({
 // Every rect comes from TERMINAL, which collision reads too.
 function TerminalStation() {
   const T = TERMINAL;
-  const cyan = "oklch(0.85 0.13 190)";
   const cyanDim = "oklch(0.85 0.13 190 / .35)";
   const mono = "var(--font-mono), monospace";
   return (
