@@ -9,6 +9,20 @@ export type ProjectItem = {
   externalUrl: string | null;
 };
 
+// Project card shape consumed by the /projects district grid.
+export type WorkItem = {
+  slug: string;
+  title: string;
+  description: string;
+  tags: string[];
+  date: string | null;
+  image: string | null;
+  imageFocus: string;
+  blurDataURL?: string;
+  externalUrl: string | null;
+  district?: string | null;
+};
+
 export type NoteItem = {
   slug: string;
   title: string;

@@ -13,7 +13,7 @@ import PageShell from "./PageShell";
 import PageTitle from "./PageTitle";
 import ContactDispatch, { type SocialLink } from "./ContactDispatch";
 import { PAGE_COPY } from "@/lib/constants";
-import type { WorkItem } from "./SelectedWork";
+import type { WorkItem } from "@/types";
 import {
   districtOf,
   districtColor,

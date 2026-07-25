@@ -4,9 +4,8 @@ import config from "../../../../keystatic.config";
 import { getBlurDataURL } from "@/lib/getBlurDataURL";
 import { sortStudioItems } from "@/lib/sortStudioItems";
 import { isListed } from "@/lib/projectStatus";
-import type { StudioItem } from "@/types";
+import type { StudioItem, WorkItem } from "@/types";
 import ProjectsDistrict from "@/components/holo/ProjectsDistrict";
-import type { WorkItem } from "@/components/holo/SelectedWork";
 import type { NoteItem } from "@/components/holo/ProjectsDistrict";
 import { toSocialLinks } from "@/lib/socialLinks";
 
