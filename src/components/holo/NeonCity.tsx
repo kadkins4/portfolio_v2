@@ -90,11 +90,14 @@ const easeIn = (t: number) => t * t * t;
 // from TERMINAL so moving the station moves the arrival with it.
 const WALK_PTS: [number, number][] = [
   // stepping off the carriage onto the deck
-  [TERMINAL.platform.x + TERMINAL.platform.w - 10, TERMINAL.stairs.y - 22],
-  // along the deck to the head of the stairs
-  [TERMINAL.platform.x + 14, TERMINAL.stairs.y + TERMINAL.stairs.h / 2],
-  // down the treads
-  [TERMINAL.stairs.x + 10, SPAWN.y],
+  [TERMINAL.platform.x + TERMINAL.platform.w / 2, TERMINAL.gap.top - 40],
+  // along the deck to the ramp mouth
+  [
+    TERMINAL.platform.x + TERMINAL.platform.w / 2,
+    (TERMINAL.gap.top + TERMINAL.gap.bot) / 2,
+  ],
+  // through the turnstiles and down the ramp
+  [TERMINAL.ramp.x + TERMINAL.ramp.w / 2, SPAWN.y],
   [SPAWN.x, SPAWN.y],
 ];
 function avatarWalk(wt: number): [number, number] {
@@ -1829,40 +1832,79 @@ function TerminalStation() {
           TERMINAL PARK · ADKINS LINE
         </span>
       </div>
-      {/* stairs down to the street, treads running west */}
+      {/* ramp down to the street, treads running west */}
       <div
-        id="nc-terminal-stairs"
+        id="nc-terminal-ramp"
         style={{
           position: "absolute",
-          left: T.stairs.x,
-          top: T.stairs.y,
-          width: T.stairs.w,
-          height: T.stairs.h,
+          left: T.ramp.x,
+          top: T.ramp.y,
+          width: T.ramp.w,
+          height: T.ramp.h,
           zIndex: 12,
           borderRadius: 2,
-          background: "#161327",
+          // lighter at the street end, darker where it meets the deck, so the
+          // ramp reads as climbing rather than lying flat
+          background: "linear-gradient(90deg, #100e1c, #1b1730)",
           border: `1px solid ${cyanDim}`,
           backgroundImage:
-            "repeating-linear-gradient(90deg, rgba(150,140,220,.22) 0 1px, transparent 1px 9px)",
+            "repeating-linear-gradient(90deg, rgba(150,140,220,.2) 0 1px, transparent 1px 9px)",
         }}
       />
-      {/* turnstiles between the stairs and the street */}
-      {[0, 1].map((i) => (
+      {/* railings — the fence that makes the deck a one-way-in space */}
+      {T.rails.map((r, i) => (
         <div
-          key={i}
-          id={`nc-turnstile-${i}`}
+          key={`rail${i}`}
+          id={`nc-platform-rail-${i}`}
           style={{
             position: "absolute",
-            left: T.stairs.x - 7,
-            top: T.stairs.y + 6 + i * 20,
-            width: 7,
-            height: 9,
-            zIndex: 13,
+            left: r.x,
+            top: r.y,
+            width: r.w,
+            height: r.h,
+            zIndex: 14,
             borderRadius: 1,
             background: "#0d0b18",
             border: `1px solid ${cyanDim}`,
+            boxShadow: `0 0 8px oklch(0.85 0.13 190 / .18)`,
           }}
         />
+      ))}
+      {/* turnstile stiles at the ramp mouth — you pass between them */}
+      {T.turnstiles.map((s, i) => (
+        <div
+          key={`stile${i}`}
+          id={`nc-turnstile-${i}`}
+          style={{
+            position: "absolute",
+            left: s.x,
+            top: s.y,
+            width: s.w,
+            height: s.h,
+            zIndex: 15,
+            borderRadius: 2,
+            background: "#12101f",
+            border: `1px solid ${cyanDim}`,
+            boxShadow: `0 0 10px oklch(0.85 0.13 190 / .25)`,
+          }}
+        >
+          {/* the arm, angled across the lane */}
+          <div
+            id={`nc-turnstile-${i}-arm`}
+            style={{
+              position: "absolute",
+              left: "50%",
+              top: "50%",
+              width: 11,
+              height: 2,
+              marginTop: -1,
+              borderRadius: 1,
+              transformOrigin: "0 50%",
+              transform: `rotate(${i === 0 ? 52 : -52}deg)`,
+              background: "oklch(0.85 0.13 190 / .7)",
+            }}
+          />
+        </div>
       ))}
     </>
   );
@@ -2225,24 +2267,6 @@ function ProjectsPavilion({ active }: { active: boolean }) {
           </div>
         </div>
       </div>
-      {/* stoop on the LEFT — you land here, you enter on the right pad */}
-      {d.stairs && (
-        <div
-          id="nc-stairs-projects"
-          style={{
-            position: "absolute",
-            left: d.stairs.x,
-            top: d.stairs.y,
-            width: d.stairs.w,
-            height: d.stairs.h,
-            background: "#131120",
-            border: "1px solid rgba(150,140,220,.3)",
-            backgroundImage:
-              "repeating-linear-gradient(90deg, rgba(243,237,226,.22) 0 2px, transparent 2px 9px)",
-            zIndex: 5,
-          }}
-        />
-      )}
       {/* entrance pad on the RIGHT — drawn from the same rect the loop tests */}
       <div
         id="nc-pad-projects"

@@ -55,27 +55,81 @@ describe("terminal station", () => {
     expect(resume.x).toBeLessThan(T.platform.x);
   });
 
-  it("keeps the un-drawn ticket hall out of the collision list", () => {
-    // it is not rendered right now, and a collider with nothing drawn over it
-    // is an invisible wall — this one sat right where the player lands
-    expect(
-      hitsSolid(T.house.x + T.house.w / 2, T.house.y + T.house.h / 2)
-    ).toBe(false);
-  });
+  const laneX = T.platform.x + T.platform.w / 2;
+  const gapMid = (T.gap.top + T.gap.bot) / 2;
 
-  it("leaves the stairs and the platform lane walkable", () => {
-    // you arrive on these; a solid on either one strands the player on the deck
-    expect(
-      hitsSolid(T.stairs.x + T.stairs.w / 2, T.stairs.y + T.stairs.h / 2)
-    ).toBe(false);
-    // the deck lane clears the resume building's east wall by CHAR_R
-    const laneX = T.platform.x + T.platform.w - CHAR_R;
+  it("leaves the ramp and the deck lane walkable", () => {
+    // you arrive on these; a solid on either strands the player on the deck
+    expect(hitsSolid(T.ramp.x + T.ramp.w / 2, gapMid)).toBe(false);
     expect(hitsSolid(laneX, T.platform.y + T.platform.h / 2)).toBe(false);
   });
 
+  it("fences the deck on every side but the ramp mouth", () => {
+    // walk into each railing from the deck side and you stop
+    const inset = T.rail + CHAR_R - 1;
+    expect(hitsSolid(laneX, T.platform.y + inset), "north end").toBe(true);
+    expect(
+      hitsSolid(laneX, T.platform.y + T.platform.h - inset),
+      "south end"
+    ).toBe(true);
+    expect(
+      hitsSolid(T.platform.x + T.platform.w - inset, gapMid),
+      "trackside"
+    ).toBe(true);
+    // the west railing, above and below the ramp
+    expect(hitsSolid(T.platform.x + inset, T.gap.top - 40), "west upper").toBe(
+      true
+    );
+    expect(hitsSolid(T.platform.x + inset, T.gap.bot + 40), "west lower").toBe(
+      true
+    );
+  });
+
+  it("makes the ramp mouth the only way on or off the deck", () => {
+    // sample the whole west edge: the only walkable stretch is the gap
+    const edgeX = T.platform.x + T.rail + CHAR_R - 1;
+    for (let y = T.platform.y; y < T.platform.y + T.platform.h; y += 4) {
+      const open = !hitsSolid(edgeX, y);
+      const inGap = y > T.gap.top && y < T.gap.bot;
+      if (open) expect(inGap, `west edge open at y=${y}`).toBe(true);
+    }
+  });
+
+  it("funnels the ramp mouth between the turnstiles", () => {
+    // the stiles are solid, the lane between them is not
+    for (const [i, s] of T.turnstiles.entries()) {
+      expect(hitsSolid(s.x + s.w / 2, s.y + s.h / 2), `stile ${i}`).toBe(true);
+    }
+    expect(hitsSolid(T.turnstiles[0].x + T.turnstiles[0].w / 2, gapMid)).toBe(
+      false
+    );
+  });
+
+  it("leaves the turnstile lane wider than the player", () => {
+    // a gap exactly a body wide is a gap nobody can find
+    const lane = T.turnstiles[1].y - (T.turnstiles[0].y + T.turnstiles[0].h);
+    expect(lane).toBeGreaterThan(CHAR_R * 2 + 8);
+  });
+
+  it("seals the slot between the station and the platform", () => {
+    // the deck's west edge butts against the building, so there is no alley to
+    // squeeze up between the two
+    expect(T.platform.x).toBe(resume.x + resume.w);
+    const slotY = Math.max(T.platform.y, resume.y) + 20;
+    expect(hitsSolid(resume.x + resume.w, slotY)).toBe(true);
+  });
+
   it("lands the player level with the resume pad", () => {
-    // a straight walk west, not a detour around the building
-    expect(SPAWN.y).toBe(resume.pad.y);
+    // a straight walk west, not a detour around the building. The landing is
+    // squared up with the gate rather than pinned to the pad's exact centre, so
+    // allow anywhere within the pad's own span.
+    const pad = centerRect(resume.pad);
+    expect(SPAWN.y).toBeGreaterThan(pad.y);
+    expect(SPAWN.y).toBeLessThan(pad.y + pad.h);
+  });
+
+  it("squares the landing up with the middle of the gate", () => {
+    expect(SPAWN.y).toBe((T.gap.top + T.gap.bot) / 2);
   });
 
   it("leaves a clear straightaway from the landing to the resume pad", () => {
@@ -88,18 +142,11 @@ describe("terminal station", () => {
     }
   });
 
-  it("keeps the platform dressing off the collision list", () => {
-    // the deck is only 32px wide; anything solid standing on it walls off the
-    // lane, so the bench, board and canopy are drawn but not solid
-    for (const [name, r] of [
-      ["bench", T.bench],
-      ["board", T.board],
-    ] as const) {
-      expect(
-        SOLIDS.some((s) => s.x === r.x && s.y === r.y),
-        name
-      ).toBe(false);
-    }
+  it("leaves the deck lane wide enough to walk", () => {
+    // rails eat into a corridor that is already narrow; if the clear span drops
+    // under a body width the deck stops being somewhere you can stand
+    const clear = T.platform.w - T.rail * 2;
+    expect(clear).toBeGreaterThan(CHAR_R * 2);
   });
 });
 

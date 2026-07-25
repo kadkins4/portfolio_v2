@@ -36,40 +36,6 @@ export const NODES: { x: number; y: number }[] = [];
 export const RAIL_PATH =
   "M 720 1660 C 750 1480 800 1420 770 1300 C 745 1195 600 1170 590 1030 C 583 930 680 905 680 810 L 680 480 C 680 330 640 260 560 200 C 470 130 380 80 320 -40";
 
-// ---- Terminal station (the end of the Adkins Line) ----
-// The platform sits on the WEST side of the track, in the gap beside the
-// ADKINS LINE building, so you step off facing your destination instead of
-// walking around the train. Everything here is world-space and drives both the
-// renderer (TerminalStation) and the arrival walk — declare the geometry once.
-export const TERMINAL = (() => {
-  // the track's vertical run; the platform hugs its west flank
-  const railX = 680;
-  const platW = 32;
-  const platX = railX - 8 - platW; // 640 — flush with the resume building's east wall
-  return {
-    railX,
-    platform: { x: platX, y: 560, w: platW, h: 230 },
-    // steps down to the street, aimed west at the ADKINS LINE doors. The tread
-    // line sits at the resume pad's own centre-y, so the walk off the stairs is
-    // a straight shot onto the mat.
-    stairs: { x: platX - 52, y: 670, w: 52, h: 40 },
-    // ticket hall at the foot of the stairs — the only solid here, so the
-    // platform lane itself stays walkable end to end
-    house: { x: platX - 84, y: 724, w: 84, h: 74 },
-    // platform dressing. All scenery: the deck is only 32px wide, so anything
-    // solid standing on it would wall the lane off (the player is 26px across).
-    board: { x: platX + 8, y: 572, w: 20, h: 30 },
-    bench: { x: platX + 9, y: 744, w: 18, h: 34 },
-    canopy: { x: platX, y: 600, w: platW, h: 120 },
-    // where the arrival walk ends and you take control, at the stairs' foot
-    landing: { x: platX - 62, y: 690 },
-  };
-})();
-
-// The player steps off the train onto the west platform and down the stairs,
-// landing here — a short straightaway east of the ADKINS LINE entry mat.
-export const SPAWN = { x: TERMINAL.landing.x, y: TERMINAL.landing.y };
-
 // ---- Terminal Park (hero + home anchor) ----
 export const PARK = {
   x: 900,
@@ -251,6 +217,58 @@ export const DESTINATIONS: Destination[] = [
     },
   },
 ];
+
+// ---- Terminal station platform (the end of the Adkins Line) ----
+// The deck sits on the WEST side of the track so you step off facing the
+// station, not away from it. It is an elevated platform: railed on all four
+// sides, with a single break at the ramp mouth, so the turnstiles are the only
+// way up or down. Its west edge butts straight against the station building —
+// derived, not typed — leaving no slot to squeeze through between the two.
+export const TERMINAL = (() => {
+  const stn = DESTINATIONS.find((d) => d.key === "resume")!;
+  const railX = 680; // the track's vertical run
+  const rail = 4; // railing thickness
+  const x = stn.x + stn.w; // flush with the station's east wall
+  const w = railX - 8 - x; // stop short of the track
+  const y = 560;
+  const h = 230;
+  // the break in the west railing. Wide enough to read as a way in at a
+  // glance — a gap the width of the player is a gap nobody notices.
+  const gapTop = 652;
+  const gapBot = 744;
+  const post = 12; // turnstile stile
+  return {
+    railX,
+    rail,
+    platform: { x, y, w, h },
+    gap: { top: gapTop, bot: gapBot },
+    // Railings. Solid, and the reason the deck reads as raised: walk up the
+    // ramp and you are on the platform until you walk back down it.
+    rails: [
+      { x, y, w, h: rail }, // north end
+      { x, y: y + h - rail, w, h: rail }, // south end
+      { x: x + w - rail, y, w: rail, h }, // trackside
+      { x, y, w: rail, h: gapTop - y }, // west, above the ramp
+      { x, y: gapBot, w: rail, h: y + h - gapBot }, // west, below the ramp
+    ] as { x: number; y: number; w: number; h: number }[],
+    // ramp down to the street, aligned with the gap
+    ramp: { x: x - 60, y: gapTop, w: 60, h: gapBot - gapTop },
+    // turnstile stiles, one at each end of the ramp mouth. Solid, so you are
+    // funnelled between them — this is the gate, not decoration.
+    turnstiles: [
+      { x: x - post, y: gapTop, w: post, h: post },
+      { x: x - post, y: gapBot - post, w: post, h: post },
+    ] as { x: number; y: number; w: number; h: number }[],
+    // Where the arrival walk ends and you take control, at the ramp's foot and
+    // squared up with the middle of the gate — so walking straight back east
+    // carries you through the turnstiles without lining anything up by hand.
+    landing: { x: x - 76, y: (gapTop + gapBot) / 2 },
+  };
+})();
+
+// The player rides in, steps off onto the west deck, walks down the ramp
+// through the turnstiles, and takes control here at its foot.
+export const SPAWN = { x: TERMINAL.landing.x, y: TERMINAL.landing.y };
 
 // ---- Unit 4B (the about apartment) ----
 // A walk-in studio, same contract as the Galleria: geometry declared once here,

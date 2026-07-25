@@ -7,6 +7,7 @@ import {
   TREES,
   GALLERIA,
   APARTMENT,
+  TERMINAL,
   POND,
   FOUNTAIN_R,
 } from "./cityData";
@@ -33,11 +34,12 @@ export const SOLIDS: Rect[] = [
   ...GALLERIA.walls,
   GALLERIA.kiosk,
   GALLERIA.fountain,
+  // the platform railings and the turnstile stiles. Together they make the deck
+  // a one-way-in space: the ramp mouth is the only break in the fence, and the
+  // stiles funnel you through it. The deck and ramp surfaces stay walkable.
+  ...TERMINAL.rails,
+  ...TERMINAL.turnstiles,
 ];
-// NOTE: TERMINAL.house is deliberately absent. The ticket hall is not currently
-// drawn, and a collider with nothing rendered over it is an invisible wall —
-// here, right where the player lands off the stairs. If the hall comes back,
-// it goes back in this list at the same time.
 
 // round solids, tested by distance rather than as boxes: tree canopies and the
 // park fountain's basin
