@@ -67,6 +67,19 @@ describe("NeonCity", () => {
       ).not.toBeInTheDocument()
     );
   });
+
+  // Regression: the skip has to land during render, not on the loop's first
+  // frame. Asserted synchronously — no rAF callback has been serviced yet, so
+  // this fails if the phase depends on the loop running at all. A backgrounded
+  // tab (or anything that throws before the loop starts) would otherwise
+  // strand the HUD at opacity 0 with the letterbox bars down.
+  it("resolves the reduced-motion skip without waiting for a frame", () => {
+    mockMedia({ reduced: true });
+    const { container } = render(<NeonCity name="Kendall Adkins" />);
+    expect(
+      container.querySelector('[class*="introFreeze"]')
+    ).not.toBeInTheDocument();
+  });
 });
 
 describe("NeonCity – dev flags", () => {

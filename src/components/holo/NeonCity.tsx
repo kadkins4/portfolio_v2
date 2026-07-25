@@ -44,6 +44,7 @@ import { hitsSolid } from "@/lib/cityCollision";
 import { pathTo } from "@/lib/nav/cityNav";
 import { FAST_TRAVEL_ITEMS } from "@/lib/cityFastTravel";
 import { useIsTouch } from "@/hooks/useIsTouch";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import {
   useColliders,
   useDevFlag,
@@ -218,9 +219,6 @@ export default function NeonCity({
   const [introPhase, setIntroPhase] = useState<"ride" | "walk" | "done">(
     "ride"
   );
-  // Last phase pushed into state, so the per-frame reconcile only fires on a
-  // real transition instead of every frame.
-  const syncedPhase = useRef<"ride" | "walk" | "done">("ride");
   const [caption, setCaption] = useState("THE ADKINS LINE · INBOUND");
   const [everMoved, setEverMoved] = useState(false);
   const [arrived, setArrived] = useState(true);
@@ -259,6 +257,27 @@ export default function NeonCity({
     unitTargetsRef.current = unitTargets;
   }, [unitTargets]);
 
+  // Live reduced-motion preference for the RAF loop. This deliberately does NOT
+  // feed the mount-time cinematic decision: the city is server-rendered, so on
+  // the hydration pass useSyncExternalStore hands back the *server* snapshot
+  // (false) and a []-dep effect reads it before React re-renders with the real
+  // client value — the cinematic would play for someone who asked for no
+  // motion. The mount effect reads matchMedia directly for that reason; this
+  // ref only carries later OS toggles into the loop, which the loop had no way
+  // to see at all before. Declared ahead of that effect so it never clobbers
+  // the direct read on the hydration pass.
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const reduceRef = useRef(false);
+  useEffect(() => {
+    reduceRef.current = prefersReducedMotion;
+  }, [prefersReducedMotion]);
+
+  // What the HUD renders. Reduced motion has no cinematic to be part-way
+  // through, so "done" is derived here rather than pushed into state by the
+  // mount effect or by the loop's first frame — the render that follows
+  // hydration is already correct, and nothing has to run for it to be.
+  const visibleIntroPhase = prefersReducedMotion ? "done" : introPhase;
+
   // arrival beat fades after ~4.6s
   useEffect(() => {
     const t = window.setTimeout(() => setArrived(false), 4600);
@@ -285,9 +304,13 @@ export default function NeonCity({
   }, []);
 
   useEffect(() => {
-    const reduce = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
+    // The one mount-time read of the motion preference — see reduceRef above
+    // for why this is matchMedia directly and not the hook. Seeded into the ref
+    // so the loop starts from the truth even before the first OS toggle.
+    const reduce =
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    reduceRef.current = reduce;
 
     function markMoved() {
       if (!everMovedRef.current) {
@@ -435,12 +458,11 @@ export default function NeonCity({
       window.matchMedia("(pointer: coarse)").matches;
 
     // reduced motion: skip the cinematic, drop straight to the landing
-    const reduced =
-      typeof window.matchMedia === "function" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) {
-      // The HUD is caught up by the phase reconcile on the first frame below,
-      // rather than by a setState in this effect body.
+    if (reduce) {
+      // Only the simulation side is set here. What the viewer sees is derived
+      // during render (visibleIntroPhase) rather than pushed into state, so the
+      // HUD does not depend on this effect — or on the loop's first frame —
+      // running at all.
       intro.current = { phase: "done", walkT: 9999 };
       pos.current.x = SPAWN.x;
       pos.current.y = SPAWN.y;
@@ -466,13 +488,8 @@ export default function NeonCity({
       let moving = false;
       const IN = intro.current;
       // The cinematic's phase lives in a ref so the loop can read it without a
-      // re-render; mirror it into state whenever it drifts so the HUD follows.
-      // Reduced motion jumps straight to "done" before the loop starts, and
-      // this is what carries that across.
-      if (IN.phase !== syncedPhase.current) {
-        syncedPhase.current = IN.phase;
-        setIntroPhase(IN.phase);
-      }
+      // re-render. Every transition pushes its own setIntroPhase at the point
+      // it happens, so there is nothing to reconcile per frame.
       if (IN.phase === "ride") {
         // cinematic: camera follows the train; the avatar is hidden here
       } else if (IN.phase === "walk") {
@@ -729,7 +746,7 @@ export default function NeonCity({
             setHits((h) => h + 1);
             // screen shake
             const st = stageRef.current;
-            if (st && !reduce) {
+            if (st && !reduceRef.current) {
               st.classList.remove(styles.shake);
               void st.offsetWidth;
               st.classList.add(styles.shake);
@@ -1180,7 +1197,7 @@ export default function NeonCity({
       ref={stageRef}
       role="main"
       aria-label="Neon City, a walkable portfolio overworld"
-      className={`${styles.stage}${introPhase !== "done" ? ` ${styles.introFreeze}` : ""}`}
+      className={`${styles.stage}${visibleIntroPhase !== "done" ? ` ${styles.introFreeze}` : ""}`}
     >
       {dev && (
         <CityDevPanel colliders={colliders} onColliders={pickColliders} />
@@ -1203,7 +1220,9 @@ export default function NeonCity({
           background: "#04030a",
           zIndex: 22,
           transform:
-            introPhase === "done" ? "translateY(-101%)" : "translateY(0)",
+            visibleIntroPhase === "done"
+              ? "translateY(-101%)"
+              : "translateY(0)",
           transition: "transform .9s ease",
           pointerEvents: "none",
         }}
@@ -1218,12 +1237,12 @@ export default function NeonCity({
           background: "#04030a",
           zIndex: 22,
           transform:
-            introPhase === "done" ? "translateY(101%)" : "translateY(0)",
+            visibleIntroPhase === "done" ? "translateY(101%)" : "translateY(0)",
           transition: "transform .9s ease",
           pointerEvents: "none",
         }}
       />
-      {introPhase !== "done" && (
+      {visibleIntroPhase !== "done" && (
         <>
           <div
             style={{
@@ -1240,7 +1259,7 @@ export default function NeonCity({
               whiteSpace: "nowrap",
             }}
           >
-            {introPhase === "ride" ? caption : "STEPPING OFF · WELCOME"}
+            {visibleIntroPhase === "ride" ? caption : "STEPPING OFF · WELCOME"}
           </div>
           <button
             type="button"
@@ -1272,8 +1291,8 @@ export default function NeonCity({
         className={styles.hud}
         data-hud
         style={{
-          opacity: introPhase === "done" ? 1 : 0,
-          pointerEvents: introPhase === "done" ? undefined : "none",
+          opacity: visibleIntroPhase === "done" ? 1 : 0,
+          pointerEvents: visibleIntroPhase === "done" ? undefined : "none",
           transition: "opacity .6s ease",
         }}
       >
@@ -1327,7 +1346,7 @@ export default function NeonCity({
           )}
         </div>
 
-        {!everMoved && !panel && introPhase === "done" && (
+        {!everMoved && !panel && visibleIntroPhase === "done" && (
           <div id="nc-hint" className={styles.hint}>
             {isTouch
               ? "DRAG THE STICK · OR TAP THE STREET"
@@ -1369,7 +1388,7 @@ export default function NeonCity({
           </div>
         )}
 
-        {isTouch && introPhase === "done" && (
+        {isTouch && visibleIntroPhase === "done" && (
           <TouchJoystick
             onStart={() => {
               target.current = null;
