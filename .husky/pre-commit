@@ -8,4 +8,4 @@ pnpm exec lint-staged
 
 # Types are cross-file, so this one has to look at the whole project — a broken
 # import in a file you did not stage is still a broken build.
-pnpm exec tsc --noEmit
+pnpm typecheck
