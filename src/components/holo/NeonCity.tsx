@@ -1633,7 +1633,7 @@ function StreetLayer() {
           pointerEvents: "none",
         }}
       >
-        ARTERIAL · V1 TRAFFIC
+        Corellian Run Road
       </div>
     </>
   );

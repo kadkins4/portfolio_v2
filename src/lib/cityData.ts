@@ -168,7 +168,7 @@ export const DESTINATIONS: Destination[] = [
     h: 270,
     // the mat lives INSIDE, at the head of the queue and flush against the
     // ticket counter — you walk the rope line and step up to the window
-    pad: { x: 550, y: 438, w: 48, h: 30 },
+    pad: { x: 471, y: 438, w: 48, h: 30 },
     href: "/resume",
     teaser: {
       kicker: "✦ NEON CITY TRANSIT · CAREER SERVICE",
@@ -288,6 +288,11 @@ export const STATION = (() => {
   const gapRight = ox + 150;
   const counterH = 38;
   const counterBot = oy + wall + counterH;
+  // The long rope's two ends. The clear span each side is the distance minus a
+  // body width (CHAR_R * 2 = 26), so `ropeStart` at ox+84 leaves a 44px exit
+  // and `ropeEnd` at ox+208 leaves a 38px gate — both comfortably walkable.
+  const ropeStart = ox + 84;
+  const ropeEnd = ox + 208;
   return {
     x: ox,
     y: oy,
@@ -313,27 +318,41 @@ export const STATION = (() => {
     // Rope lines. Together they form one barrier from the west wall, east, then
     // north to the counter — leaving a single gap to reach the window through.
     rails: [
-      // the long rope: blocks every northward route west of the gap
-      { id: "rail-long", x: ox + wall, y: oy + 99, w: 186, h: 6 },
+      // The long rope. It deliberately stops short of the west wall: that slot
+      // is the EXIT, so once you have been served you walk out down the west
+      // side instead of back through the line. Widen or narrow the exit by
+      // moving `ropeStart`; `ropeEnd` sets the gate to the window.
+      {
+        id: "rail-long",
+        x: ropeStart,
+        y: oy + 95,
+        w: ropeEnd - ropeStart,
+        h: 6,
+      },
       // the return rope, running east under the counter enclosure
-      { id: "rail-return", x: ox + 150, y: oy + 165, w: 110, h: 6 },
+      { id: "rail-return", x: ox + 153, y: oy + 145, w: 110, h: 6 },
       // the counter enclosure's east side, closing the approach from that flank
       {
         id: "rail-window",
-        x: ox + 260,
+        x: ox + 272,
         y: counterBot,
         w: 6,
-        h: oy + 171 - counterBot,
+        h: oy + 148 - counterBot,
       },
     ],
     // seating in the lobby, outside the rope. Solid, like the studio's furniture.
     benches: [
-      { id: "bench-west-1", x: ox + 24, y: oy + 135, w: 22, h: 56 },
-      { id: "bench-west-2", x: ox + 24, y: oy + 201, w: 22, h: 56 },
-      { id: "bench-south", x: ox + 180, y: oy + 200, w: 56, h: 20 },
+      { id: "bench-west-1", x: ox + 15, y: oy + 141, w: 22, h: 56 },
+      { id: "bench-west-2", x: ox + 15, y: oy + 201, w: 22, h: 56 },
+      { id: "bench-south-1", x: ox + 165, y: oy + 235, w: 56, h: 20 },
+      { id: "bench-south-2", x: ox + 225, y: oy + 235, w: 56, h: 20 },
     ],
+    // Greenery. Solid, but purely decorative — the queue is enforced by the
+    // ropes alone, so these can be moved anywhere without opening a bypass.
+    // Anything added here renders automatically; wide entries get three crowns.
+    plants: [{ id: "plant-lobby", x: ox + 236, y: oy + 180, w: 46, h: 30 }],
     // departures board on the east wall — drawn, never collided with
-    board: { x: ox + 272, y: oy + 75, w: 14, h: 60 },
+    board: { x: ox + 270, y: oy + 53, w: 14, h: 100 },
     open: {
       inside: {
         x0: ox + wall,

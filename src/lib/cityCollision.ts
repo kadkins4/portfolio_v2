@@ -31,6 +31,7 @@ export const SOLIDS: Rect[] = [
   STATION.counter,
   ...STATION.rails.map((r) => ({ x: r.x, y: r.y, w: r.w, h: r.h })),
   ...STATION.benches.map((b) => ({ x: b.x, y: b.y, w: b.w, h: b.h })),
+  ...STATION.plants.map((p) => ({ x: p.x, y: p.y, w: p.w, h: p.h })),
   ...APARTMENT.walls,
   ...APARTMENT.furniture.map((f) => ({ x: f.x, y: f.y, w: f.w, h: f.h })),
   ...SHELLS.map((s) => ({ x: s.x, y: s.y, w: s.w, h: s.h })),

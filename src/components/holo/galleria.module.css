@@ -102,6 +102,46 @@
   text-shadow: 0 0 8px rgba(140, 190, 235, 0.6);
 }
 
+/* ---- rooftop kit ----
+   A couple of extra roof parts beyond the shared .skylight / .hvac, so the
+   buildings that open are not identical from above. Kept deliberately quiet:
+   the sign and the lit doorway already mark these out, the roof should not. */
+
+/* round vent stack with a cap */
+.vent {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 32%, #1b1830, #0a0913);
+  border: 1px solid rgba(150, 140, 220, 0.3);
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.7);
+}
+.vent::after {
+  content: "";
+  position: absolute;
+  inset: 26%;
+  border-radius: 50%;
+  border: 1px solid rgba(150, 140, 220, 0.34);
+}
+
+/* satellite dish — domestic, for the studio roof */
+.dish {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle at 62% 38%, #232038, #0c0b16 70%);
+  border: 1px solid rgba(150, 140, 220, 0.35);
+}
+.dish::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 44%;
+  height: 1px;
+  transform: rotate(-34deg);
+  transform-origin: 0 50%;
+  background: rgba(180, 170, 235, 0.55);
+}
+
 /* Sign painted on the roof itself. It rides inside the roof element so the
    one `data-open` flag both lifts the roof and clears the sign: once you are
    inside you can see the room, and the name would only be in the way. */

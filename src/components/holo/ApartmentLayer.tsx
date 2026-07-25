@@ -297,7 +297,8 @@ export default function ApartmentLayer({
               marginLeft: -4.5,
               marginTop: -4.5,
               borderRadius: "50%",
-              background: "radial-gradient(circle at 40% 34%, #2a4a32, #12211a)",
+              background:
+                "radial-gradient(circle at 40% 34%, #2a4a32, #12211a)",
               border: "1px solid rgba(110,190,140,.45)",
             }}
           />
@@ -373,24 +374,20 @@ export default function ApartmentLayer({
         data-open="0"
         style={{ left: A.x, top: A.y, width: A.w, height: A.h }}
       >
+        {/* A house roof: a plant unit and a dish. Deliberately plainer than
+            the station's — it is a flat above a studio, not a terminal. */}
         <div className={`${roof.half} ${roof.halfL}`}>
           <div
-            className={roof.skylight}
-            style={{ left: 22, top: 40, width: 54, height: 34 }}
-          />
-          <div
+            id="nc-apartment-roof-hvac"
             className={roof.hvac}
-            style={{ left: 26, top: 210, width: 40, height: 30 }}
+            style={{ left: 30, top: 206, width: 38, height: 30 }}
           />
         </div>
         <div className={`${roof.half} ${roof.halfR}`}>
           <div
-            className={roof.skylight}
-            style={{ left: 40, top: 54, width: 48, height: 30 }}
-          />
-          <div
-            className={roof.hvac}
-            style={{ left: 22, top: 206, width: 44, height: 32 }}
+            id="nc-apartment-roof-dish"
+            className={roof.dish}
+            style={{ right: 26, top: 46, width: 24, height: 24 }}
           />
         </div>
         {/* name painted on the roof; fades out as the roof lifts */}

@@ -90,22 +90,22 @@ export default function StationLayer({
           boxShadow: "inset 0 1px 10px rgba(0,0,0,.5)",
         }}
       >
-        {/* three glazed windows; the east one is the one you queue for */}
+        {/* three glazed windows; the middle one is the one you queue for */}
         {[0, 1, 2].map((i) => (
           <div
             key={i}
             id={`nc-ticket-window-${i}`}
             style={{
               position: "absolute",
-              left: 34 + i * 82,
+              left: 25 + i * 82,
               top: 8,
               width: 58,
               height: 22,
               borderRadius: 2,
-              background: hueColor(HUE, 0.8, 0.12, i === 2 ? 0.24 : 0.12),
+              background: hueColor(HUE, 0.8, 0.12, i === 1 ? 0.24 : 0.12),
               border: `1px solid ${dim}`,
               boxShadow:
-                i === 2
+                i === 1
                   ? `0 0 12px ${hueColor(HUE, 0.85, 0.13, 0.35)}`
                   : "none",
             }}
@@ -193,6 +193,73 @@ export default function StationLayer({
         />
       ))}
 
+      {/* Greenery. Every entry in STATION.plants is drawn, so adding another is
+          a one-line change in cityData. Swap an entry's w and h to stand a
+          trough on its end. */}
+      {S.plants.map((p) => {
+        // A trough is anything clearly longer than it is deep, in EITHER
+        // direction — so swapping w and h rotates the planter rather than
+        // turning it into a single round pot.
+        const long = Math.max(p.w, p.h) > Math.min(p.w, p.h) * 1.4;
+        const vertical = p.h > p.w;
+        const crowns = long ? [0.22, 0.5, 0.78] : [0.5];
+        return (
+          <div
+            key={p.id}
+            id={`nc-station-${p.id}`}
+            style={{
+              position: "absolute",
+              left: p.x,
+              top: p.y,
+              width: p.w,
+              height: p.h,
+              borderRadius: long ? 4 : "3px 3px 50% 50%",
+              background: "#241a15",
+              border: "1px solid rgba(214,178,120,.35)",
+            }}
+          >
+            {crowns.map((cx, ci) => (
+              <div key={ci}>
+                {/* fronds, seen from above */}
+                {[0, 60, 120, 180, 240, 300].map((deg) => (
+                  <div
+                    key={deg}
+                    style={{
+                      position: "absolute",
+                      left: vertical ? "50%" : `${cx * 100}%`,
+                      top: vertical ? `${cx * 100}%` : "50%",
+                      width: 11,
+                      height: 5,
+                      marginTop: -2.5,
+                      borderRadius: 3,
+                      transformOrigin: "0 50%",
+                      transform: `rotate(${deg + ci * 18}deg)`,
+                      background: "rgba(110,190,140,.5)",
+                    }}
+                  />
+                ))}
+                <div
+                  id={`nc-station-${p.id}-crown-${ci}`}
+                  style={{
+                    position: "absolute",
+                    left: vertical ? "50%" : `${cx * 100}%`,
+                    top: vertical ? `${cx * 100}%` : "50%",
+                    width: 10,
+                    height: 10,
+                    marginLeft: -5,
+                    marginTop: -5,
+                    borderRadius: "50%",
+                    background:
+                      "radial-gradient(circle at 40% 34%, #2a4a32, #12211a)",
+                    border: "1px solid rgba(110,190,140,.45)",
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+        );
+      })}
+
       {/* departures board on the east wall */}
       <div
         id="nc-station-board"
@@ -254,24 +321,31 @@ export default function StationLayer({
         data-open="0"
         style={{ left: S.x, top: S.y, width: S.w, height: S.h }}
       >
+        {/* Rooftop kit kept in the city's own vocabulary — skylights and a
+            plant room, same parts the other buildings use. The sign and the lit
+            doorway already say this one opens; the roof does not need to. */}
         <div className={`${roof.half} ${roof.halfL}`}>
           <div
+            id="nc-station-roof-skylight-0"
             className={roof.skylight}
-            style={{ left: 26, top: 44, width: 62, height: 36 }}
+            style={{ left: 28, top: 46, width: 54, height: 32 }}
           />
           <div
+            id="nc-station-roof-hvac"
             className={roof.hvac}
-            style={{ left: 30, top: 186, width: 44, height: 32 }}
+            style={{ left: 30, top: 192, width: 36, height: 30 }}
           />
         </div>
         <div className={`${roof.half} ${roof.halfR}`}>
           <div
+            id="nc-station-roof-skylight-1"
             className={roof.skylight}
-            style={{ left: 44, top: 44, width: 62, height: 36 }}
+            style={{ left: 42, top: 46, width: 54, height: 32 }}
           />
           <div
-            className={roof.hvac}
-            style={{ left: 26, top: 190, width: 46, height: 30 }}
+            id="nc-station-roof-vent"
+            className={roof.vent}
+            style={{ left: 58, top: 196, width: 22, height: 22 }}
           />
         </div>
         {/* name painted on the roof; fades out as the roof lifts */}

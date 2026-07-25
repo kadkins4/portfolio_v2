@@ -48,7 +48,7 @@ function reaches(
   room: { x: number; y: number; w: number; h: number; wall: number },
   start: Pt,
   target: Box,
-  plug?: Box
+  plugs: Box[] = []
 ): boolean {
   const step = 4;
   const x0 = room.x + room.wall;
@@ -56,11 +56,13 @@ function reaches(
   const y0 = room.y + room.wall;
   const y1 = room.y + room.h - room.wall;
   const inPlug = (x: number, y: number) =>
-    !!plug &&
-    x > plug.x - CHAR_R &&
-    x < plug.x + plug.w + CHAR_R &&
-    y > plug.y - CHAR_R &&
-    y < plug.y + plug.h + CHAR_R;
+    plugs.some(
+      (p) =>
+        x > p.x - CHAR_R &&
+        x < p.x + p.w + CHAR_R &&
+        y > p.y - CHAR_R &&
+        y < p.y + p.h + CHAR_R
+    );
   const blocked = (x: number, y: number) => hitsSolid(x, y) || inPlug(x, y);
   const key = (x: number, y: number) => `${x},${y}`;
   const sx = Math.round(start.x / step) * step;
@@ -457,23 +459,63 @@ describe("Terminal Park Station", () => {
     );
   });
 
-  it("makes the rope gap the only way to the window", () => {
-    // Flood the room from just inside the door and confirm the mat is
-    // reachable; then plug the single gap and confirm it is not. That is the
-    // whole point of the queue — if it can be walked around, it is decoration.
+  it("leaves exactly two ways through the rope line", () => {
+    // The queue has two deliberate openings: the gate to the window, and the
+    // exit slot by the west wall so you can leave without walking back up the
+    // line. Any THIRD opening is an accident — a rope nudged off a wall, or a
+    // fitting moved — and would let the whole queue be skipped unnoticed.
+    const y = railLong.y + railLong.h / 2;
+    const spans: { from: number; to: number }[] = [];
+    let run: number | null = null;
+    for (let x = S.x + S.wall; x <= S.x + S.w - S.wall; x += 2) {
+      const open = !hitsSolid(x, y);
+      if (open && run === null) run = x;
+      if (!open && run !== null) {
+        spans.push({ from: run, to: x });
+        run = null;
+      }
+    }
+    if (run !== null) spans.push({ from: run, to: S.x + S.w - S.wall });
+    expect(spans.map((s2) => `${s2.from}-${s2.to}`).join(", ")).toBe(
+      spans.length === 2
+        ? spans.map((s2) => `${s2.from}-${s2.to}`).join(", ")
+        : "two spans"
+    );
+    expect(spans).toHaveLength(2);
+    // and both must actually admit a body
+    for (const s2 of spans) expect(s2.to - s2.from).toBeGreaterThan(16);
+  });
+
+  it("leaves the gate to the window wider than the player", () => {
+    const gate = railWin.x - (railLong.x + railLong.w) - CHAR_R * 2;
+    expect(gate).toBeGreaterThan(8);
+  });
+
+  it("keeps the mat reachable, and only past the rope line", () => {
+    // Flood from just inside the door: the mat must be reachable. Then seal
+    // BOTH openings and confirm it is not — proving the rope line is the only
+    // thing standing between the lobby and the window, rather than the ropes
+    // being cosmetic and the room simply open.
     const start = { x: doorX, y: S.y + S.h - S.wall - CHAR_R - 2 };
-    const plug = {
+    const gate = {
       x: railLong.x + railLong.w,
       y: railWin.y,
       w: railWin.x - (railLong.x + railLong.w),
       h: railLong.y - railWin.y,
     };
+    const exit = {
+      x: S.x + S.wall,
+      y: railLong.y,
+      w: railLong.x - (S.x + S.wall),
+      h: railLong.h,
+    };
     expect(reaches(S, start, mat), "mat unreachable through the queue").toBe(
       true
     );
-    expect(reaches(S, start, mat, plug), "queue can be walked around").toBe(
-      false
-    );
+    expect(
+      reaches(S, start, mat, [gate, exit]),
+      "mat reachable with both openings sealed"
+    ).toBe(false);
   });
 
   it("puts the mat at the head of the line, against the counter", () => {
