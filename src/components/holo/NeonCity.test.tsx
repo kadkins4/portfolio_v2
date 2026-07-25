@@ -103,6 +103,25 @@ describe("NeonCity – dev flags", () => {
     ).not.toBeInTheDocument();
   });
 
+  // Regression: the snapshot is read during render, and a browser with storage
+  // blocked throws on the *read*. Unguarded that took the whole page down.
+  it("still renders when the browser blocks storage access", async () => {
+    visit("?dev=1");
+    const getItem = vi
+      .spyOn(Storage.prototype, "getItem")
+      .mockImplementation(() => {
+        throw new DOMException("The operation is insecure.", "SecurityError");
+      });
+    try {
+      render(<NeonCity name="Kendall Adkins" />);
+      await waitFor(() =>
+        expect(screen.getByText(/DEV · COLLIDERS/)).toBeInTheDocument()
+      );
+    } finally {
+      getItem.mockRestore();
+    }
+  });
+
   it("ignores the stored collider flag when ?dev=1 is absent", async () => {
     localStorage.setItem("neoncity.colliders", "1");
     const { container } = render(<NeonCity name="Kendall Adkins" />);

@@ -14,13 +14,27 @@ function subscribeColliders(onChange: () => void) {
   };
 }
 
+// This snapshot runs during render, so it must not throw: `localStorage` raises
+// SecurityError on access — not just on write — when storage is blocked (Safari
+// "block all cookies", a partitioned third-party context). Unguarded, that
+// throw propagates out of getSnapshot and takes the whole city down to the
+// nearest error boundary, for a dev-only overlay an ordinary visitor never sees.
 function collidersSnapshot(): boolean {
-  return localStorage.getItem(COLLIDERS_KEY) === "1";
+  try {
+    return localStorage.getItem(COLLIDERS_KEY) === "1";
+  } catch {
+    return false;
+  }
 }
 
 /** Persist the collider-overlay choice and notify every mounted reader. */
 export function writeColliders(on: boolean) {
-  localStorage.setItem(COLLIDERS_KEY, on ? "1" : "0");
+  try {
+    localStorage.setItem(COLLIDERS_KEY, on ? "1" : "0");
+  } catch {
+    // Storage blocked. The overlay still toggles for this render pass; it just
+    // will not survive a reload.
+  }
   listeners.forEach((l) => l());
 }
 
