@@ -1,0 +1,25 @@
+---
+title: Football Pool
+description: >-
+  A live NFL season pool for ten friends. Each player is dealt three teams, and
+  the standings add up their teams' scores week by week. Scores refresh from
+  ESPN during games, and every week shows how each player moved in the
+  standings.
+tags:
+  - Side Project
+image: /images/projects/football-pool/image.png
+imageFocus: top
+externalUrl: https://football-pool-mauve.vercel.app
+date: 2026-09-04
+featured: true
+order: 8
+district: sports
+status: live
+---
+Football Pool tracks a season-long NFL pool. Ten players are dealt three teams each from a replayed draw, and a player's score is the points their teams put up. The scoreboard styles the totals like a stadium display, with a standings list, a team scoring chart, and a week picker.
+
+Scores come from ESPN's scoreboard feed, cached for 30 seconds during the active week so the page can take any number of viewers without hammering the API. Games in progress count toward standings right away and flash on touchdowns. Each week keeps its own standings and shows the places every player gained or lost since the week before, so someone who missed a week can see how they slid. After Week 18 the page opens on a podium.
+
+**Tech:** Next.js 16 · React 19 · TypeScript · Tailwind CSS 4 · Vitest · Vercel
+
+**Status:** Live for the 2026 season.
